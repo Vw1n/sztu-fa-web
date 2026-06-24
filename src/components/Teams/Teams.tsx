@@ -156,7 +156,7 @@ const Teams: React.FC = () => {
                 >
                   <div className="teamImageWrapper">
                     <img
-                      src={team.teamLogo || 'https://via.placeholder.com/300x200'}
+                      src={team.teamLogo || 'https://picsum.photos/seed/team/300/200'}
                       alt={team.teamName}
                       className="teamImage"
                       loading="lazy"
@@ -253,7 +253,7 @@ const Teams: React.FC = () => {
               </button>
               <div className="modalHeader">
                 <img
-                  src={selectedTeam.teamLogo || 'https://via.placeholder.com/100x100'}
+                  src={selectedTeam.teamLogo || 'https://picsum.photos/seed/jersey1/100/100'}
                   alt={selectedTeam.teamName}
                   className="modalLogo"
                 />
@@ -293,7 +293,7 @@ const Teams: React.FC = () => {
                 <div className="modalJerseys">
                   <div className="modalJersey">
                     <img
-                      src={selectedTeam.homeJersey || 'https://via.placeholder.com/200x300'}
+                      src={selectedTeam.homeJersey || 'https://picsum.photos/seed/jersey2/200/300'}
                       alt="主场球衣"
                       className="jerseyImage"
                     />
@@ -301,7 +301,7 @@ const Teams: React.FC = () => {
                   </div>
                   <div className="modalJersey">
                     <img
-                      src={selectedTeam.awayJersey || 'https://via.placeholder.com/200x300'}
+                      src={selectedTeam.awayJersey || 'https://picsum.photos/seed/jersey2/200/300'}
                       alt="客场球衣"
                       className="jerseyImage"
                     />

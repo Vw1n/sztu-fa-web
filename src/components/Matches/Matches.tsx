@@ -233,7 +233,7 @@ const Matches: React.FC = () => {
                     <div className="matchTeam">
                       <div className="matchTeamLogo">
                         <img
-                          src={match.homeTeam.teamLogo || 'https://via.placeholder.com/100'}
+                          src={match.homeTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'}
                           alt={match.homeTeam.teamName}
                           loading="lazy"
                         />
@@ -259,7 +259,7 @@ const Matches: React.FC = () => {
                     <div className="matchTeam">
                       <div className="matchTeamLogo">
                         <img
-                          src={match.awayTeam.teamLogo || 'https://via.placeholder.com/100'}
+                          src={match.awayTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'}
                           alt={match.awayTeam.teamName}
                           loading="lazy"
                         />
