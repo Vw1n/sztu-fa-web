@@ -9,6 +9,7 @@ export default defineConfig({
       '/api': {
         target: 'https://api.sztufa.xyz',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api/v1'),
       },
     },
   },

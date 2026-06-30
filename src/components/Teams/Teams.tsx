@@ -13,6 +13,7 @@ const Teams: React.FC = () => {
   const [limit] = useState(6);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const loadTeams = async (page: number, search?: string) => {
     setLoading(true);
@@ -256,6 +257,7 @@ const Teams: React.FC = () => {
                   src={selectedTeam.teamLogo || 'https://picsum.photos/seed/jersey1/100/100'}
                   alt={selectedTeam.teamName}
                   className="modalLogo"
+                  onClick={() => setPreviewImage(selectedTeam.teamLogo || 'https://picsum.photos/seed/jersey1/100/100')}
                 />
                 <h3 className="modalTitle">{selectedTeam.teamName}</h3>
               </div>
@@ -296,6 +298,7 @@ const Teams: React.FC = () => {
                       src={selectedTeam.homeJersey || 'https://picsum.photos/seed/jersey2/200/300'}
                       alt="主场球衣"
                       className="jerseyImage"
+                      onClick={() => setPreviewImage(selectedTeam.homeJersey || 'https://picsum.photos/seed/jersey2/200/300')}
                     />
                     <span className="jerseyLabel">主场球衣</span>
                   </div>
@@ -304,11 +307,27 @@ const Teams: React.FC = () => {
                       src={selectedTeam.awayJersey || 'https://picsum.photos/seed/jersey2/200/300'}
                       alt="客场球衣"
                       className="jerseyImage"
+                      onClick={() => setPreviewImage(selectedTeam.awayJersey || 'https://picsum.photos/seed/jersey2/200/300')}
                     />
                     <span className="jerseyLabel">客场球衣</span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 图片预览弹窗 */}
+        {previewImage && (
+          <div className="imagePreviewOverlay" onClick={() => setPreviewImage(null)}>
+            <div className="imagePreviewContainer" onClick={(e) => e.stopPropagation()}>
+              <img src={previewImage} alt="大图预览" className="previewLargeImage" />
+              <button className="previewCloseButton" onClick={() => setPreviewImage(null)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
           </div>
         )}
