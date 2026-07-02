@@ -284,16 +284,33 @@ const Matches: React.FC = () => {
                               })
                               .map((e, i) => {
                                 const icon = e.eventType === 'goal' ? '⚽' :
+                                             e.eventType === 'own_goal' ? '🥅' :
+                                             e.eventType === 'penalty' ? '🎯' :
                                              e.eventType === 'yellow_card' ? '🟨' :
                                              e.eventType === 'red_card' ? '🟥' :
                                              e.eventType === 'substitution' ? '🔄' : '📢';
-                                const playerNameText = e.playerName ? `${e.playerName}${e.jerseyNumber ? ` (${e.jerseyNumber}号)` : ''}` : '';
                                 return (
                                   <div key={i} className="timelineItem">
                                     <span className="eventTime">{e.eventTime}</span>
                                     <span className="eventIcon">{icon}</span>
                                     <span className="eventDesc">
-                                      <strong>{playerNameText}</strong> {e.description}
+                                      {e.eventType === 'substitution' ? (
+                                        <span>
+                                          换上 <strong>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
+                                        </span>
+                                      ) : e.eventType === 'own_goal' ? (
+                                        <span>
+                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
+                                        </span>
+                                      ) : e.eventType === 'penalty' ? (
+                                        <span>
+                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                        </span>
+                                      ) : (
+                                        <span>
+                                          <strong>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong> {e.description || '进球'}
+                                        </span>
+                                      )}
                                     </span>
                                   </div>
                                 );
@@ -318,16 +335,33 @@ const Matches: React.FC = () => {
                               })
                               .map((e, i) => {
                                 const icon = e.eventType === 'goal' ? '⚽' :
+                                             e.eventType === 'own_goal' ? '🥅' :
+                                             e.eventType === 'penalty' ? '🎯' :
                                              e.eventType === 'yellow_card' ? '🟨' :
                                              e.eventType === 'red_card' ? '🟥' :
                                              e.eventType === 'substitution' ? '🔄' : '📢';
-                                const playerNameText = e.playerName ? `${e.playerName}${e.jerseyNumber ? ` (${e.jerseyNumber}号)` : ''}` : '';
                                 return (
                                   <div key={i} className="timelineItem">
                                     <span className="eventTime">{e.eventTime}</span>
                                     <span className="eventIcon">{icon}</span>
                                     <span className="eventDesc">
-                                      <strong>{playerNameText}</strong> {e.description}
+                                      {e.eventType === 'substitution' ? (
+                                        <span>
+                                          换上 <strong>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
+                                        </span>
+                                      ) : e.eventType === 'own_goal' ? (
+                                        <span>
+                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
+                                        </span>
+                                      ) : e.eventType === 'penalty' ? (
+                                        <span>
+                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                        </span>
+                                      ) : (
+                                        <span>
+                                          <strong>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong> {e.description || '进球'}
+                                        </span>
+                                      )}
                                     </span>
                                   </div>
                                 );
