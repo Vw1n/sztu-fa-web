@@ -1,54 +1,43 @@
-# React + TypeScript + Vite
+# 深圳技术大学足球协会 - 官方展示官网 (sztu-fa-web)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+本项目是校园足球赛事信息管理平台的**前台展示网站**，向师生提供实时的赛程安排、球队积分榜、球员数据以及详尽的赛事精彩事件回顾。
 
-Currently, two official plugins are available:
+## 🛠️ 技术栈
+* **核心框架**：React 18 + TypeScript + Vite 6
+* **页面样式**：Vanilla CSS 3 (原生设计系统，无 Tailwind，适配深浅主题与 CSS 变量)
+* **字体系列**：统一采用 Google Fonts `Noto Sans SC` (思源黑体)
+* **部署平台**：Vercel
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 精美交互设计
+1. **球队卡片与大图预览**：
+   * 球队列表展示队徽、主教练、队长等概要信息。
+   * 点击查看详情弹出遮罩卡片，队徽、主客场球衣支持**点击触发平滑的毛玻璃大图预览**。
+2. **比赛列表与赛事详情回顾弹窗**：
+   * 直观展示进行中、即将开始和已结束的比赛卡片，并带有动态呼吸的 Live 徽章。
+   * **毛玻璃详情弹窗**：点击任意比赛卡片，弹出宽屏玻璃态浮层（`max-width: 800px`），防止外部样式污染。
+   * **单轴双侧时序时间轴 (Timeline)**：
+     * 主队事件（进球、换人、红黄牌）靠左分布，客队事件靠右分布。
+     * 所有事件严格按照分钟从上至下时序排布。
+     * 时间和事件指示点在中央垂直轴线上精确对齐。
+     * **移动端响应式兼容**：小屏下时间轴自动向左折叠，保证无文字挤压。
+3. **数据统计与积分榜**：
+   * 展示射手榜、积分明细等排行。
 
-## Expanding the ESLint configuration
+## 🚀 开发与构建
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 1. 安装依赖
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 2. 启动本地开发服务
+```bash
+npm run dev
 ```
+本地开发服务会在 `http://localhost:5173` 启动，API 接口默认代理至 `http://localhost:3001`。
+
+### 3. 项目构建
+```bash
+npm run build
+```
+编译产物输出至 `dist/` 目录。

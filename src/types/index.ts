@@ -27,6 +27,33 @@ export interface Player {
   updatedAt: string;
 }
 
+export interface Goal {
+  id: string;
+  matchId: string;
+  playerId?: string | null;
+  playerName: string;
+  jerseyNumber: string;
+  goalTime: string;
+  teamType: 'home' | 'away';
+  createdAt: string;
+}
+
+export interface MatchEvent {
+  id: string;
+  matchId: string;
+  eventTime: string;
+  eventType: 'goal' | 'own_goal' | 'penalty' | 'yellow_card' | 'red_card' | 'substitution';
+  playerId?: string | null;
+  playerName?: string | null;
+  jerseyNumber?: string | null;
+  subPlayerId?: string | null;
+  subPlayerName?: string | null;
+  subJerseyNumber?: string | null;
+  description: string;
+  teamType: 'home' | 'away';
+  createdAt: string;
+}
+
 export interface Match {
   id: string;
   homeTeamId: string;
@@ -38,6 +65,8 @@ export interface Match {
   matchDate: string;
   location: string;
   status: 'scheduled' | 'in_progress' | 'completed';
+  goals?: Goal[];
+  events?: MatchEvent[];
   createdAt: string;
   updatedAt: string;
 }
