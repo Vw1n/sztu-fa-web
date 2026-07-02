@@ -583,8 +583,8 @@ const Matches: React.FC = () => {
                           
                           return (
                             <div key={i} className={`timelineRow ${isHome ? 'rowHome' : 'rowAway'}`}>
-                              <span className="eventTime">{e.eventTime}</span>
                               <div className="timelineDotContainer">
+                                <span className="eventTime">{e.eventTime}</span>
                                 <span className={`eventIconContainer eventIcon-${e.eventType}`}>
                                   {icon}
                                 </span>
