@@ -544,12 +544,18 @@ const Matches: React.FC = () => {
 
                 <div className="matchInfoDetails">
                   <div className="infoItem">
-                    <span className="infoLabel">📍 比赛地点</span>
-                    <span className="infoValue">{selectedMatchForModal.location || '学校足球场'}</span>
+                    <span className="infoIcon">📍</span>
+                    <div className="infoContent">
+                      <span className="infoLabel">比赛地点</span>
+                      <span className="infoValue">{selectedMatchForModal.location || '学校足球场'}</span>
+                    </div>
                   </div>
                   <div className="infoItem">
-                    <span className="infoLabel">📅 比赛时间</span>
-                    <span className="infoValue">{formatDate(selectedMatchForModal.matchDate)}</span>
+                    <span className="infoIcon">📅</span>
+                    <div className="infoContent">
+                      <span className="infoLabel">比赛时间</span>
+                      <span className="infoValue">{formatDate(selectedMatchForModal.matchDate)}</span>
+                    </div>
                   </div>
                 </div>
 
