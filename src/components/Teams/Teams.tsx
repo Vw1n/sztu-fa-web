@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Teams.css';
-import type { Team } from '../../types';
-import { fetchTeams, searchTeams } from '../../api';
+import type { Team, Player } from '../../types';
+import { fetchTeams, searchTeams, fetchSeasons, fetchTeamById, fetchMatches } from '../../api';
 
 const Teams: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -14,6 +14,13 @@ const Teams: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  // 赛季与球员相关状态
+  const [seasons, setSeasons] = useState<any[]>([]);
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
+  const [displayPlayers, setDisplayPlayers] = useState<any[]>([]);
+  const [playersLoading, setPlayersLoading] = useState(false);
+  const [teamPlayersMap, setTeamPlayersMap] = useState<Record<string, Player[]>>({});
 
   const loadTeams = async (page: number, search?: string) => {
     setLoading(true);
@@ -63,6 +70,139 @@ const Teams: React.FC = () => {
     if (page >= 1 && (!isSearching || page === 1)) {
       setCurrentPage(page);
       loadTeams(page, isSearching ? searchTerm : undefined);
+    }
+  };
+
+  const extractPlayersFromMatches = (matches: any[], targetTeamId: string) => {
+    const playerMap = new Map<string, { id?: string; name: string; jerseyNumber: string; photo?: string }>();
+    
+    matches.forEach(match => {
+      const isHome = match.homeTeamId === targetTeamId;
+      const teamType = isHome ? 'home' : 'away';
+      
+      // 从进球中提取
+      if (match.goals) {
+        match.goals.forEach((goal: any) => {
+          if (goal.teamType === teamType) {
+            const key = `${goal.playerName}_${goal.jerseyNumber}`;
+            if (!playerMap.has(key)) {
+              let cleanName = goal.playerName;
+              if (cleanName.endsWith(' (点球)')) {
+                cleanName = cleanName.substring(0, cleanName.length - 5);
+              } else if (cleanName.endsWith(' (乌龙)')) {
+                cleanName = cleanName.substring(0, cleanName.length - 5);
+              }
+              playerMap.set(key, {
+                id: goal.playerId || undefined,
+                name: cleanName,
+                jerseyNumber: goal.jerseyNumber
+              });
+            }
+          }
+        });
+      }
+      
+      // 从事件中提取
+      if (match.events) {
+        match.events.forEach((event: any) => {
+          if (event.teamType === teamType) {
+            if (event.playerName) {
+              const key = `${event.playerName}_${event.jerseyNumber || ''}`;
+              if (!playerMap.has(key)) {
+                playerMap.set(key, {
+                  id: event.playerId || undefined,
+                  name: event.playerName,
+                  jerseyNumber: event.jerseyNumber || ''
+                });
+              }
+            }
+            if (event.subPlayerName) {
+              const key = `${event.subPlayerName}_${event.subJerseyNumber || ''}`;
+              if (!playerMap.has(key)) {
+                playerMap.set(key, {
+                  id: event.subPlayerId || undefined,
+                  name: event.subPlayerName,
+                  jerseyNumber: event.subJerseyNumber || ''
+                });
+              }
+            }
+            if (event.assistPlayerName) {
+              const key = `${event.assistPlayerName}_${event.assistJerseyNumber || ''}`;
+              if (!playerMap.has(key)) {
+                playerMap.set(key, {
+                  id: event.assistPlayerId || undefined,
+                  name: event.assistPlayerName,
+                  jerseyNumber: event.assistJerseyNumber || ''
+                });
+              }
+            }
+          }
+        });
+      }
+    });
+    
+    return Array.from(playerMap.values()).sort((a, b) => {
+      const numA = parseInt(a.jerseyNumber) || 999;
+      const numB = parseInt(b.jerseyNumber) || 999;
+      return numA - numB;
+    });
+  };
+
+  useEffect(() => {
+    if (!selectedTeam) {
+      setDisplayPlayers([]);
+      setSelectedSeasonId('');
+      return;
+    }
+    
+    const initializeTeamModal = async () => {
+      setPlayersLoading(true);
+      try {
+        const seasonsList = await fetchSeasons();
+        setSeasons(seasonsList);
+        
+        const activeSeason = seasonsList.find(s => s.status === 'active');
+        const activeId = activeSeason ? activeSeason.id : (seasonsList[0]?.id || '');
+        setSelectedSeasonId(activeId);
+        
+        const details = await fetchTeamById(selectedTeam.id);
+        const currentRoster = details.players || [];
+        
+        setTeamPlayersMap(prev => ({
+          ...prev,
+          [selectedTeam.id]: currentRoster
+        }));
+        
+        setDisplayPlayers(currentRoster);
+      } catch (err) {
+        console.error('初始化球队详情弹窗失败:', err);
+      } finally {
+        setPlayersLoading(false);
+      }
+    };
+    
+    initializeTeamModal();
+  }, [selectedTeam]);
+
+  const handleSeasonChange = async (seasonId: string) => {
+    if (!selectedTeam) return;
+    setSelectedSeasonId(seasonId);
+    setPlayersLoading(true);
+    try {
+      const activeSeason = seasons.find(s => s.id === seasonId && s.status === 'active');
+      if (activeSeason) {
+        const roster = teamPlayersMap[selectedTeam.id] || [];
+        setDisplayPlayers(roster);
+      } else {
+        const matchesRes = await fetchMatches(1, 100, selectedTeam.id, seasonId);
+        const historicalPlayers = extractPlayersFromMatches(matchesRes.data, selectedTeam.id);
+        setDisplayPlayers(historicalPlayers);
+      }
+    } catch (err) {
+      console.error('切换赛季获取球员失败:', err);
+      setDisplayPlayers([]);
+    } finally {
+      setPlayersLoading(false);
     }
   };
 
@@ -311,6 +451,48 @@ const Teams: React.FC = () => {
                     />
                     <span className="jerseyLabel">客场球衣</span>
                   </div>
+                </div>
+
+                {/* 赛季球员名单 */}
+                <div className="modalPlayersSection">
+                  <div className="modalPlayersHeader">
+                    <h4>👥 队员名单</h4>
+                    {seasons.length > 0 && (
+                      <select
+                        value={selectedSeasonId}
+                        onChange={(e) => handleSeasonChange(e.target.value)}
+                        className="modalSeasonSelect"
+                      >
+                        {seasons.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name} {s.status === 'active' ? '(当前)' : ''}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  
+                  {playersLoading ? (
+                    <div className="modalPlayersLoading">加载球员列表中...</div>
+                  ) : displayPlayers.length === 0 ? (
+                    <div className="modalPlayersEmpty">该赛季暂无队员登记或出场记录</div>
+                  ) : (
+                    <div className="modalPlayersList">
+                      {displayPlayers.map((player) => (
+                        <div key={player.id || `${player.name}_${player.jerseyNumber}`} className="modalPlayerCard">
+                          {player.photo ? (
+                            <img src={player.photo} alt={player.name} className="modalPlayerPhoto" />
+                          ) : (
+                            <div className="modalPlayerPhotoPlaceholder">👕</div>
+                          )}
+                          <div className="modalPlayerInfo">
+                            <span className="modalPlayerName">{player.name}</span>
+                            <span className="modalPlayerNumber">{player.jerseyNumber ? `${player.jerseyNumber}号` : '无号'}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
