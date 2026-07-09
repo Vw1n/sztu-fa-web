@@ -45,11 +45,15 @@ function normalizeMatchStatus(match: Match): Match {
 export async function fetchMatches(
   page: number = 1,
   limit: number = 10,
-  teamId?: string
+  teamId?: string,
+  seasonId?: string
 ): Promise<PaginatedResponse<Match>> {
   let url = `${BASE_URL}/matches?page=${page}&limit=${limit}`;
   if (teamId) {
     url += `&teamId=${teamId}`;
+  }
+  if (seasonId) {
+    url += `&seasonId=${seasonId}`;
   }
   const response = await fetch(url);
   if (!response.ok) {
@@ -60,6 +64,22 @@ export async function fetchMatches(
     result.data = result.data.map(normalizeMatchStatus);
   }
   return result;
+}
+
+export async function fetchSeasons(): Promise<any[]> {
+  const response = await fetch(`${BASE_URL}/seasons`);
+  if (!response.ok) {
+    throw new Error('获取赛季列表失败');
+  }
+  return response.json();
+}
+
+export async function fetchPlayerCareer(id: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/players/${id}/career`);
+  if (!response.ok) {
+    throw new Error('获取球员生涯数据失败');
+  }
+  return response.json();
 }
 
 export async function fetchMatchById(id: string): Promise<Match> {

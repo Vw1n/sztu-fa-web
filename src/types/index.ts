@@ -49,6 +49,9 @@ export interface MatchEvent {
   subPlayerId?: string | null;
   subPlayerName?: string | null;
   subJerseyNumber?: string | null;
+  assistPlayerId?: string | null;
+  assistPlayerName?: string | null;
+  assistJerseyNumber?: string | null;
   description: string;
   teamType: 'home' | 'away';
   createdAt: string;
@@ -67,6 +70,9 @@ export interface Match {
   status: 'scheduled' | 'in_progress' | 'completed';
   goals?: Goal[];
   events?: MatchEvent[];
+  mvpPlayerId?: string | null;
+  mvpPlayerName?: string | null;
+  seasonId?: string | null;
   createdAt: string;
   updatedAt: string;
 }

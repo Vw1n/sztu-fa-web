@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Matches.css';
 import type { Match, Team } from '../../types';
-import { fetchMatches, fetchTeams } from '../../api';
+import { fetchMatches, fetchTeams, fetchSeasons, fetchPlayerCareer } from '../../api';
 
 type SortOption = 'date-desc' | 'date-asc' | 'score-desc' | 'score-asc';
 type StatusFilter = 'all' | 'scheduled' | 'in_progress' | 'completed';
@@ -31,18 +31,45 @@ const Matches: React.FC = () => {
   const [availableTeams, setAvailableTeams] = useState<Team[]>([]);
   const [selectedMatchForModal, setSelectedMatchForModal] = useState<Match | null>(null);
 
+  // 赛季与生涯卡片状态
+  const [seasons, setSeasons] = useState<any[]>([]);
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
+  const [careerPlayerId, setCareerPlayerId] = useState<string | null>(null);
+  const [careerPlayerName, setCareerPlayerName] = useState<string>('');
+  const [careerData, setCareerData] = useState<any>(null);
+  const [careerLoading, setCareerLoading] = useState(false);
+
   // 积分与数据统计逻辑
-  const [activeTab, setActiveTab] = useState<'matches' | 'standings' | 'scorers'>('matches');
+  const [activeTab, setActiveTab] = useState<'matches' | 'standings' | 'scorers' | 'assists'>('matches');
   const [allMatchesForStats, setAllMatchesForStats] = useState<Match[]>([]);
   const [allTeamsForStats, setAllTeamsForStats] = useState<Team[]>([]);
   const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
+    const loadSeasonsData = async () => {
+      try {
+        const seasonsList = await fetchSeasons();
+        setSeasons(seasonsList);
+        const active = seasonsList.find(s => s.status === 'active');
+        if (active) {
+          setSelectedSeasonId(active.id);
+        } else if (seasonsList.length > 0) {
+          setSelectedSeasonId(seasonsList[0].id);
+        }
+      } catch (err) {
+        console.error('加载赛季列表失败:', err);
+      }
+    };
+    loadSeasonsData();
+  }, []);
+
+  useEffect(() => {
     const loadStatsData = async () => {
+      if (!selectedSeasonId) return;
       setStatsLoading(true);
       try {
         const [matchesRes, teamsRes] = await Promise.all([
-          fetchMatches(1, 1000),
+          fetchMatches(1, 1000, undefined, selectedSeasonId),
           fetchTeams(1, 1000)
         ]);
         setAllMatchesForStats(matchesRes.data);
@@ -54,7 +81,7 @@ const Matches: React.FC = () => {
       }
     };
     loadStatsData();
-  }, []);
+  }, [selectedSeasonId]);
 
   interface StandingRow {
     teamId: string;
@@ -138,6 +165,15 @@ const Matches: React.FC = () => {
     });
   };
 
+  interface ScorerRow {
+    playerId: string;
+    playerName: string;
+    jerseyNumber: string;
+    teamName: string;
+    teamLogo: string;
+    goals: number;
+  }
+
   const getScorers = (): ScorerRow[] => {
     const scorersMap: Record<string, ScorerRow> = {};
     allMatchesForStats.forEach(match => {
@@ -150,6 +186,7 @@ const Matches: React.FC = () => {
               const key = `${event.playerName || '未知球员'}_${team.id}`;
               if (!scorersMap[key]) {
                 scorersMap[key] = {
+                  playerId: event.playerId || '',
                   playerName: event.playerName || '未知球员',
                   jerseyNumber: event.jerseyNumber || '-',
                   teamName: team.teamName,
@@ -169,12 +206,53 @@ const Matches: React.FC = () => {
       .slice(0, 10);
   };
 
-  const loadMatches = async (page: number, status?: string, teamId?: string, sort?: SortOption) => {
+  interface AssistRow {
+    playerId: string;
+    playerName: string;
+    jerseyNumber: string;
+    teamName: string;
+    teamLogo: string;
+    assists: number;
+  }
+
+  const getAssists = (): AssistRow[] => {
+    const assistsMap: Record<string, AssistRow> = {};
+    allMatchesForStats.forEach(match => {
+      if (match.events && match.events.length > 0) {
+        match.events.forEach(event => {
+          if ((event.eventType === 'goal' || event.eventType === 'penalty') && event.assistPlayerName) {
+            const isHome = event.teamType === 'home';
+            const team = isHome ? match.homeTeam : match.awayTeam;
+            if (team) {
+              const key = `${event.assistPlayerName}_${team.id}`;
+              if (!assistsMap[key]) {
+                assistsMap[key] = {
+                  playerId: event.assistPlayerId || '',
+                  playerName: event.assistPlayerName,
+                  jerseyNumber: event.assistJerseyNumber || '-',
+                  teamName: team.teamName,
+                  teamLogo: team.teamLogo || '',
+                  assists: 0
+                };
+              }
+              assistsMap[key].assists += 1;
+            }
+          }
+        });
+      }
+    });
+
+    return Object.values(assistsMap)
+      .sort((a, b) => b.assists - a.assists)
+      .slice(0, 10);
+  };
+
+  const loadMatches = async (page: number, status?: string, teamId?: string, sort?: SortOption, seasonId?: string) => {
     setLoading(true);
     setError(null);
     try {
       let filteredTeamId = teamId && teamId !== 'all' ? teamId : undefined;
-      const response = await fetchMatches(page, limit, filteredTeamId);
+      const response = await fetchMatches(page, limit, filteredTeamId, seasonId);
       
       let sortedMatches = [...response.data];
       
@@ -222,18 +300,34 @@ const Matches: React.FC = () => {
   };
 
   useEffect(() => {
-    loadMatches(1, statusFilter, teamFilter, sortBy);
-  }, [statusFilter, teamFilter, sortBy]);
+    loadMatches(1, statusFilter, teamFilter, sortBy, selectedSeasonId);
+  }, [statusFilter, teamFilter, sortBy, selectedSeasonId]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1) {
       setCurrentPage(page);
-      loadMatches(page, statusFilter, teamFilter, sortBy);
+      loadMatches(page, statusFilter, teamFilter, sortBy, selectedSeasonId);
     }
   };
 
   const handleRefresh = () => {
-    loadMatches(currentPage, statusFilter, teamFilter, sortBy);
+    loadMatches(currentPage, statusFilter, teamFilter, sortBy, selectedSeasonId);
+  };
+
+  const handlePlayerClick = async (playerId: string, playerName: string) => {
+    if (!playerId) return;
+    setCareerPlayerId(playerId);
+    setCareerPlayerName(playerName);
+    setCareerLoading(true);
+    setCareerData(null);
+    try {
+      const data = await fetchPlayerCareer(playerId);
+      setCareerData(data);
+    } catch (err) {
+      console.error('加载球员生涯数据失败:', err);
+    } finally {
+      setCareerLoading(false);
+    }
   };
 
   const formatDate = (dateStr: string) => {
@@ -267,26 +361,62 @@ const Matches: React.FC = () => {
           </p>
         </div>
 
-        {/* 导航标签卡 */}
-        <div className="matchesTabs">
-          <button
-            className={`tabButton ${activeTab === 'matches' ? 'active' : ''}`}
-            onClick={() => setActiveTab('matches')}
-          >
-            📅 赛程安排
-          </button>
-          <button
-            className={`tabButton ${activeTab === 'standings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('standings')}
-          >
-            🏆 积分榜
-          </button>
-          <button
-            className={`tabButton ${activeTab === 'scorers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('scorers')}
-          >
-            ⚽ 射手榜
-          </button>
+        {/* 导航标签卡与赛季选择器 */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '30px' }}>
+          <div className="matchesTabs" style={{ margin: 0 }}>
+            <button
+              className={`tabButton ${activeTab === 'matches' ? 'active' : ''}`}
+              onClick={() => setActiveTab('matches')}
+            >
+              📅 赛程安排
+            </button>
+            <button
+              className={`tabButton ${activeTab === 'standings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('standings')}
+            >
+              🏆 积分榜
+            </button>
+            <button
+              className={`tabButton ${activeTab === 'scorers' ? 'active' : ''}`}
+              onClick={() => setActiveTab('scorers')}
+            >
+              ⚽ 射手榜
+            </button>
+            <button
+              className={`tabButton ${activeTab === 'assists' ? 'active' : ''}`}
+              onClick={() => setActiveTab('assists')}
+            >
+              🎯 助攻榜
+            </button>
+          </div>
+
+          {seasons.length > 0 && (
+            <div className="seasonSelectorWrapper" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-color)' }}>📅 选择赛季:</span>
+              <select
+                value={selectedSeasonId}
+                onChange={(e) => setSelectedSeasonId(e.target.value)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '30px',
+                  border: '2px solid var(--border-color)',
+                  backgroundColor: 'var(--card-bg, #fff)',
+                  color: 'var(--text-color)',
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: 'var(--shadow-sm)'
+                }}
+              >
+                {seasons.map(s => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} {s.status === 'active' ? '(当前赛季)' : '(往期归档)'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {activeTab === 'matches' && (
@@ -404,19 +534,24 @@ const Matches: React.FC = () => {
                                     <span className="eventDesc">
                                       {e.eventType === 'substitution' ? (
                                         <span>
-                                          换上 <strong>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
+                                          换上 <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong style={{ cursor: e.subPlayerId ? 'pointer' : 'default', textDecoration: e.subPlayerId ? 'underline' : 'none', color: e.subPlayerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.subPlayerId && handlePlayerClick(e.subPlayerId, e.subPlayerName || ''); }}>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
                                         </span>
                                       ) : e.eventType === 'own_goal' ? (
                                         <span>
-                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
+                                          <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
                                         </span>
                                       ) : e.eventType === 'penalty' ? (
                                         <span>
-                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                          <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                          {e.assistPlayerName && (
+                                            <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                            </span>
+                                          )}
                                         </span>
                                       ) : (
                                         <span>
-                                          <strong>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
+                                          <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
                                           {e.eventType === 'yellow_card' ? '黄牌' :
                                            e.eventType === 'red_card' ? '红牌' :
                                            e.eventType === 'goal' ? '进球' :
@@ -424,6 +559,11 @@ const Matches: React.FC = () => {
                                            e.eventType === 'own_goal' ? '乌龙球' :
                                            e.eventType === 'substitution' ? '换人' :
                                            (e.description || '事件')}
+                                          {e.eventType === 'goal' && e.assistPlayerName && (
+                                            <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                            </span>
+                                          )}
                                         </span>
                                       )}
                                     </span>
@@ -462,19 +602,24 @@ const Matches: React.FC = () => {
                                     <span className="eventDesc">
                                       {e.eventType === 'substitution' ? (
                                         <span>
-                                          换上 <strong>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
+                                          换上 <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong style={{ cursor: e.subPlayerId ? 'pointer' : 'default', textDecoration: e.subPlayerId ? 'underline' : 'none', color: e.subPlayerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.subPlayerId && handlePlayerClick(e.subPlayerId, e.subPlayerName || ''); }}>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
                                         </span>
                                       ) : e.eventType === 'own_goal' ? (
                                         <span>
-                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
+                                          <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
                                         </span>
                                       ) : e.eventType === 'penalty' ? (
                                         <span>
-                                          <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                          <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                          {e.assistPlayerName && (
+                                            <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                            </span>
+                                          )}
                                         </span>
                                       ) : (
                                         <span>
-                                          <strong>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
+                                          <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
                                           {e.eventType === 'yellow_card' ? '黄牌' :
                                            e.eventType === 'red_card' ? '红牌' :
                                            e.eventType === 'goal' ? '进球' :
@@ -482,6 +627,11 @@ const Matches: React.FC = () => {
                                            e.eventType === 'own_goal' ? '乌龙球' :
                                            e.eventType === 'substitution' ? '换人' :
                                            (e.description || '事件')}
+                                          {e.eventType === 'goal' && e.assistPlayerName && (
+                                            <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                            </span>
+                                          )}
                                         </span>
                                       )}
                                     </span>
@@ -512,8 +662,13 @@ const Matches: React.FC = () => {
                         <line x1="8" y1="2" x2="8" y2="6" />
                         <line x1="3" y1="10" x2="21" y2="10" />
                       </svg>
-                      {new Date(match.createdAt).toLocaleDateString('zh-CN')}
+                      {new Date(match.matchDate).toLocaleDateString('zh-CN')}
                     </div>
+                    {match.mvpPlayerName && (
+                      <div className="matchDetail" style={{ color: '#e65100', fontWeight: 'bold', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={(evt) => { evt.stopPropagation(); match.mvpPlayerId && handlePlayerClick(match.mvpPlayerId, match.mvpPlayerName || ''); }}>
+                        🏆 MVP: <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>{match.mvpPlayerName}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -726,9 +881,17 @@ const Matches: React.FC = () => {
                           <td>
                             <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
                           </td>
-                          <td className="scorerNameCell">
+                          <td
+                            className="scorerNameCell"
+                            style={{ cursor: row.playerId ? 'pointer' : 'default' }}
+                            onClick={() => row.playerId && handlePlayerClick(row.playerId, row.playerName)}
+                          >
                             <span className="scorerIcon">⚽</span>
-                            <strong>{row.playerName}</strong>
+                            {row.playerId ? (
+                              <strong style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>{row.playerName}</strong>
+                            ) : (
+                              <strong>{row.playerName}</strong>
+                            )}
                           </td>
                           <td>{row.jerseyNumber}号</td>
                           <td className="tableTeamCell">
@@ -743,6 +906,73 @@ const Matches: React.FC = () => {
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center', padding: 'var(--spacing-xl) 0', color: 'var(--text-light)' }}>
                           暂无进球数据记录
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 助攻榜 Tab 视图 */}
+        {activeTab === 'assists' && (
+          <div className="scorersSection">
+            {statsLoading ? (
+              <div className="loadingContainer">
+                <div className="loadingSpinner"></div>
+                <p>正在计算助攻榜...</p>
+              </div>
+            ) : (
+              <div className="scorersTableContainer">
+                <table className="scorersTable">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '60px' }}>排名</th>
+                      <th>球员</th>
+                      <th>号码</th>
+                      <th>所属球队</th>
+                      <th style={{ width: '120px', textAlign: 'center' }}>助攻数</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getAssists().map((row, index) => {
+                      let rankClass = '';
+                      if (index === 0) rankClass = 'rank-gold';
+                      else if (index === 1) rankClass = 'rank-silver';
+                      else if (index === 2) rankClass = 'rank-bronze';
+                      
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
+                          </td>
+                          <td
+                            className="scorerNameCell"
+                            style={{ cursor: row.playerId ? 'pointer' : 'default' }}
+                            onClick={() => row.playerId && handlePlayerClick(row.playerId, row.playerName)}
+                          >
+                            <span className="scorerIcon">🎯</span>
+                            {row.playerId ? (
+                              <strong style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>{row.playerName}</strong>
+                            ) : (
+                              <strong>{row.playerName}</strong>
+                            )}
+                          </td>
+                          <td>{row.jerseyNumber}号</td>
+                          <td className="tableTeamCell">
+                            <img className="tableTeamLogo" src={row.teamLogo || 'https://picsum.photos/seed/team/30/30'} alt={row.teamName} />
+                            <span className="tableTeamName">{row.teamName}</span>
+                          </td>
+                          <td className="goalsCell">{row.assists}</td>
+                        </tr>
+                      );
+                    })}
+                    {getAssists().length === 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center', padding: 'var(--spacing-xl) 0', color: 'var(--text-light)' }}>
+                          暂无助攻数据记录
                         </td>
                       </tr>
                     )}
@@ -807,6 +1037,15 @@ const Matches: React.FC = () => {
                       <span className="infoValue">{formatDate(selectedMatchForModal.matchDate)}</span>
                     </div>
                   </div>
+                  {selectedMatchForModal.mvpPlayerName && (
+                    <div className="infoItem" style={{ cursor: selectedMatchForModal.mvpPlayerId ? 'pointer' : 'default' }} onClick={() => selectedMatchForModal.mvpPlayerId && handlePlayerClick(selectedMatchForModal.mvpPlayerId, selectedMatchForModal.mvpPlayerName || '')}>
+                      <span className="infoIcon">🏆</span>
+                      <div className="infoContent">
+                        <span className="infoLabel">本场最佳 (MVP)</span>
+                        <span className="infoValue" style={{ fontWeight: 'bold', color: '#e65100', textDecoration: selectedMatchForModal.mvpPlayerId ? 'underline' : 'none' }}>{selectedMatchForModal.mvpPlayerName}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* 进球与事件面板 */}
@@ -853,19 +1092,24 @@ const Matches: React.FC = () => {
                                 <span className="eventDesc">
                                   {e.eventType === 'substitution' ? (
                                     <span>
-                                      换上 <strong>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
+                                      换上 <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={() => e.playerId && handlePlayerClick(e.playerId, e.playerName || '')}>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong style={{ cursor: e.subPlayerId ? 'pointer' : 'default', textDecoration: e.subPlayerId ? 'underline' : 'none', color: e.subPlayerId ? 'var(--primary-color)' : 'inherit' }} onClick={() => e.subPlayerId && handlePlayerClick(e.subPlayerId, e.subPlayerName || '')}>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
                                     </span>
                                   ) : e.eventType === 'own_goal' ? (
                                     <span>
-                                      <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
+                                      <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={() => e.playerId && handlePlayerClick(e.playerId, e.playerName || '')}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
                                     </span>
                                   ) : e.eventType === 'penalty' ? (
                                     <span>
-                                      <strong>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                      <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={() => e.playerId && handlePlayerClick(e.playerId, e.playerName || '')}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
+                                      {e.assistPlayerName && (
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
+                                          (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={() => e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || '')}>{e.assistPlayerName}</strong>)
+                                        </span>
+                                      )}
                                     </span>
                                   ) : (
                                     <span>
-                                      <strong>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
+                                      <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={() => e.playerId && handlePlayerClick(e.playerId, e.playerName || '')}>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
                                       {e.eventType === 'yellow_card' ? '黄牌' :
                                        e.eventType === 'red_card' ? '红牌' :
                                        e.eventType === 'goal' ? '进球' :
@@ -873,6 +1117,11 @@ const Matches: React.FC = () => {
                                        e.eventType === 'own_goal' ? '乌龙球' :
                                        e.eventType === 'substitution' ? '换人' :
                                        (e.description || '事件')}
+                                      {e.eventType === 'goal' && e.assistPlayerName && (
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
+                                          (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={() => e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || '')}>{e.assistPlayerName}</strong>)
+                                        </span>
+                                      )}
                                     </span>
                                   )}
                                 </span>
@@ -888,6 +1137,123 @@ const Matches: React.FC = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+        {/* 球员跨赛季“生涯数据球星卡” */}
+        {careerPlayerId && (
+          <div className="matchModalOverlay" style={{ zIndex: 1000 }} onClick={() => setCareerPlayerId(null)}>
+            <div
+              className="matchModal careerCardModal"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                maxWidth: '520px',
+                background: 'rgba(255, 255, 255, 0.75)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                borderRadius: '24px',
+                overflow: 'hidden'
+              }}
+            >
+              <button className="matchModalClose" onClick={() => setCareerPlayerId(null)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+
+              {careerLoading ? (
+                <div style={{ padding: '60px 0', textAlign: 'center' }}>
+                  <div className="loadingSpinner" style={{ margin: '0 auto 15px auto' }}></div>
+                  <p style={{ color: 'var(--text-color)', fontWeight: 600 }}>正在生成生涯球星卡...</p>
+                </div>
+              ) : careerData ? (
+                <div style={{ padding: '30px 24px' }}>
+                  {/* 球星卡顶部个人信息 */}
+                  <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '24px', borderBottom: '1px dashed rgba(0,0,0,0.1)', paddingBottom: '20px' }}>
+                    <div style={{
+                      width: '90px',
+                      height: '90px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2.5rem',
+                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      flexShrink: 0
+                    }}>
+                      {careerData.jerseyNumber || '#'}
+                    </div>
+                    <div>
+                      <h3 style={{ margin: '0 0 4px 0', fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-color)' }}>
+                        {careerPlayerName}
+                      </h3>
+                      <p style={{ margin: 0, fontSize: '1rem', color: 'var(--primary-color)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span>🛡️</span> {careerData.teamName || '暂无队伍'}
+                        {careerData.status === 'suspended' && (
+                          <span style={{ background: '#ffebeb', color: '#d93838', fontSize: '0.8rem', padding: '2px 8px', borderRadius: '12px', marginLeft: '5px' }}>🛑 停赛中</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 生涯总计面板 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '24px' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.5)' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-color)' }}>{careerData.summary.totalMatches}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '2px' }}>出场数</div>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.5)' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-color)' }}>{careerData.summary.totalGoals}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '2px' }}>总进球</div>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.5)' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0288d1' }}>{careerData.summary.totalAssists}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '2px' }}>总助攻</div>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px 8px', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.5)' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f57c00' }}>
+                        🟨{careerData.summary.totalYellow} 🟥{careerData.summary.totalRed}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '2px' }}>红黄牌</div>
+                    </div>
+                  </div>
+
+                  {/* 跨赛季历史表单 */}
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>📊 赛季生涯历程</h4>
+                  <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.08)' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'center' }}>
+                      <thead>
+                        <tr style={{ background: 'rgba(0,0,0,0.03)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                          <th style={{ padding: '10px 8px', fontWeight: 600 }}>赛季</th>
+                          <th style={{ padding: '10px 8px', fontWeight: 600 }}>估算出场</th>
+                          <th style={{ padding: '10px 8px', fontWeight: 600 }}>进球</th>
+                          <th style={{ padding: '10px 8px', fontWeight: 600 }}>助攻</th>
+                          <th style={{ padding: '10px 8px', fontWeight: 600 }}>黄牌/红牌</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {careerData.seasons.map((s: any, idx: number) => (
+                          <tr key={idx} style={{ borderBottom: idx === careerData.seasons.length - 1 ? 'none' : '1px solid rgba(0,0,0,0.05)', background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.2)' }}>
+                            <td style={{ padding: '10px 8px', fontWeight: 500 }}>{s.seasonName}</td>
+                            <td style={{ padding: '10px 8px' }}>{s.matchesPlayed}</td>
+                            <td style={{ padding: '10px 8px', fontWeight: 600, color: 'var(--primary-color)' }}>{s.goals}</td>
+                            <td style={{ padding: '10px 8px', fontWeight: 600, color: '#0288d1' }}>{s.assists}</td>
+                            <td style={{ padding: '10px 8px' }}>🟨{s.yellowCards} / 🟥{s.redCards}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>无法加载生涯数据</div>
+              )}
             </div>
           </div>
         )}
