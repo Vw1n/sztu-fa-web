@@ -321,8 +321,50 @@ const Matches: React.FC = () => {
     setCareerLoading(true);
     setCareerData(null);
     try {
-      const data = await fetchPlayerCareer(playerId);
-      setCareerData(data);
+      const apiResponse = await fetchPlayerCareer(playerId);
+      if (apiResponse && apiResponse.player) {
+        const playerObj = apiResponse.player;
+        const careerList = apiResponse.career || [];
+        
+        let totalMatches = 0;
+        let totalGoals = 0;
+        let totalAssists = 0;
+        let totalYellow = 0;
+        let totalRed = 0;
+        
+        careerList.forEach((c: any) => {
+          totalMatches += c.appearances || 0;
+          totalGoals += c.goals || 0;
+          totalAssists += c.assists || 0;
+          totalYellow += c.yellowCards || 0;
+          totalRed += c.redCards || 0;
+        });
+
+        const structuredData = {
+          jerseyNumber: playerObj.jerseyNumber || '#',
+          teamName: playerObj.team?.teamName || '暂无队伍',
+          status: playerObj.status || 'active',
+          summary: {
+            totalMatches,
+            totalGoals,
+            totalAssists,
+            totalYellow,
+            totalRed
+          },
+          seasons: careerList.map((c: any) => ({
+            seasonName: c.seasonName,
+            matchesPlayed: c.appearances || 0,
+            goals: c.goals || 0,
+            assists: c.assists || 0,
+            yellowCards: c.yellowCards || 0,
+            redCards: c.redCards || 0
+          }))
+        };
+        
+        setCareerData(structuredData);
+      } else {
+        console.error('返回数据格式不正确:', apiResponse);
+      }
     } catch (err) {
       console.error('加载球员生涯数据失败:', err);
     } finally {
