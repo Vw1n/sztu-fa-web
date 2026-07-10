@@ -128,3 +128,31 @@ export async function fetchPlayerById(id: string): Promise<Player> {
   }
   return response.json();
 }
+
+export async function fetchTeamPlayersBySeason(teamId: string, seasonId?: string): Promise<Player[]> {
+  let url = `${BASE_URL}/teams/${teamId}/players`;
+  if (seasonId) {
+    url += `?seasonId=${seasonId}`;
+  }
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('获取赛季球员名册失败');
+  }
+  return response.json();
+}
+
+export async function fetchSeasonStandings(seasonId: string): Promise<any[]> {
+  const response = await fetch(`${BASE_URL}/seasons/${seasonId}/standings`);
+  if (!response.ok) {
+    throw new Error('获取赛季积分榜失败');
+  }
+  return response.json();
+}
+
+export async function fetchSeasonStats(seasonId: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/seasons/${seasonId}/stats`);
+  if (!response.ok) {
+    throw new Error('获取赛季榜单数据失败');
+  }
+  return response.json();
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Teams.css';
 import type { Team, Player } from '../../types';
-import { fetchTeams, searchTeams, fetchSeasons, fetchTeamById, fetchMatches } from '../../api';
+import { fetchTeams, searchTeams, fetchSeasons, fetchTeamById, fetchMatches, fetchTeamPlayersBySeason } from '../../api';
 
 const Teams: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -20,7 +20,6 @@ const Teams: React.FC = () => {
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
   const [displayPlayers, setDisplayPlayers] = useState<any[]>([]);
   const [playersLoading, setPlayersLoading] = useState(false);
-  const [teamPlayersMap, setTeamPlayersMap] = useState<Record<string, Player[]>>({});
 
   const loadTeams = async (page: number, search?: string) => {
     setLoading(true);
@@ -73,81 +72,6 @@ const Teams: React.FC = () => {
     }
   };
 
-  const extractPlayersFromMatches = (matches: any[], targetTeamId: string) => {
-    const playerMap = new Map<string, { id?: string; name: string; jerseyNumber: string; photo?: string }>();
-    
-    matches.forEach(match => {
-      const isHome = match.homeTeamId === targetTeamId;
-      const teamType = isHome ? 'home' : 'away';
-      
-      // 从进球中提取
-      if (match.goals) {
-        match.goals.forEach((goal: any) => {
-          if (goal.teamType === teamType) {
-            const key = `${goal.playerName}_${goal.jerseyNumber}`;
-            if (!playerMap.has(key)) {
-              let cleanName = goal.playerName;
-              if (cleanName.endsWith(' (点球)')) {
-                cleanName = cleanName.substring(0, cleanName.length - 5);
-              } else if (cleanName.endsWith(' (乌龙)')) {
-                cleanName = cleanName.substring(0, cleanName.length - 5);
-              }
-              playerMap.set(key, {
-                id: goal.playerId || undefined,
-                name: cleanName,
-                jerseyNumber: goal.jerseyNumber
-              });
-            }
-          }
-        });
-      }
-      
-      // 从事件中提取
-      if (match.events) {
-        match.events.forEach((event: any) => {
-          if (event.teamType === teamType) {
-            if (event.playerName) {
-              const key = `${event.playerName}_${event.jerseyNumber || ''}`;
-              if (!playerMap.has(key)) {
-                playerMap.set(key, {
-                  id: event.playerId || undefined,
-                  name: event.playerName,
-                  jerseyNumber: event.jerseyNumber || ''
-                });
-              }
-            }
-            if (event.subPlayerName) {
-              const key = `${event.subPlayerName}_${event.subJerseyNumber || ''}`;
-              if (!playerMap.has(key)) {
-                playerMap.set(key, {
-                  id: event.subPlayerId || undefined,
-                  name: event.subPlayerName,
-                  jerseyNumber: event.subJerseyNumber || ''
-                });
-              }
-            }
-            if (event.assistPlayerName) {
-              const key = `${event.assistPlayerName}_${event.assistJerseyNumber || ''}`;
-              if (!playerMap.has(key)) {
-                playerMap.set(key, {
-                  id: event.assistPlayerId || undefined,
-                  name: event.assistPlayerName,
-                  jerseyNumber: event.assistJerseyNumber || ''
-                });
-              }
-            }
-          }
-        });
-      }
-    });
-    
-    return Array.from(playerMap.values()).sort((a, b) => {
-      const numA = parseInt(a.jerseyNumber) || 999;
-      const numB = parseInt(b.jerseyNumber) || 999;
-      return numA - numB;
-    });
-  };
-
   useEffect(() => {
     if (!selectedTeam) {
       setDisplayPlayers([]);
@@ -165,15 +89,8 @@ const Teams: React.FC = () => {
         const activeId = activeSeason ? activeSeason.id : (seasonsList[0]?.id || '');
         setSelectedSeasonId(activeId);
         
-        const details = await fetchTeamById(selectedTeam.id);
-        const currentRoster = details.players || [];
-        
-        setTeamPlayersMap(prev => ({
-          ...prev,
-          [selectedTeam.id]: currentRoster
-        }));
-        
-        setDisplayPlayers(currentRoster);
+        const roster = await fetchTeamPlayersBySeason(selectedTeam.id, activeId);
+        setDisplayPlayers(roster);
       } catch (err) {
         console.error('初始化球队详情弹窗失败:', err);
       } finally {
@@ -189,15 +106,8 @@ const Teams: React.FC = () => {
     setSelectedSeasonId(seasonId);
     setPlayersLoading(true);
     try {
-      const activeSeason = seasons.find(s => s.id === seasonId && s.status === 'active');
-      if (activeSeason) {
-        const roster = teamPlayersMap[selectedTeam.id] || [];
-        setDisplayPlayers(roster);
-      } else {
-        const matchesRes = await fetchMatches(1, 100, selectedTeam.id, seasonId);
-        const historicalPlayers = extractPlayersFromMatches(matchesRes.data, selectedTeam.id);
-        setDisplayPlayers(historicalPlayers);
-      }
+      const roster = await fetchTeamPlayersBySeason(selectedTeam.id, seasonId);
+      setDisplayPlayers(roster);
     } catch (err) {
       console.error('切换赛季获取球员失败:', err);
       setDisplayPlayers([]);

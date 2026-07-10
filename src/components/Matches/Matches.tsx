@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Matches.css';
 import type { Match, Team } from '../../types';
-import { fetchMatches, fetchTeams, fetchSeasons, fetchPlayerCareer } from '../../api';
+import { fetchMatches, fetchTeams, fetchSeasons, fetchPlayerCareer, fetchSeasonStandings, fetchSeasonStats } from '../../api';
 
 type SortOption = 'date-desc' | 'date-asc' | 'score-desc' | 'score-asc';
 type StatusFilter = 'all' | 'scheduled' | 'in_progress' | 'completed';
@@ -41,8 +41,8 @@ const Matches: React.FC = () => {
 
   // 积分与数据统计逻辑
   const [activeTab, setActiveTab] = useState<'matches' | 'standings' | 'scorers' | 'assists'>('matches');
-  const [allMatchesForStats, setAllMatchesForStats] = useState<Match[]>([]);
-  const [allTeamsForStats, setAllTeamsForStats] = useState<Team[]>([]);
+  const [standings, setStandings] = useState<StandingRow[]>([]);
+  const [stats, setStats] = useState<any>({ scorers: [], assists: [], cards: [] });
   const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
@@ -68,12 +68,12 @@ const Matches: React.FC = () => {
       if (!selectedSeasonId) return;
       setStatsLoading(true);
       try {
-        const [matchesRes, teamsRes] = await Promise.all([
-          fetchMatches(1, 1000, undefined, selectedSeasonId),
-          fetchTeams(1, 1000)
+        const [standingsData, statsData] = await Promise.all([
+          fetchSeasonStandings(selectedSeasonId),
+          fetchSeasonStats(selectedSeasonId)
         ]);
-        setAllMatchesForStats(matchesRes.data);
-        setAllTeamsForStats(teamsRes.data);
+        setStandings(standingsData);
+        setStats(statsData);
       } catch (err) {
         console.error('加载统计数据失败:', err);
       } finally {
@@ -98,6 +98,7 @@ const Matches: React.FC = () => {
   }
 
   interface ScorerRow {
+    playerId?: string;
     playerName: string;
     jerseyNumber: string;
     teamName: string;
@@ -106,108 +107,15 @@ const Matches: React.FC = () => {
   }
 
   const getStandings = (): StandingRow[] => {
-    const standingsMap: Record<string, StandingRow> = {};
-    allTeamsForStats.forEach(team => {
-      standingsMap[team.id] = {
-        teamId: team.id,
-        teamName: team.teamName,
-        teamLogo: team.teamLogo || '',
-        played: 0,
-        won: 0,
-        drawn: 0,
-        lost: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-        goalDifference: 0,
-        points: 0,
-      };
-    });
-
-    allMatchesForStats.forEach(match => {
-      if (match.status === 'completed') {
-        const homeStanding = standingsMap[match.homeTeamId];
-        const awayStanding = standingsMap[match.awayTeamId];
-
-        if (homeStanding && awayStanding) {
-          homeStanding.played += 1;
-          awayStanding.played += 1;
-          
-          homeStanding.goalsFor += match.homeScore;
-          homeStanding.goalsAgainst += match.awayScore;
-          awayStanding.goalsFor += match.awayScore;
-          awayStanding.goalsAgainst += match.homeScore;
-
-          if (match.homeScore > match.awayScore) {
-            homeStanding.won += 1;
-            homeStanding.points += 3;
-            awayStanding.lost += 1;
-          } else if (match.homeScore < match.awayScore) {
-            awayStanding.won += 1;
-            awayStanding.points += 3;
-            homeStanding.lost += 1;
-          } else {
-            homeStanding.drawn += 1;
-            homeStanding.points += 1;
-            awayStanding.drawn += 1;
-            awayStanding.points += 1;
-          }
-        }
-      }
-    });
-
-    return Object.values(standingsMap).map(row => {
-      row.goalDifference = row.goalsFor - row.goalsAgainst;
-      return row;
-    }).sort((a, b) => {
-      if (b.points !== a.points) return b.points - a.points;
-      if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
-      return b.goalsFor - a.goalsFor;
-    });
+    return standings;
   };
 
-  interface ScorerRow {
-    playerId: string;
-    playerName: string;
-    jerseyNumber: string;
-    teamName: string;
-    teamLogo: string;
-    goals: number;
-  }
-
   const getScorers = (): ScorerRow[] => {
-    const scorersMap: Record<string, ScorerRow> = {};
-    allMatchesForStats.forEach(match => {
-      if (match.events && match.events.length > 0) {
-        match.events.forEach(event => {
-          if (event.eventType === 'goal' || event.eventType === 'penalty') {
-            const isHome = event.teamType === 'home';
-            const team = isHome ? match.homeTeam : match.awayTeam;
-            if (team) {
-              const key = `${event.playerName || '未知球员'}_${team.id}`;
-              if (!scorersMap[key]) {
-                scorersMap[key] = {
-                  playerId: event.playerId || '',
-                  playerName: event.playerName || '未知球员',
-                  jerseyNumber: event.jerseyNumber || '-',
-                  teamName: team.teamName,
-                  teamLogo: team.teamLogo || '',
-                  goals: 0
-                };
-              }
-              scorersMap[key].goals += 1;
-            }
-          }
-        });
-      }
-    });
-
-    return Object.values(scorersMap)
-      .sort((a, b) => b.goals - a.goals)
-      .slice(0, 10);
+    return (stats.scorers || []).slice(0, 10);
   };
 
   interface AssistRow {
-    playerId: string;
+    playerId?: string;
     playerName: string;
     jerseyNumber: string;
     teamName: string;
@@ -216,35 +124,7 @@ const Matches: React.FC = () => {
   }
 
   const getAssists = (): AssistRow[] => {
-    const assistsMap: Record<string, AssistRow> = {};
-    allMatchesForStats.forEach(match => {
-      if (match.events && match.events.length > 0) {
-        match.events.forEach(event => {
-          if ((event.eventType === 'goal' || event.eventType === 'penalty') && event.assistPlayerName) {
-            const isHome = event.teamType === 'home';
-            const team = isHome ? match.homeTeam : match.awayTeam;
-            if (team) {
-              const key = `${event.assistPlayerName}_${team.id}`;
-              if (!assistsMap[key]) {
-                assistsMap[key] = {
-                  playerId: event.assistPlayerId || '',
-                  playerName: event.assistPlayerName,
-                  jerseyNumber: event.assistJerseyNumber || '-',
-                  teamName: team.teamName,
-                  teamLogo: team.teamLogo || '',
-                  assists: 0
-                };
-              }
-              assistsMap[key].assists += 1;
-            }
-          }
-        });
-      }
-    });
-
-    return Object.values(assistsMap)
-      .sort((a, b) => b.assists - a.assists)
-      .slice(0, 10);
+    return (stats.assists || []).slice(0, 10);
   };
 
   const loadMatches = async (page: number, status?: string, teamId?: string, sort?: SortOption, seasonId?: string) => {
