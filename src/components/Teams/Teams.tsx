@@ -313,7 +313,7 @@ const Teams: React.FC = () => {
               </div>
               <div className="modalContent">
                 <div className="modalInfoGrid">
-                  <div className="modalInfoItem">
+                  <div className="modalInfoItem coachInfoItem">
                     <span className="modalInfoLabel">主教练</span>
                     <span className="modalInfoValue">{selectedTeam.headCoach || '暂无'}</span>
                   </div>

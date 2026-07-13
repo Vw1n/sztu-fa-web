@@ -455,6 +455,10 @@
   flex-direction: column;
 }
 
+.coachInfoItem {
+  grid-column: span 2 !important;
+}
+
 .modalInfoLabel {
   font-size: 0.85rem;
   color: var(--text-light);
