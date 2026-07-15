@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './Matches.css';
 import type { Match, Team } from '../../types';
 import { fetchMatches, fetchTeams, fetchSeasons, fetchPlayerCareer, fetchSeasonStandings, fetchSeasonStats } from '../../api';
@@ -66,6 +66,7 @@ const Matches: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    let active = true;
     const loadStatsData = async () => {
       if (!selectedSeasonId) return;
       setStatsLoading(true);
@@ -74,15 +75,19 @@ const Matches: React.FC = () => {
           fetchSeasonStandings(selectedSeasonId),
           fetchSeasonStats(selectedSeasonId)
         ]);
+        if (!active) return;
         setStandings(standingsData);
         setStats(statsData);
       } catch (err) {
         console.error('加载统计数据失败:', err);
       } finally {
-        setStatsLoading(false);
+        if (active) setStatsLoading(false);
       }
     };
     loadStatsData();
+    return () => {
+      active = false;
+    };
   }, [selectedSeasonId]);
 
   interface StandingRow {
@@ -129,19 +134,28 @@ const Matches: React.FC = () => {
     return (stats.assists || []).slice(0, 10);
   };
 
-  const loadMatches = async (page: number, status?: string, teamId?: string, sort?: SortOption, seasonId?: string) => {
+  const loadMatches = useCallback(async (
+    page: number,
+    status?: string,
+    teamId?: string,
+    sort?: SortOption,
+    seasonId?: string,
+    activeToken: { active: boolean } = { active: true }
+  ) => {
     setLoading(true);
     setError(null);
     try {
       let filteredTeamId = teamId && teamId !== 'all' ? teamId : undefined;
       const response = await fetchMatches(page, limit, filteredTeamId, seasonId);
       
+      if (!activeToken.active) return;
+      
       let sortedMatches = [...response.data];
       
       if (sort) {
         sortedMatches.sort((a, b) => {
-          const dateA = new Date(a.matchDate).getTime();
-          const dateB = new Date(b.matchDate).getTime();
+          const dateA = a.matchDate ? new Date(a.matchDate).getTime() : 0;
+          const dateB = b.matchDate ? new Date(b.matchDate).getTime() : 0;
           
           switch (sort) {
             case 'date-desc':
@@ -180,21 +194,32 @@ const Matches: React.FC = () => {
         });
       }
       
-      const teams = [...new Set(
-        response.data.flatMap(m => [m.homeTeam, m.awayTeam])
-      )];
+      const teamMap = new Map<string, Team>();
+      response.data.forEach(m => {
+        if (m.homeTeam) teamMap.set(m.homeTeam.id, m.homeTeam);
+        if (m.awayTeam) teamMap.set(m.awayTeam.id, m.awayTeam);
+      });
+      const teams = Array.from(teamMap.values());
       setAvailableTeams(teams);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '加载比赛数据失败');
+      if (activeToken.active) {
+        setError(err instanceof Error ? err.message : '加载比赛数据失败');
+      }
       console.error(err);
     } finally {
-      setLoading(false);
+      if (activeToken.active) {
+        setLoading(false);
+      }
     }
-  };
+  }, [limit]);
 
   useEffect(() => {
-    loadMatches(1, statusFilter, teamFilter, sortBy, selectedSeasonId);
-  }, [statusFilter, teamFilter, sortBy, selectedSeasonId]);
+    const activeToken = { active: true };
+    loadMatches(1, statusFilter, teamFilter, sortBy, selectedSeasonId, activeToken);
+    return () => {
+      activeToken.active = false;
+    };
+  }, [statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1) {
@@ -455,7 +480,7 @@ const Matches: React.FC = () => {
                             {match.events
                               .filter(e => e.teamType === 'home')
                               .sort((a, b) => {
-                                const parseTime = (t: string) => parseInt(t.replace(/'/g, '')) || 0;
+                                const parseTime = (t: any) => parseInt(String(t || '').replace(/'/g, '')) || 0;
                                 return parseTime(a.eventTime) - parseTime(b.eventTime);
                               })
                               .map((e, i) => {
@@ -526,7 +551,7 @@ const Matches: React.FC = () => {
                             {match.events
                               .filter(e => e.teamType === 'away')
                               .sort((a, b) => {
-                                const parseTime = (t: string) => parseInt(t.replace(/'/g, '')) || 0;
+                                const parseTime = (t: any) => parseInt(String(t || '').replace(/'/g, '')) || 0;
                                 return parseTime(a.eventTime) - parseTime(b.eventTime);
                               })
                               .map((e, i) => {
@@ -1039,8 +1064,8 @@ const Matches: React.FC = () => {
                       <div className="unifiedTimeline">
                         {selectedMatchForModal.events
                           .sort((a, b) => {
-                            const parseTime = (t: string) => {
-                              const cleaned = t.replace(/'/g, '');
+                            const parseTime = (t: any) => {
+                              const cleaned = String(t || '').replace(/'/g, '');
                               if (cleaned.includes('+')) {
                                 const parts = cleaned.split('+');
                                 return (parseInt(parts[0]) || 0) + (parseInt(parts[1]) || 0) / 100;
@@ -1139,12 +1164,12 @@ const Matches: React.FC = () => {
                           ) : (
                             selectedMatchForModal.lineups.filter((l: any) => l.teamType === 'home' && l.lineupType === 'starting').map((l: any) => (
                               <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: 'var(--bg-light, #f8f9fa)', borderRadius: '8px', fontSize: '0.95rem' }}>
-                                <span style={{ fontWeight: 800, color: '#4caf50', minWidth: '24px' }}>#{l.player.jerseyNumber}</span>
+                                <span style={{ fontWeight: 800, color: '#4caf50', minWidth: '24px' }}>#{l.player?.jerseyNumber ?? ''}</span>
                                 <strong
                                   style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-color)' }}
-                                  onClick={() => handlePlayerClick(l.playerId, l.player.name)}
+                                  onClick={() => handlePlayerClick(l.playerId, l.player?.name || '')}
                                 >
-                                  {l.player.name}
+                                  {l.player?.name || '未知球员'}
                                 </strong>
                               </div>
                             ))
@@ -1160,12 +1185,12 @@ const Matches: React.FC = () => {
                           ) : (
                             selectedMatchForModal.lineups.filter((l: any) => l.teamType === 'home' && l.lineupType === 'substitute').map((l: any) => (
                               <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: 'var(--bg-light, #f8f9fa)', borderRadius: '8px', fontSize: '0.95rem' }}>
-                                <span style={{ fontWeight: 800, color: '#2196f3', minWidth: '24px' }}>#{l.player.jerseyNumber}</span>
+                                <span style={{ fontWeight: 800, color: '#2196f3', minWidth: '24px' }}>#{l.player?.jerseyNumber ?? ''}</span>
                                 <strong
                                   style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-color)' }}
-                                  onClick={() => handlePlayerClick(l.playerId, l.player.name)}
+                                  onClick={() => handlePlayerClick(l.playerId, l.player?.name || '')}
                                 >
-                                  {l.player.name}
+                                  {l.player?.name || '未知球员'}
                                 </strong>
                               </div>
                             ))
@@ -1188,12 +1213,12 @@ const Matches: React.FC = () => {
                           ) : (
                             selectedMatchForModal.lineups.filter((l: any) => l.teamType === 'away' && l.lineupType === 'starting').map((l: any) => (
                               <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: 'var(--bg-light, #f8f9fa)', borderRadius: '8px', fontSize: '0.95rem' }}>
-                                <span style={{ fontWeight: 800, color: '#4caf50', minWidth: '24px' }}>#{l.player.jerseyNumber}</span>
+                                <span style={{ fontWeight: 800, color: '#4caf50', minWidth: '24px' }}>#{l.player?.jerseyNumber ?? ''}</span>
                                 <strong
                                   style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-color)' }}
-                                  onClick={() => handlePlayerClick(l.playerId, l.player.name)}
+                                  onClick={() => handlePlayerClick(l.playerId, l.player?.name || '')}
                                 >
-                                  {l.player.name}
+                                  {l.player?.name || '未知球员'}
                                 </strong>
                               </div>
                             ))
@@ -1209,12 +1234,12 @@ const Matches: React.FC = () => {
                           ) : (
                             selectedMatchForModal.lineups.filter((l: any) => l.teamType === 'away' && l.lineupType === 'substitute').map((l: any) => (
                               <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: 'var(--bg-light, #f8f9fa)', borderRadius: '8px', fontSize: '0.95rem' }}>
-                                <span style={{ fontWeight: 800, color: '#2196f3', minWidth: '24px' }}>#{l.player.jerseyNumber}</span>
+                                <span style={{ fontWeight: 800, color: '#2196f3', minWidth: '24px' }}>#{l.player?.jerseyNumber ?? ''}</span>
                                 <strong
                                   style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-color)' }}
-                                  onClick={() => handlePlayerClick(l.playerId, l.player.name)}
+                                  onClick={() => handlePlayerClick(l.playerId, l.player?.name || '')}
                                 >
-                                  {l.player.name}
+                                  {l.player?.name || '未知球员'}
                                 </strong>
                               </div>
                             ))

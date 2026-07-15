@@ -33,6 +33,7 @@ export async function searchTeams(name: string): Promise<Team[]> {
 }
 
 function normalizeMatchStatus(match: Match): Match {
+  if (!match) return match;
   let status = match.status;
   if (status as string === 'finished') {
     status = 'completed';

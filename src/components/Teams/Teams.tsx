@@ -20,6 +20,7 @@ const Teams: React.FC = () => {
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
   const [displayPlayers, setDisplayPlayers] = useState<any[]>([]);
   const [playersLoading, setPlayersLoading] = useState(false);
+  const [rosterError, setRosterError] = useState<string | null>(null);
 
   const loadTeams = async (page: number, search?: string) => {
     setLoading(true);
@@ -74,46 +75,69 @@ const Teams: React.FC = () => {
 
   useEffect(() => {
     if (!selectedTeam) {
-      setDisplayPlayers([]);
+      setSeasons([]);
       setSelectedSeasonId('');
+      setRosterError(null);
       return;
     }
     
-    const initializeTeamModal = async () => {
-      setPlayersLoading(true);
+    let active = true;
+    const loadSeasons = async () => {
       try {
         const seasonsList = await fetchSeasons();
+        if (!active) return;
         setSeasons(seasonsList);
         
         const activeSeason = seasonsList.find(s => s.status === 'active');
         const activeId = activeSeason ? activeSeason.id : (seasonsList[0]?.id || '');
         setSelectedSeasonId(activeId);
-        
-        const roster = await fetchTeamPlayersBySeason(selectedTeam.id, activeId);
-        setDisplayPlayers(roster);
       } catch (err) {
-        console.error('初始化球队详情弹窗失败:', err);
-      } finally {
-        setPlayersLoading(false);
+        console.error('获取赛季列表失败:', err);
       }
     };
     
-    initializeTeamModal();
+    loadSeasons();
+    return () => {
+      active = false;
+    };
   }, [selectedTeam]);
 
-  const handleSeasonChange = async (seasonId: string) => {
-    if (!selectedTeam) return;
-    setSelectedSeasonId(seasonId);
-    setPlayersLoading(true);
-    try {
-      const roster = await fetchTeamPlayersBySeason(selectedTeam.id, seasonId);
-      setDisplayPlayers(roster);
-    } catch (err) {
-      console.error('切换赛季获取球员失败:', err);
+  useEffect(() => {
+    if (!selectedTeam || !selectedSeasonId) {
       setDisplayPlayers([]);
-    } finally {
-      setPlayersLoading(false);
+      setRosterError(null);
+      return;
     }
+    
+    let active = true;
+    const loadRoster = async () => {
+      setPlayersLoading(true);
+      setRosterError(null);
+      try {
+        const roster = await fetchTeamPlayersBySeason(selectedTeam.id, selectedSeasonId);
+        if (!active) return;
+        setDisplayPlayers(roster);
+      } catch (err) {
+        console.error('获取球员名单失败:', err);
+        if (active) {
+          setDisplayPlayers([]);
+          setRosterError('获取球员花名册失败，请稍后重试');
+        }
+      } finally {
+        if (active) {
+          setPlayersLoading(false);
+        }
+      }
+    };
+    
+    loadRoster();
+    return () => {
+      active = false;
+    };
+  }, [selectedTeam, selectedSeasonId]);
+
+  const handleSeasonChange = (seasonId: string) => {
+    setSelectedSeasonId(seasonId);
   };
 
   const totalPages = isSearching ? 1 : Math.ceil(total / limit);
@@ -384,6 +408,8 @@ const Teams: React.FC = () => {
                   
                   {playersLoading ? (
                     <div className="modalPlayersLoading">加载球员列表中...</div>
+                  ) : rosterError ? (
+                    <div className="modalPlayersEmpty" style={{ color: '#fa5252' }}>{rosterError}</div>
                   ) : displayPlayers.length === 0 ? (
                     <div className="modalPlayersEmpty">该赛季暂无队员登记或出场记录</div>
                   ) : (
