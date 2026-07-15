@@ -18,6 +18,38 @@ const statusColors: Record<string, string> = {
   completed: 'var(--text-light)',
 };
 
+export interface StandingRow {
+  teamId: string;
+  teamName: string;
+  teamLogo: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number;
+}
+
+export interface ScorerRow {
+  playerId?: string;
+  playerName: string;
+  jerseyNumber: string;
+  teamName: string;
+  teamLogo: string;
+  goals: number;
+}
+
+export interface AssistRow {
+  playerId?: string;
+  playerName: string;
+  jerseyNumber: string;
+  teamName: string;
+  teamLogo: string;
+  assists: number;
+}
+
 const Matches: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [matchStats, setMatchStats] = useState({ total: 0, completed: 0, scheduled: 0, ongoing: 0 });
@@ -90,29 +122,6 @@ const Matches: React.FC = () => {
     };
   }, [selectedSeasonId]);
 
-  interface StandingRow {
-    teamId: string;
-    teamName: string;
-    teamLogo: string;
-    played: number;
-    won: number;
-    drawn: number;
-    lost: number;
-    goalsFor: number;
-    goalsAgainst: number;
-    goalDifference: number;
-    points: number;
-  }
-
-  interface ScorerRow {
-    playerId?: string;
-    playerName: string;
-    jerseyNumber: string;
-    teamName: string;
-    teamLogo: string;
-    goals: number;
-  }
-
   const getStandings = (): StandingRow[] => {
     return standings;
   };
@@ -120,15 +129,6 @@ const Matches: React.FC = () => {
   const getScorers = (): ScorerRow[] => {
     return (stats.scorers || []).slice(0, 10);
   };
-
-  interface AssistRow {
-    playerId?: string;
-    playerName: string;
-    jerseyNumber: string;
-    teamName: string;
-    teamLogo: string;
-    assists: number;
-  }
 
   const getAssists = (): AssistRow[] => {
     return (stats.assists || []).slice(0, 10);
@@ -146,7 +146,7 @@ const Matches: React.FC = () => {
     setError(null);
     try {
       let filteredTeamId = teamId && teamId !== 'all' ? teamId : undefined;
-      const response = await fetchMatches(page, limit, filteredTeamId, seasonId);
+      const response = await fetchMatches(page, limit, filteredTeamId, seasonId, status);
       
       if (!activeToken.active) return;
       
@@ -162,22 +162,20 @@ const Matches: React.FC = () => {
               return dateB - dateA;
             case 'date-asc':
               return dateA - dateB;
-            case 'score-desc':
+            case 'score-desc': {
               const totalScoreA = (a.homeScore || 0) + (a.awayScore || 0);
               const totalScoreB = (b.homeScore || 0) + (b.awayScore || 0);
               return totalScoreB - totalScoreA;
-            case 'score-asc':
+            }
+            case 'score-asc': {
               const scoreA = (a.homeScore || 0) + (a.awayScore || 0);
               const scoreB = (b.homeScore || 0) + (b.awayScore || 0);
               return scoreA - scoreB;
+            }
             default:
               return 0;
           }
         });
-      }
-      
-      if (status && status !== 'all') {
-        sortedMatches = sortedMatches.filter(match => match.status === status);
       }
       
       setMatches(sortedMatches);
@@ -508,7 +506,7 @@ const Matches: React.FC = () => {
                                           <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
                                           {e.assistPlayerName && (
                                             <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
                                             </span>
                                           )}
                                         </span>
@@ -524,7 +522,7 @@ const Matches: React.FC = () => {
                                            (e.description || '事件')}
                                           {e.eventType === 'goal' && e.assistPlayerName && (
                                             <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
                                             </span>
                                           )}
                                         </span>
@@ -579,7 +577,7 @@ const Matches: React.FC = () => {
                                           <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && handlePlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
                                           {e.assistPlayerName && (
                                             <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
                                             </span>
                                           )}
                                         </span>
@@ -595,7 +593,7 @@ const Matches: React.FC = () => {
                                            (e.description || '事件')}
                                           {e.eventType === 'goal' && e.assistPlayerName && (
                                             <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
+                                              (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
                                             </span>
                                           )}
                                         </span>
@@ -1112,7 +1110,7 @@ const Matches: React.FC = () => {
                                         <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={() => e.playerId && handlePlayerClick(e.playerId, e.playerName || '')}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
                                         {e.assistPlayerName && (
                                           <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={() => e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || '')}>{e.assistPlayerName}</strong>)
+                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={() => e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || '')}>{e.assistPlayerName}</strong>)
                                           </span>
                                         )}
                                       </span>
@@ -1128,7 +1126,7 @@ const Matches: React.FC = () => {
                                          (e.description || '事件')}
                                         {e.eventType === 'goal' && e.assistPlayerName && (
                                           <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'underline' }} onClick={() => e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || '')}>{e.assistPlayerName}</strong>)
+                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={() => e.assistPlayerId && handlePlayerClick(e.assistPlayerId, e.assistPlayerName || '')}>{e.assistPlayerName}</strong>)
                                           </span>
                                         )}
                                       </span>

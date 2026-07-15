@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './Teams.css';
 import type { Team, Player } from '../../types';
 import { fetchTeams, searchTeams, fetchSeasons, fetchTeamById, fetchMatches, fetchTeamPlayersBySeason } from '../../api';
@@ -22,7 +22,7 @@ const Teams: React.FC = () => {
   const [playersLoading, setPlayersLoading] = useState(false);
   const [rosterError, setRosterError] = useState<string | null>(null);
 
-  const loadTeams = async (page: number, search?: string) => {
+  const loadTeams = useCallback(async (page: number, search?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -43,18 +43,18 @@ const Teams: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
 
   useEffect(() => {
     loadTeams(1);
-  }, []);
+  }, [loadTeams]);
 
   const handleSearch = () => {
     setCurrentPage(1);
     loadTeams(1, searchTerm);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
@@ -167,7 +167,7 @@ const Teams: React.FC = () => {
               placeholder="搜索球队名称..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               className="searchInput"
             />
             {searchTerm && (

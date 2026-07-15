@@ -47,7 +47,8 @@ export async function fetchMatches(
   page: number = 1,
   limit: number = 10,
   teamId?: string,
-  seasonId?: string
+  seasonId?: string,
+  status?: string
 ): Promise<PaginatedResponse<Match>> {
   let url = `${BASE_URL}/matches?page=${page}&limit=${limit}`;
   if (teamId) {
@@ -55,6 +56,15 @@ export async function fetchMatches(
   }
   if (seasonId) {
     url += `&seasonId=${seasonId}`;
+  }
+  if (status && status !== 'all') {
+    let backendStatus = status;
+    if (status === 'completed') {
+      backendStatus = 'finished';
+    } else if (status === 'in_progress') {
+      backendStatus = 'ongoing';
+    }
+    url += `&status=${backendStatus}`;
   }
   const response = await fetch(url);
   if (!response.ok) {
