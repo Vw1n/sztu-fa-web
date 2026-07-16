@@ -1,4 +1,4 @@
-import type { Team, Player, Match, PaginatedResponse, TeamWithPlayers } from '../types';
+import type { Team, Player, Match, PaginatedResponse, TeamWithPlayers, News } from '../types';
 
 const BASE_URL = '/api';
 
@@ -164,6 +164,22 @@ export async function fetchSeasonStats(seasonId: string): Promise<any> {
   const response = await fetch(`${BASE_URL}/seasons/${seasonId}/stats`);
   if (!response.ok) {
     throw new Error('获取赛季榜单数据失败');
+  }
+  return response.json();
+}
+
+export async function fetchNews(
+  page: number = 1,
+  limit: number = 10,
+  category?: string
+): Promise<PaginatedResponse<News>> {
+  let url = `${BASE_URL}/news?page=${page}&limit=${limit}`;
+  if (category && category !== 'all') {
+    url += `&category=${encodeURIComponent(category)}`;
+  }
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('获取活动资讯失败');
   }
   return response.json();
 }
