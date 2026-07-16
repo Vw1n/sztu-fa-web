@@ -80,7 +80,7 @@ const Matches: React.FC = () => {
   const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
-    const loadSeasonsData = async () => {
+    const loadInitialData = async () => {
       try {
         const seasonsList = await fetchSeasons();
         setSeasons(seasonsList);
@@ -90,11 +90,17 @@ const Matches: React.FC = () => {
         } else if (seasonsList.length > 0) {
           setSelectedSeasonId(seasonsList[0].id);
         }
+
+        // 获取全部球队列表，支持过滤
+        const teamsRes = await fetchTeams(1, 100);
+        if (teamsRes && teamsRes.data) {
+          setAvailableTeams(teamsRes.data);
+        }
       } catch (err) {
-        console.error('加载赛季列表失败:', err);
+        console.error('加载初始数据失败:', err);
       }
     };
-    loadSeasonsData();
+    loadInitialData();
   }, []);
 
   useEffect(() => {
@@ -192,13 +198,7 @@ const Matches: React.FC = () => {
         });
       }
       
-      const teamMap = new Map<string, Team>();
-      response.data.forEach(m => {
-        if (m.homeTeam) teamMap.set(m.homeTeam.id, m.homeTeam);
-        if (m.awayTeam) teamMap.set(m.awayTeam.id, m.awayTeam);
-      });
-      const teams = Array.from(teamMap.values());
-      setAvailableTeams(teams);
+      // 移除动态覆盖 availableTeams 逻辑以保留 fetchTeams 加载的全部球队列表
     } catch (err) {
       if (activeToken.active) {
         setError(err instanceof Error ? err.message : '加载比赛数据失败');
@@ -260,6 +260,7 @@ const Matches: React.FC = () => {
           jerseyNumber: playerObj.jerseyNumber || '#',
           teamName: playerObj.team?.teamName || '暂无队伍',
           status: playerObj.status || 'active',
+          photo: playerObj.photo || null,
           summary: {
             totalMatches,
             totalGoals,
@@ -379,6 +380,94 @@ const Matches: React.FC = () => {
 
         {activeTab === 'matches' && (
           <>
+            {/* 赛程过滤与排序工具栏 */}
+            <div style={{
+              display: 'flex',
+              gap: '15px',
+              flexWrap: 'wrap',
+              marginBottom: '25px',
+              padding: '15px 20px',
+              background: 'rgba(255, 255, 255, 0.4)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: 'var(--shadow-sm)'
+            }}>
+              {/* 球队筛选 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '180px', flex: '1' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-light)' }}>🛡️ 筛选球队</span>
+                <select
+                  value={teamFilter}
+                  onChange={(e) => setTeamFilter(e.target.value)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--card-bg, #fff)',
+                    color: 'var(--text-color)',
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">全部球队</option>
+                  {availableTeams.map(t => (
+                    <option key={t.id} value={t.id}>{t.teamName}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 比赛状态筛选 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '150px', flex: '1' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-light)' }}>⏳ 比赛状态</span>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--card-bg, #fff)',
+                    color: 'var(--text-color)',
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="all">全部比赛</option>
+                  <option value="scheduled">即将开始</option>
+                  <option value="in_progress">进行中</option>
+                  <option value="completed">已结束</option>
+                </select>
+              </div>
+
+              {/* 排序方式 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '150px', flex: '1' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-light)' }}>🔃 排序方式</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--card-bg, #fff)',
+                    color: 'var(--text-color)',
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="date-desc">按时间 (从近到远)</option>
+                  <option value="date-asc">按时间 (从远到近)</option>
+                  <option value="score-desc">按总比分 (从大到小)</option>
+                  <option value="score-asc">按总比分 (从小到大)</option>
+                </select>
+              </div>
+            </div>
 
         {/* 错误提示 */}
         {error && (
@@ -1284,22 +1373,33 @@ const Matches: React.FC = () => {
                 <div style={{ padding: '30px 24px' }}>
                   {/* 球星卡顶部个人信息 */}
                   <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '24px', borderBottom: '1px dashed rgba(0,0,0,0.1)', paddingBottom: '20px' }}>
-                    <div style={{
-                      width: '90px',
-                      height: '90px',
-                      borderRadius: '50%',
-                      background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '2.5rem',
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-                      color: '#fff',
-                      fontWeight: 'bold',
-                      flexShrink: 0
-                    }}>
-                      {careerData.jerseyNumber || '#'}
-                    </div>
+                    {careerData.photo ? (
+                      <img src={careerData.photo} alt={careerPlayerName} style={{
+                        width: '90px',
+                        height: '90px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                        flexShrink: 0
+                      }} />
+                    ) : (
+                      <div style={{
+                        width: '90px',
+                        height: '90px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '2.5rem',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                        flexShrink: 0
+                      }}>
+                        {careerData.jerseyNumber || '#'}
+                      </div>
+                    )}
                     <div>
                       <h3 style={{ margin: '0 0 4px 0', fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-color)' }}>
                         {careerPlayerName}
