@@ -1617,6 +1617,7 @@
   gap: var(--spacing-md);
   width: 220px;
   position: relative;
+  flex-shrink: 0;
 }
 
 .centerColumn {
