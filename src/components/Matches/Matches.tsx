@@ -74,10 +74,13 @@ const Matches: React.FC = () => {
   const [careerLoading, setCareerLoading] = useState(false);
 
   // 积分与数据统计逻辑
-  const [activeTab, setActiveTab] = useState<'matches' | 'standings' | 'scorers' | 'assists'>('matches');
-  const [standings, setStandings] = useState<StandingRow[]>([]);
+  const [activeTab, setActiveTab] = useState<'matches' | 'standings' | 'bracket' | 'scorers' | 'assists'>('matches');
+  const [standings, setStandings] = useState<any>([]);
   const [stats, setStats] = useState<any>({ scorers: [], assists: [], cards: [] });
   const [statsLoading, setStatsLoading] = useState(false);
+
+  const [bracketMatches, setBracketMatches] = useState<Match[]>([]);
+  const [bracketLoading, setBracketLoading] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -219,6 +222,26 @@ const Matches: React.FC = () => {
     };
   }, [statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
 
+  const loadBracketMatches = useCallback(async () => {
+    if (!selectedSeasonId) return;
+    setBracketLoading(true);
+    try {
+      const response = await fetchMatches(1, 200, undefined, selectedSeasonId);
+      const filtered = (response.data || []).filter((m: any) => m.stage === 'KNOCKOUT');
+      setBracketMatches(filtered);
+    } catch (err) {
+      console.error('加载淘汰赛比赛失败:', err);
+    } finally {
+      setBracketLoading(false);
+    }
+  }, [selectedSeasonId]);
+
+  useEffect(() => {
+    if (activeTab === 'bracket') {
+      loadBracketMatches();
+    }
+  }, [activeTab, loadBracketMatches]);
+
   const handlePageChange = (page: number) => {
     if (page >= 1) {
       setCurrentPage(page);
@@ -302,6 +325,185 @@ const Matches: React.FC = () => {
 
   const totalPages = Math.ceil(total / limit);
 
+  const renderBracket = () => {
+    // 查找并放置比赛
+    const findMatch = (round: string, index: number) => {
+      return bracketMatches.find(m => m.knockoutRound === round && m.knockoutMatchIndex === index);
+    };
+
+    const hasR16 = bracketMatches.some(m => m.knockoutRound === 'R16');
+
+    // 渲染单场比赛卡片
+    const renderMatchCard = (match: Match | undefined, round: string, index: number) => {
+      if (!match) {
+        return (
+          <div className="bracketMatchCard emptyCard">
+            <div className="bracketMatchHeader">对阵 #{index}</div>
+            <div className="bracketTeamRow">
+              <span className="bracketTeamName">待定</span>
+              <span className="bracketTeamScore">-</span>
+            </div>
+            <div className="bracketTeamRow">
+              <span className="bracketTeamName">待定</span>
+              <span className="bracketTeamScore">-</span>
+            </div>
+          </div>
+        );
+      }
+
+      const isHomeWinner = match.status === 'completed' && match.homeScore > match.awayScore;
+      const isAwayWinner = match.status === 'completed' && match.awayScore > match.homeScore;
+
+      return (
+        <div 
+          className={`bracketMatchCard ${match.status === 'in_progress' ? 'ongoingMatch' : ''} ${match.status === 'completed' ? 'completedMatch' : ''}`}
+          onClick={() => {
+            setSelectedMatchForModal(match);
+            setModalTab('events');
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="bracketMatchHeader">
+            <span>{match.location || '待定'}</span>
+            {match.status === 'in_progress' ? (
+              <span className="liveBadge">LIVE</span>
+            ) : match.status === 'completed' ? (
+              <span className="completedBadge">已结束</span>
+            ) : (
+              <span className="scheduledBadge">未开始</span>
+            )}
+          </div>
+          <div className={`bracketTeamRow ${isHomeWinner ? 'winnerRow' : ''}`}>
+            <div className="bracketTeamInfo">
+              {match.homeTeam?.teamLogo ? (
+                <img src={match.homeTeam.teamLogo} alt={match.homeTeam.teamName} className="bracketTeamLogo" />
+              ) : (
+                <span className="bracketLogoPlaceholder">⚽</span>
+              )}
+              <span className="bracketTeamName">{match.homeTeam?.teamName || '待定'}</span>
+            </div>
+            <span className="bracketTeamScore">
+              {match.status === 'completed' || match.status === 'in_progress' ? match.homeScore : '-'}
+            </span>
+          </div>
+          <div className={`bracketTeamRow ${isAwayWinner ? 'winnerRow' : ''}`}>
+            <div className="bracketTeamInfo">
+              {match.awayTeam?.teamLogo ? (
+                <img src={match.awayTeam.teamLogo} alt={match.awayTeam.teamName} className="bracketTeamLogo" />
+              ) : (
+                <span className="bracketLogoPlaceholder">⚽</span>
+              )}
+              <span className="bracketTeamName">{match.awayTeam?.teamName || '待定'}</span>
+            </div>
+            <span className="bracketTeamScore">
+              {match.status === 'completed' || match.status === 'in_progress' ? match.awayScore : '-'}
+            </span>
+          </div>
+          <div className="bracketTime">
+            {match.matchDate ? new Date(match.matchDate).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '时间未定'}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div className="bracketContainer">
+        {/* 左半翼 */}
+        {hasR16 && (
+          <div className="bracketColumn">
+            <div className="columnHeader">1/8 决赛</div>
+            <div className="matchGroups">
+              {renderMatchCard(findMatch('R16', 1), 'R16', 1)}
+              <div className="spacer small"></div>
+              {renderMatchCard(findMatch('R16', 2), 'R16', 2)}
+              <div className="spacer large"></div>
+              {renderMatchCard(findMatch('R16', 3), 'R16', 3)}
+              <div className="spacer small"></div>
+              {renderMatchCard(findMatch('R16', 4), 'R16', 4)}
+            </div>
+          </div>
+        )}
+
+        <div className="bracketColumn">
+          <div className="columnHeader">1/4 决赛</div>
+          <div className="matchGroups">
+            <div className="spacer medium"></div>
+            {renderMatchCard(findMatch('QF', 1), 'QF', 1)}
+            <div className="spacer xlarge"></div>
+            {renderMatchCard(findMatch('QF', 2), 'QF', 2)}
+          </div>
+        </div>
+
+        <div className="bracketColumn">
+          <div className="columnHeader">半决赛</div>
+          <div className="matchGroups">
+            <div className="spacer xxlarge"></div>
+            {renderMatchCard(findMatch('SF', 1), 'SF', 1)}
+          </div>
+        </div>
+
+        {/* 决赛 (中心) */}
+        <div className="bracketColumn centerColumn">
+          <div className="columnHeader championHeader">🏆 决赛</div>
+          <div className="matchGroups finalGroup">
+            {renderMatchCard(findMatch('F', 1), 'F', 1)}
+            {(() => {
+              const finalMatch = findMatch('F', 1);
+              if (finalMatch && finalMatch.status === 'completed') {
+                const champion = finalMatch.homeScore > finalMatch.awayScore ? finalMatch.homeTeam : finalMatch.awayTeam;
+                if (champion) {
+                  return (
+                    <div className="championCard">
+                      <div className="championCrown">🏆</div>
+                      <div className="championTitle">冠军</div>
+                      {champion.teamLogo && <img src={champion.teamLogo} alt={champion.teamName} className="championLogo" />}
+                      <div className="championName">{champion.teamName}</div>
+                    </div>
+                  );
+                }
+              }
+              return null;
+            })()}
+          </div>
+        </div>
+
+        {/* 右半翼 */}
+        <div className="bracketColumn">
+          <div className="columnHeader">半决赛</div>
+          <div className="matchGroups">
+            <div className="spacer xxlarge"></div>
+            {renderMatchCard(findMatch('SF', 2), 'SF', 2)}
+          </div>
+        </div>
+
+        <div className="bracketColumn">
+          <div className="columnHeader">1/4 决赛</div>
+          <div className="matchGroups">
+            <div className="spacer medium"></div>
+            {renderMatchCard(findMatch('QF', 3), 'QF', 3)}
+            <div className="spacer xlarge"></div>
+            {renderMatchCard(findMatch('QF', 4), 'QF', 4)}
+          </div>
+        </div>
+
+        {hasR16 && (
+          <div className="bracketColumn">
+            <div className="columnHeader">1/8 决赛</div>
+            <div className="matchGroups">
+              {renderMatchCard(findMatch('R16', 5), 'R16', 5)}
+              <div className="spacer small"></div>
+              {renderMatchCard(findMatch('R16', 6), 'R16', 6)}
+              <div className="spacer large"></div>
+              {renderMatchCard(findMatch('R16', 7), 'R16', 7)}
+              <div className="spacer small"></div>
+              {renderMatchCard(findMatch('R16', 8), 'R16', 8)}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const upcomingMatches = matches
     .filter(m => m.status === 'scheduled')
     .sort((a, b) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime())
@@ -335,6 +537,14 @@ const Matches: React.FC = () => {
             >
               🏆 积分榜
             </button>
+            {seasons.find(s => s.id === selectedSeasonId)?.type === 'CUP' && (
+              <button
+                className={`tabButton ${activeTab === 'bracket' ? 'active' : ''}`}
+                onClick={() => setActiveTab('bracket')}
+              >
+                🌳 淘汰赛对阵
+              </button>
+            )}
             <button
               className={`tabButton ${activeTab === 'scorers' ? 'active' : ''}`}
               onClick={() => setActiveTab('scorers')}
@@ -836,6 +1046,60 @@ const Matches: React.FC = () => {
                 <div className="loadingSpinner"></div>
                 <p>正在计算积分榜...</p>
               </div>
+            ) : standings && standings.type === 'CUP' && standings.groups ? (
+              <div className="cupGroupsContainer">
+                {Object.keys(standings.groups).sort().map(groupName => {
+                  const groupRows = standings.groups[groupName];
+                  return (
+                    <div key={groupName} className="cupGroupCard">
+                      <div className="cupGroupHeader">{groupName} 组</div>
+                      <div className="standingsTableContainer">
+                        <table className="standingsTable miniTable">
+                          <thead>
+                            <tr>
+                              <th style={{ width: '50px' }}>排名</th>
+                              <th>球队</th>
+                              <th>已赛</th>
+                              <th className="hideMobile">胜</th>
+                              <th className="hideMobile">平</th>
+                              <th className="hideMobile">负</th>
+                              <th>进/失</th>
+                              <th>积分</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {groupRows.map((row: any, index: number) => {
+                              let rankClass = '';
+                              if (index === 0) rankClass = 'rank-gold';
+                              else if (index === 1) rankClass = 'rank-silver';
+                              else if (index === 2) rankClass = 'rank-bronze';
+                              return (
+                                <tr key={row.teamId} className={index < 2 ? 'advancingRow' : ''}>
+                                  <td>
+                                    <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
+                                  </td>
+                                  <td>
+                                    <div className="tableTeamCell">
+                                      <img className="tableTeamLogo" src={row.teamLogo || 'https://picsum.photos/seed/team/30/30'} alt={row.teamName} />
+                                      <span className="tableTeamName">{row.teamName}</span>
+                                    </div>
+                                  </td>
+                                  <td>{row.played}</td>
+                                  <td className="hideMobile">{row.won}</td>
+                                  <td className="hideMobile">{row.drawn}</td>
+                                  <td className="hideMobile">{row.lost}</td>
+                                  <td>{row.goalsFor}/{row.goalsAgainst}</td>
+                                  <td className="pointsCell" style={{ fontWeight: 'bold' }}>{row.points}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
               <div className="standingsTableContainer">
                 <table className="standingsTable">
@@ -854,7 +1118,7 @@ const Matches: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {getStandings().map((row, index) => {
+                    {Array.isArray(standings) && standings.map((row, index) => {
                       let rankClass = '';
                       if (index === 0) rankClass = 'rank-gold';
                       else if (index === 1) rankClass = 'rank-silver';
@@ -884,7 +1148,7 @@ const Matches: React.FC = () => {
                         </tr>
                       );
                     })}
-                    {getStandings().length === 0 && (
+                    {(!Array.isArray(standings) || standings.length === 0) && (
                       <tr>
                         <td colSpan={10} style={{ textAlign: 'center', padding: 'var(--spacing-xl) 0', color: 'var(--text-light)' }}>
                           暂无球队数据
@@ -893,6 +1157,22 @@ const Matches: React.FC = () => {
                     )}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 淘汰赛对阵 Tab 视图 */}
+        {activeTab === 'bracket' && (
+          <div className="bracketSection">
+            {bracketLoading ? (
+              <div className="loadingContainer">
+                <div className="loadingSpinner"></div>
+                <p>正在加载对阵图...</p>
+              </div>
+            ) : (
+              <div className="bracketWrapper">
+                {renderBracket()}
               </div>
             )}
           </div>

@@ -1540,3 +1540,306 @@
 .scorerIcon {
   font-size: 1rem;
 }
+
+/* Cup Standings Group Layout */
+.cupGroupsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-md);
+}
+
+.cupGroupCard {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.cupGroupHeader {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: var(--spacing-sm);
+  letter-spacing: 0.5px;
+}
+
+.miniTable {
+  font-size: 0.9rem;
+}
+
+.advancingRow {
+  background-color: rgba(16, 185, 129, 0.04);
+}
+
+.advancingRow:hover {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+/* Bracket Section */
+.bracketSection {
+  margin-top: var(--spacing-lg);
+}
+
+.bracketWrapper {
+  overflow-x: auto;
+  padding: var(--spacing-xl) 0;
+  scrollbar-width: thin;
+}
+
+.bracketContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xl);
+  min-width: max-content;
+  padding: 0 var(--spacing-lg);
+}
+
+.bracketColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 200px;
+}
+
+.centerColumn {
+  width: 220px;
+}
+
+.columnHeader {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  width: 100%;
+}
+
+.championHeader {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%);
+  border-color: #fbbf24;
+  color: #fbbf24;
+}
+
+.matchGroups {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 480px;
+  position: relative;
+}
+
+.finalGroup {
+  height: auto;
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+/* Bracket Spacers for Vertical Alignment */
+.spacer {
+  flex-grow: 1;
+}
+.spacer.small {
+  height: 20px;
+}
+.spacer.medium {
+  height: 60px;
+}
+.spacer.large {
+  height: 100px;
+}
+.spacer.xlarge {
+  height: 140px;
+}
+.spacer.xxlarge {
+  height: 180px;
+}
+
+/* Match Card */
+.bracketMatchCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  width: 100%;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bracketMatchCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.emptyCard {
+  background: rgba(255, 255, 255, 0.02);
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.bracketMatchHeader {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: var(--spacing-xs);
+}
+
+.bracketTeamRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xs) 0;
+}
+
+.bracketTeamInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  overflow: hidden;
+}
+
+.bracketTeamLogo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.bracketLogoPlaceholder {
+  font-size: 0.8rem;
+}
+
+.bracketTeamName {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bracketTeamScore {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.winnerRow .bracketTeamName {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.winnerRow .bracketTeamScore {
+  color: var(--primary-color);
+}
+
+.bracketTime {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  text-align: right;
+  margin-top: var(--spacing-xs);
+}
+
+/* Badges */
+.liveBadge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+  animation: pulseBracket 1.5s infinite;
+}
+
+.completedBadge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  font-size: 0.65rem;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.scheduledBadge {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  font-size: 0.65rem;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+@keyframes pulseBracket {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Champion Card style */
+.championCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(245, 158, 11, 0.08) 100%);
+  border: 2px dashed #fbbf24;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  width: 100%;
+  animation: shineGold 3s infinite alternate;
+}
+
+.championCrown {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.championTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.championLogo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-bottom: var(--spacing-sm);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+.championName {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+@keyframes shineGold {
+  0% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
+}
+
+/* Hide on Mobile helper */
+@media (max-width: 600px) {
+  .hideMobile {
+    display: none !important;
+  }
+}
