@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import './Teams.css';
-import type { Team } from '../../types';
+import type { Player, Season, Team } from '../../types';
 import { fetchTeams, searchTeams, fetchSeasons, fetchTeamPlayersBySeason } from '../../api';
 import TeamCard from './TeamCard';
 import TeamModal from './TeamModal';
@@ -14,32 +14,40 @@ const Teams: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [limit] = useState(6);
-  const [isSearching, setIsSearching] = useState(false);
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const isSearching = appliedSearchTerm.length > 0;
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // 赛季与球员相关状态
-  const [seasons, setSeasons] = useState<any[]>([]);
+  const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
-  const [displayPlayers, setDisplayPlayers] = useState<any[]>([]);
+  const [displayPlayers, setDisplayPlayers] = useState<Player[]>([]);
   const [playersLoading, setPlayersLoading] = useState(false);
   const [rosterError, setRosterError] = useState<string | null>(null);
 
   // 全局赛季与男女组别筛选状态
-  const [globalSeasons, setGlobalSeasons] = useState<any[]>([]);
+  const [globalSeasons, setGlobalSeasons] = useState<Season[]>([]);
   const [globalSeasonId, setGlobalSeasonId] = useState<string>('all');
   const [selectedGender, setSelectedGender] = useState<string>('all');
+  const latestRequestId = useRef(0);
 
   const loadTeams = useCallback(async (page: number, seasonId: string, gender: string, search?: string) => {
+    const requestId = ++latestRequestId.current;
     setLoading(true);
     setError(null);
     try {
       if (search && search.trim()) {
         const results = await searchTeams(search);
-        const filtered = gender === 'all' ? results : results.filter(t => t.gender === gender);
+        const filtered = results.filter((team) => {
+          const matchesGender = gender === 'all' || team.gender === gender;
+          const matchesSeason = seasonId === 'all'
+            || team.groupTeams?.some((groupTeam) => groupTeam.seasonId === seasonId);
+          return matchesGender && matchesSeason;
+        });
+        if (requestId !== latestRequestId.current) return;
         setTeams(filtered);
         setTotal(filtered.length);
-        setIsSearching(true);
       } else {
         const response = await fetchTeams(
           page, 
@@ -47,15 +55,16 @@ const Teams: React.FC = () => {
           seasonId === 'all' ? undefined : seasonId, 
           gender === 'all' ? undefined : gender
         );
+        if (requestId !== latestRequestId.current) return;
         setTeams(response.data);
         setTotal(response.total);
-        setIsSearching(false);
       }
     } catch (err) {
+      if (requestId !== latestRequestId.current) return;
       setError(err instanceof Error ? err.message : '加载球队数据失败');
       console.error(err);
     } finally {
-      setLoading(false);
+      if (requestId === latestRequestId.current) setLoading(false);
     }
   }, [limit]);
 
@@ -65,7 +74,7 @@ const Teams: React.FC = () => {
       try {
         const seasonsList = await fetchSeasons();
         setGlobalSeasons(seasonsList);
-        const activeSeason = seasonsList.find((s: any) => s.status === 'active');
+        const activeSeason = seasonsList.find((s) => s.status === 'active');
         if (activeSeason) {
           setGlobalSeasonId(activeSeason.id);
         }
@@ -78,8 +87,8 @@ const Teams: React.FC = () => {
 
   // 筛选状态变化时重新加载
   useEffect(() => {
-    loadTeams(currentPage, globalSeasonId, selectedGender, isSearching ? searchTerm : undefined);
-  }, [currentPage, globalSeasonId, selectedGender, loadTeams]);
+    loadTeams(currentPage, globalSeasonId, selectedGender, appliedSearchTerm || undefined);
+  }, [currentPage, globalSeasonId, selectedGender, appliedSearchTerm, loadTeams]);
 
   // 处理性别 Tab 切换
   const handleGenderTabChange = (gender: string) => {
@@ -99,7 +108,11 @@ const Teams: React.FC = () => {
 
   const handleSearch = () => {
     setCurrentPage(1);
-    loadTeams(1, globalSeasonId, selectedGender, searchTerm);
+    const nextSearchTerm = searchTerm.trim();
+    setAppliedSearchTerm(nextSearchTerm);
+    if (currentPage === 1 && appliedSearchTerm === nextSearchTerm) {
+      loadTeams(1, globalSeasonId, selectedGender, nextSearchTerm || undefined);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -109,7 +122,10 @@ const Teams: React.FC = () => {
   const handleReset = () => {
     setSearchTerm('');
     setCurrentPage(1);
-    loadTeams(1, globalSeasonId, selectedGender);
+    setAppliedSearchTerm('');
+    if (currentPage === 1 && appliedSearchTerm === '') {
+      loadTeams(1, globalSeasonId, selectedGender);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -129,7 +145,7 @@ const Teams: React.FC = () => {
       try {
         const seasonsList = await fetchSeasons();
         if (!active) return;
-        const filteredSeasons = seasonsList.filter((s: any) => {
+        const filteredSeasons = seasonsList.filter((s) => {
           if (selectedTeam.gender === 'FEMALE') {
             return !s.name.includes('男') && !s.name.includes('男子');
           } else {
@@ -137,7 +153,7 @@ const Teams: React.FC = () => {
           }
         });
         setSeasons(filteredSeasons);
-        const teamSeasonIds = selectedTeam.groupTeams?.map((gt: any) => gt.seasonId) || [];
+        const teamSeasonIds = selectedTeam.groupTeams?.map((gt) => gt.seasonId) || [];
         const matchedActiveSeason = filteredSeasons.find(s => s.status === 'active' && teamSeasonIds.includes(s.id));
         const activeSeason = matchedActiveSeason || filteredSeasons.find(s => s.status === 'active');
         const activeId = activeSeason ? activeSeason.id : (filteredSeasons[0]?.id || '');
@@ -180,7 +196,7 @@ const Teams: React.FC = () => {
   }, [selectedTeam, selectedSeasonId]);
 
   const handleSeasonChange = (seasonId: string) => setSelectedSeasonId(seasonId);
-  const totalPages = isSearching ? 1 : Math.ceil(total / limit);
+  const totalPages = appliedSearchTerm ? 1 : Math.ceil(total / limit);
 
   return (
     <section className="teams" id="teams">

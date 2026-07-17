@@ -24,6 +24,9 @@ export interface Player {
   jerseyNumber: string;
   photo: string;
   teamId: string;
+  status?: string;
+  yellowCards?: number;
+  redCards?: number;
   team?: Team;
   createdAt: string;
   updatedAt: string;
@@ -111,4 +114,10 @@ export interface News {
   date: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Season {
+  id: string;
+  name: string;
+  status: string;
 }

@@ -1,10 +1,10 @@
-import type { Team } from '../../types';
+import type { Player, Season, Team } from '../../types';
 
 interface TeamModalProps {
   team: Team;
-  seasons: any[];
+  seasons: Season[];
   selectedSeasonId: string;
-  displayPlayers: any[];
+  displayPlayers: Player[];
   playersLoading: boolean;
   rosterError: string | null;
   onClose: () => void;
@@ -151,10 +151,10 @@ const TeamModal: React.FC<TeamModalProps> = ({
                         </span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                           <span className="modalPlayerNumber">{player.jerseyNumber ? `${player.jerseyNumber}号` : '无号'}</span>
-                          {(player.yellowCards > 0 || player.redCards > 0) && (
+                          {((player.yellowCards ?? 0) > 0 || (player.redCards ?? 0) > 0) && (
                             <span style={{ display: 'inline-flex', gap: '3px', fontSize: '0.75rem' }}>
-                              {player.yellowCards > 0 && <span style={{ color: '#f59f00' }}>🟨{player.yellowCards}</span>}
-                              {player.redCards > 0 && <span style={{ color: '#fa5252' }}>🟥{player.redCards}</span>}
+                              {(player.yellowCards ?? 0) > 0 && <span style={{ color: '#f59f00' }}>🟨{player.yellowCards}</span>}
+                              {(player.redCards ?? 0) > 0 && <span style={{ color: '#fa5252' }}>🟥{player.redCards}</span>}
                             </span>
                           )}
                         </div>

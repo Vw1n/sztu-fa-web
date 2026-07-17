@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Match, Team } from '../../../types';
+import { MatchEventTimeline } from './MatchEventTimeline';
 
 type SortOption = 'date-desc' | 'date-asc' | 'score-desc' | 'score-asc';
 type StatusFilter = 'all' | 'scheduled' | 'in_progress' | 'completed';
@@ -208,151 +209,21 @@ export const MatchList: React.FC<MatchListProps> = ({
                 {match.status === 'completed' && match.events && match.events.length > 0 && (
                   <div className="matchEventsSection">
                     <div className="eventsGrid">
-                      {/* 主队事件 */}
-                      <div className="teamEvents homeEvents">
-                        <div className="eventLabel">
-                          <span className="fullTeamName">👕 {match.homeTeam.teamName} 事件</span>
-                          <span className="shortTeamName">👕 主队</span>
-                        </div>
-                        <div className="eventsTimeline">
-                          {match.events
-                            .filter(e => e.teamType === 'home')
-                            .sort((a, b) => {
-                              const parseTime = (t: any) => parseInt(String(t || '').replace(/'/g, '')) || 0;
-                              return parseTime(a.eventTime) - parseTime(b.eventTime);
-                            })
-                            .map((e, i) => {
-                              const icon = e.eventType === 'goal' ? '⚽' :
-                                           e.eventType === 'own_goal' ? '🥅' :
-                                           e.eventType === 'penalty' ? '🎯' :
-                                           e.eventType === 'yellow_card' ? '🟨' :
-                                           e.eventType === 'red_card' ? '🟥' : e.eventType === 'yellow_to_red' ? '\uD83D\uDFE8\uD83D\uDFE5' :
-                                           e.eventType === 'substitution' ? '🔄' :
-                                           e.eventType === 'penalty_shootout_goal' ? '⚽' :
-                                           e.eventType === 'penalty_shootout_miss' ? '❌' :
-                                           e.eventType === 'penalty_miss' ? '❌' : '📢';
-                              return (
-                                <div key={i} className="timelineItem">
-                                  <span className="eventTime">{e.eventTime}</span>
-                                  <span className="eventIcon">{icon}</span>
-                                  <span className="eventDesc">
-                                    {e.eventType === 'substitution' ? (
-                                      <span>
-                                        换上 <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong style={{ cursor: e.subPlayerId ? 'pointer' : 'default', textDecoration: e.subPlayerId ? 'underline' : 'none', color: e.subPlayerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.subPlayerId && onPlayerClick(e.subPlayerId, e.subPlayerName || ''); }}>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
-                                      </span>
-                                    ) : e.eventType === 'own_goal' ? (
-                                      <span>
-                                        <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
-                                      </span>
-                                    ) : e.eventType === 'penalty' ? (
-                                      <span>
-                                        <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
-                                        {e.assistPlayerName && (
-                                          <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && onPlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
-                                          </span>
-                                        )}
-                                      </span>
-                                    ) : (
-                                      <span>
-                                        <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
-                                        {e.eventType === 'yellow_card' ? '黄牌' :
-                                         e.eventType === 'red_card' ? '红牌' : e.eventType === 'yellow_to_red' ? '两黄变一红' :
-                                         e.eventType === 'goal' ? '进球' :
-                                         e.eventType === 'penalty_shootout_goal' ? '点球大战进球' :
-                                         e.eventType === 'penalty_shootout_miss' ? '点球大战罚失' :
-                                         e.eventType === 'penalty_miss' ? '点球罚失' :
-                                         (e.description || '事件')}
-                                        {e.eventType === 'goal' && e.assistPlayerName && (
-                                          <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && onPlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
-                                          </span>
-                                        )}
-                                      </span>
-                                    )}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          {match.events.filter(e => e.teamType === 'home').length === 0 && (
-                            <div className="noEvents">暂无事件记录</div>
-                          )}
-                        </div>
-                      </div>
+                      <MatchEventTimeline
+                        events={match.events}
+                        teamType="home"
+                        teamName={match.homeTeam.teamName}
+                        onPlayerClick={onPlayerClick}
+                      />
 
                       <div className="eventsGridDivider"></div>
 
-                      {/* 客队事件 */}
-                      <div className="teamEvents awayEvents">
-                        <div className="eventLabel">
-                          <span className="fullTeamName">👚 {match.awayTeam.teamName} 事件</span>
-                          <span className="shortTeamName">👚 客队</span>
-                        </div>
-                        <div className="eventsTimeline">
-                          {match.events
-                            .filter(e => e.teamType === 'away')
-                            .sort((a, b) => {
-                              const parseTime = (t: any) => parseInt(String(t || '').replace(/'/g, '')) || 0;
-                              return parseTime(a.eventTime) - parseTime(b.eventTime);
-                            })
-                            .map((e, i) => {
-                              const icon = e.eventType === 'goal' ? '⚽' :
-                                           e.eventType === 'own_goal' ? '🥅' :
-                                           e.eventType === 'penalty' ? '🎯' :
-                                           e.eventType === 'yellow_card' ? '🟨' :
-                                           e.eventType === 'red_card' ? '🟥' : e.eventType === 'yellow_to_red' ? '\uD83D\uDFE8\uD83D\uDFE5' :
-                                           e.eventType === 'substitution' ? '🔄' :
-                                           e.eventType === 'penalty_shootout_goal' ? '⚽' :
-                                           e.eventType === 'penalty_shootout_miss' ? '❌' :
-                                           e.eventType === 'penalty_miss' ? '❌' : '📢';
-                              return (
-                                <div key={i} className="timelineItem">
-                                  <span className="eventTime">{e.eventTime}</span>
-                                  <span className="eventIcon">{icon}</span>
-                                  <span className="eventDesc">
-                                    {e.eventType === 'substitution' ? (
-                                      <span>
-                                        换上 <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong>，换下 <strong style={{ cursor: e.subPlayerId ? 'pointer' : 'default', textDecoration: e.subPlayerId ? 'underline' : 'none', color: e.subPlayerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.subPlayerId && onPlayerClick(e.subPlayerId, e.subPlayerName || ''); }}>{e.subPlayerName} ({e.subJerseyNumber}号)</strong>
-                                      </span>
-                                    ) : e.eventType === 'own_goal' ? (
-                                      <span>
-                                        <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="ownGoalBadge">乌龙球</span>
-                                      </span>
-                                    ) : e.eventType === 'penalty' ? (
-                                      <span>
-                                        <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName} ({e.jerseyNumber}号)</strong> <span className="penaltyBadge">点球</span>
-                                        {e.assistPlayerName && (
-                                          <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && onPlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
-                                          </span>
-                                        )}
-                                      </span>
-                                    ) : (
-                                      <span>
-                                        <strong style={{ cursor: e.playerId ? 'pointer' : 'default', textDecoration: e.playerId ? 'underline' : 'none', color: e.playerId ? 'var(--primary-color)' : 'inherit' }} onClick={(evt) => { evt.stopPropagation(); e.playerId && onPlayerClick(e.playerId, e.playerName || ''); }}>{e.playerName ? `${e.playerName} (${e.jerseyNumber}号)` : ''}</strong>{' '}
-                                        {e.eventType === 'yellow_card' ? '黄牌' :
-                                         e.eventType === 'red_card' ? '红牌' : e.eventType === 'yellow_to_red' ? '两黄变一红' :
-                                         e.eventType === 'goal' ? '进球' :
-                                         e.eventType === 'penalty_shootout_goal' ? '点球大战进球' :
-                                         e.eventType === 'penalty_shootout_miss' ? '点球大战罚失' :
-                                         e.eventType === 'penalty_miss' ? '点球罚失' :
-                                         (e.description || '事件')}
-                                        {e.eventType === 'goal' && e.assistPlayerName && (
-                                          <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', marginLeft: '6px', fontStyle: 'italic' }}>
-                                            (助攻: <strong style={{ cursor: e.assistPlayerId ? 'pointer' : 'default', textDecoration: e.assistPlayerId ? 'underline' : 'none' }} onClick={(evt) => { evt.stopPropagation(); e.assistPlayerId && onPlayerClick(e.assistPlayerId, e.assistPlayerName || ''); }}>{e.assistPlayerName}</strong>)
-                                          </span>
-                                        )}
-                                      </span>
-                                    )}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          {match.events.filter(e => e.teamType === 'away').length === 0 && (
-                            <div className="noEvents">暂无事件记录</div>
-                          )}
-                        </div>
-                      </div>
+                      <MatchEventTimeline
+                        events={match.events}
+                        teamType="away"
+                        teamName={match.awayTeam.teamName}
+                        onPlayerClick={onPlayerClick}
+                      />
                     </div>
                   </div>
                 )}
@@ -375,7 +246,16 @@ export const MatchList: React.FC<MatchListProps> = ({
                     {new Date(match.matchDate).toLocaleDateString('zh-CN')}
                   </div>
                   {match.mvpPlayerName && (
-                    <div className="matchDetail" style={{ color: '#e65100', fontWeight: 'bold', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={(evt) => { evt.stopPropagation(); match.mvpPlayerId && onPlayerClick(match.mvpPlayerId, match.mvpPlayerName || ''); }}>
+                    <div
+                      className="matchDetail"
+                      style={{ color: '#e65100', fontWeight: 'bold', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if (match.mvpPlayerId) {
+                          onPlayerClick(match.mvpPlayerId, match.mvpPlayerName || '');
+                        }
+                      }}
+                    >
                       🏆 MVP: <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>{match.mvpPlayerName}</span>
                     </div>
                   )}

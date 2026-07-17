@@ -1,4 +1,4 @@
-import type { Team, Player, Match, PaginatedResponse, TeamWithPlayers, News } from '../types';
+import type { Team, Player, Match, PaginatedResponse, TeamWithPlayers, News, Season } from '../types';
 
 const BASE_URL = '/api';
 
@@ -86,7 +86,7 @@ export async function fetchMatches(
   return result;
 }
 
-export async function fetchSeasons(): Promise<any[]> {
+export async function fetchSeasons(): Promise<Season[]> {
   const response = await fetch(`${BASE_URL}/seasons`);
   if (!response.ok) {
     throw new Error('获取赛季列表失败');

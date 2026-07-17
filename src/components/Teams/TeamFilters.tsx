@@ -1,5 +1,7 @@
+import type { Season } from '../../types';
+
 interface TeamFiltersProps {
-  globalSeasons: any[];
+  globalSeasons: Season[];
   globalSeasonId: string;
   selectedGender: string;
   searchTerm: string;
