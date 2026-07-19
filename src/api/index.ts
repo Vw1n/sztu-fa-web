@@ -1,12 +1,21 @@
-import type { Team, Player, Match, PaginatedResponse, TeamWithPlayers } from '../types';
+import type { Team, Player, Match, PaginatedResponse, TeamWithPlayers, News, Season, PlayerCareerResponse, StandingRow, CupStandings, SeasonStats } from '../types';
 
 const BASE_URL = '/api';
 
 export async function fetchTeams(
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  seasonId?: string,
+  gender?: string
 ): Promise<PaginatedResponse<Team>> {
-  const response = await fetch(`${BASE_URL}/teams?page=${page}&limit=${limit}`);
+  let url = `${BASE_URL}/teams?page=${page}&limit=${limit}`;
+  if (seasonId) {
+    url += `&seasonId=${seasonId}`;
+  }
+  if (gender) {
+    url += `&gender=${gender}`;
+  }
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error('获取球队列表失败');
   }
@@ -32,18 +41,63 @@ export async function searchTeams(name: string): Promise<Team[]> {
   return response.json();
 }
 
+function normalizeMatchStatus(match: Match): Match {
+  if (!match) return match;
+  let status = match.status;
+  if (status as string === 'finished') {
+    status = 'completed';
+  } else if (status as string === 'ongoing') {
+    status = 'in_progress';
+  }
+  return { ...match, status };
+}
+
 export async function fetchMatches(
   page: number = 1,
   limit: number = 10,
-  teamId?: string
+  teamId?: string,
+  seasonId?: string,
+  status?: string
 ): Promise<PaginatedResponse<Match>> {
   let url = `${BASE_URL}/matches?page=${page}&limit=${limit}`;
   if (teamId) {
     url += `&teamId=${teamId}`;
   }
+  if (seasonId) {
+    url += `&seasonId=${seasonId}`;
+  }
+  if (status && status !== 'all') {
+    let backendStatus = status;
+    if (status === 'completed') {
+      backendStatus = 'finished';
+    } else if (status === 'in_progress') {
+      backendStatus = 'ongoing';
+    }
+    url += `&status=${backendStatus}`;
+  }
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error('获取比赛列表失败');
+  }
+  const result = await response.json();
+  if (result && Array.isArray(result.data)) {
+    result.data = result.data.map(normalizeMatchStatus);
+  }
+  return result;
+}
+
+export async function fetchSeasons(): Promise<Season[]> {
+  const response = await fetch(`${BASE_URL}/seasons`);
+  if (!response.ok) {
+    throw new Error('获取赛季列表失败');
+  }
+  return response.json();
+}
+
+export async function fetchPlayerCareer(id: string): Promise<PlayerCareerResponse> {
+  const response = await fetch(`${BASE_URL}/players/${id}/career`);
+  if (!response.ok) {
+    throw new Error('获取球员生涯数据失败');
   }
   return response.json();
 }
@@ -56,7 +110,8 @@ export async function fetchMatchById(id: string): Promise<Match> {
     }
     throw new Error('获取比赛详情失败');
   }
-  return response.json();
+  const result = await response.json();
+  return normalizeMatchStatus(result);
 }
 
 export async function fetchPlayers(
@@ -90,6 +145,50 @@ export async function fetchPlayerById(id: string): Promise<Player> {
       throw new Error('球员不存在');
     }
     throw new Error('获取球员详情失败');
+  }
+  return response.json();
+}
+
+export async function fetchTeamPlayersBySeason(teamId: string, seasonId?: string): Promise<Player[]> {
+  let url = `${BASE_URL}/teams/${teamId}/players`;
+  if (seasonId) {
+    url += `?seasonId=${seasonId}`;
+  }
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('获取赛季球员名册失败');
+  }
+  return response.json();
+}
+
+export async function fetchSeasonStandings(seasonId: string): Promise<StandingRow[] | CupStandings> {
+  const response = await fetch(`${BASE_URL}/seasons/${seasonId}/standings`);
+  if (!response.ok) {
+    throw new Error('获取赛季积分榜失败');
+  }
+  return response.json();
+}
+
+export async function fetchSeasonStats(seasonId: string): Promise<SeasonStats> {
+  const response = await fetch(`${BASE_URL}/seasons/${seasonId}/stats`);
+  if (!response.ok) {
+    throw new Error('获取赛季榜单数据失败');
+  }
+  return response.json();
+}
+
+export async function fetchNews(
+  page: number = 1,
+  limit: number = 10,
+  category?: string
+): Promise<PaginatedResponse<News>> {
+  let url = `${BASE_URL}/news?page=${page}&limit=${limit}`;
+  if (category && category !== 'all') {
+    url += `&category=${encodeURIComponent(category)}`;
+  }
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('获取活动资讯失败');
   }
   return response.json();
 }
