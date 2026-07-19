@@ -18,7 +18,7 @@
   margin-bottom: var(--spacing-2xl);
 }
 
-/* 品牌区域 */
+/* ========================= 品牌区域 ========================= */
 .footerBrand {
   display: flex;
   flex-direction: column;
@@ -34,6 +34,8 @@
 .footerLogoIcon {
   width: 50px;
   height: 50px;
+  border-radius: var(--radius-md);
+  object-fit: contain;
 }
 
 .footerLogoText {
@@ -45,6 +47,7 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-white);
+  letter-spacing: 0.5px;
 }
 
 .footerLogoSubtitle {
@@ -60,6 +63,7 @@
   margin: var(--spacing-md) 0;
 }
 
+/* 社交媒体 */
 .footerSocial {
   display: flex;
   gap: var(--spacing-md);
@@ -83,12 +87,18 @@
   transform: translateY(-2px);
 }
 
+.socialLink:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  background-color: var(--primary-color);
+}
+
 .socialLink svg {
   width: 20px;
   height: 20px;
 }
 
-/* 链接区域 */
+/* ========================= 链接区域 ========================= */
 .footerSection {
   display: flex;
   flex-direction: column;
@@ -123,9 +133,11 @@
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   transition: all var(--transition-fast);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  padding: 2px 0;
+  border-radius: var(--radius-sm);
 }
 
 .footerLink:hover {
@@ -133,7 +145,13 @@
   padding-left: var(--spacing-xs);
 }
 
-/* 联系信息 */
+.footerLink:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  color: var(--accent-color);
+}
+
+/* ========================= 联系信息 ========================= */
 .contactInfo {
   display: flex;
   flex-direction: column;
@@ -146,6 +164,7 @@
   gap: var(--spacing-sm);
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .contactItem svg {
@@ -156,7 +175,7 @@
   color: var(--accent-color);
 }
 
-/* 底部版权 */
+/* ========================= 底部版权 ========================= */
 .footerBottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: var(--spacing-xl);
@@ -176,6 +195,10 @@
   color: var(--accent-color);
 }
 
+.copyright a:hover {
+  text-decoration: underline;
+}
+
 .footerBottomLinks {
   display: flex;
   gap: var(--spacing-lg);
@@ -185,24 +208,34 @@
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   transition: color var(--transition-fast);
+  border-radius: var(--radius-sm);
 }
 
 .footerBottomLink:hover {
   color: var(--text-white);
 }
 
-/* 响应式 */
+.footerBottomLink:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  color: var(--text-white);
+}
+
+/* ========================= 响应式 ========================= */
+
+/* -- 平板 / 窄桌面 -- */
 @media (max-width: 1024px) {
   .footerTop {
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-xl);
   }
-  
+
   .footerBrand {
     grid-column: 1 / -1;
   }
 }
 
+/* -- 平板竖屏 / 大屏手机 -- */
 @media (max-width: 768px) {
   .footer {
     padding: var(--spacing-2xl) 0 var(--spacing-lg);
@@ -228,16 +261,92 @@
   }
 }
 
+/* -- 手机端（480px 以下）-- */
 @media (max-width: 480px) {
   .footerContainer {
     padding: 0 var(--spacing-md);
   }
 
+  .footerLogo {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footerLogoText {
+    align-items: center;
+  }
+
+  .footerDescription {
+    text-align: center;
+  }
+
   .footerSocial {
     justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .footerTitle::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .footerTitle {
+    text-align: center;
+  }
+
+  .footerLinks {
+    align-items: center;
   }
 
   .contactInfo {
     align-items: center;
+  }
+
+  .contactItem {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footerBottomLinks {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+}
+
+/* -- 窄屏手机（375px 以下）-- */
+@media (max-width: 375px) {
+  .footer {
+    padding: var(--spacing-xl) 0 var(--spacing-md);
+  }
+
+  .footerTop {
+    gap: var(--spacing-lg);
+  }
+
+  .footerLogoTitle {
+    font-size: 1.1rem;
+  }
+
+  .footerDescription {
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .footerLink {
+    font-size: 0.85rem;
+    padding: 4px 0;
+  }
+
+  .contactItem {
+    font-size: 0.8rem;
+  }
+
+  .copyright {
+    font-size: 0.75rem;
+  }
+
+  .footerBottomLink {
+    font-size: 0.8rem;
   }
 }
