@@ -26,14 +26,45 @@ export const useMatchDirectory = () => {
         setSeasons(seasonsList);
         const active = seasonsList.find((season) => season.status === 'active');
         setSelectedSeasonId(active?.id || seasonsList[0]?.id || '');
-        const teamsResponse = await fetchTeams(1, 100);
-        if (teamsResponse?.data) setAvailableTeams(teamsResponse.data);
       } catch (loadError) {
         console.error('加载初始数据失败:', loadError);
       }
     };
     void loadInitialData();
   }, []);
+
+  useEffect(() => {
+    const activeToken = { active: true };
+
+    const loadSeasonTeams = async () => {
+      if (!selectedSeasonId) {
+        setAvailableTeams([]);
+        setTeamFilter('');
+        return;
+      }
+
+      try {
+        const response = await fetchTeams(1, 100, selectedSeasonId);
+        if (!activeToken.active) return;
+        const seasonTeams = response?.data || [];
+        setAvailableTeams(seasonTeams);
+        setTeamFilter((currentTeamId) => (
+          currentTeamId && !seasonTeams.some((team) => team.id === currentTeamId)
+            ? ''
+            : currentTeamId
+        ));
+      } catch (loadError) {
+        if (activeToken.active) {
+          setAvailableTeams([]);
+          setTeamFilter('');
+        }
+        console.error('加载当前赛季球队失败:', loadError);
+      }
+    };
+
+    void loadSeasonTeams();
+    return () => { activeToken.active = false; };
+  }, [selectedSeasonId]);
 
   const loadMatches = useCallback(async (
     page: number,
@@ -70,6 +101,7 @@ export const useMatchDirectory = () => {
 
   useEffect(() => {
     const activeToken = { active: true };
+    setCurrentPage(1);
     void loadMatches(1, statusFilter, teamFilter, sortBy, selectedSeasonId, activeToken);
     return () => { activeToken.active = false; };
   }, [statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
@@ -80,10 +112,16 @@ export const useMatchDirectory = () => {
     void loadMatches(page, statusFilter, teamFilter, sortBy, selectedSeasonId);
   };
 
+  const changeSeason = (seasonId: string) => {
+    setAvailableTeams([]);
+    setTeamFilter('');
+    setSelectedSeasonId(seasonId);
+  };
+
   return {
     matches, matchStats, loading, error, currentPage, total, limit,
     sortBy, setSortBy, statusFilter, setStatusFilter, teamFilter, setTeamFilter,
-    availableTeams, seasons, selectedSeasonId, setSelectedSeasonId,
+    availableTeams, seasons, selectedSeasonId, setSelectedSeasonId: changeSeason,
     upcomingMatches: selectUpcomingMatches(matches), changePage,
   };
 };
