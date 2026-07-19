@@ -642,167 +642,162 @@
 }
 
 /* ==========================================================================
-   Mobile Bracket — 纵向垂直布局 (≤768px)
+   Mobile Bracket — 上下半区纵向对阵图 (≤768px)
+
+     QF1 ──┐  ┌── QF2
+           ├──┤          1/4 决赛
+           │SF1
+           │             半决赛
+    [Final] [🏆冠军]      🏆 决赛
+           │             半决赛
+           │SF2
+           ├──┤          1/4 决赛
+     QF3 ──┘  └── QF4
    ========================================================================== */
 
 @media (max-width: 768px) {
-  /* 容器切换为纵向堆叠 */
-  .bracketContainer {
-    flex-direction: column;
-    gap: 0;
-    min-width: auto;
-    padding: 16px 8px;
+  .bracketDesktop {
+    display: none !important;
   }
+}
 
-  /* 每轮变为横向行：左侧标签 + 右侧比赛卡片 */
-  .bracketColumn {
-    width: 100%;
-    flex-direction: row;
-    align-items: stretch;
-    gap: 10px;
-    padding: 10px 0;
-    border-top: 1px dashed var(--border-color);
-  }
-  .bracketColumn:first-child {
-    border-top: none;
-  }
+.bracketTreeMobile {
+  display: none;
+}
 
-  /* 轮次标签 — 左侧竖排窄标签 */
-  .columnHeader {
-    width: 64px;
-    flex-shrink: 0;
-    font-size: 0.7rem;
-    padding: 8px 4px;
-    margin-bottom: 0;
-    writing-mode: horizontal-tb;
+@media (max-width: 768px) {
+  .bracketTreeMobile {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border-radius: var(--radius-md);
-    line-height: 1.3;
-  }
-
-  .championHeader {
-    width: 64px;
-    font-size: 0.7rem;
-    white-space: nowrap;
-  }
-
-  /* 比赛卡片组 — 横向排列 */
-  .matchGroups {
-    flex-direction: row;
-    flex-wrap: wrap;
-    height: auto !important;
-    gap: 8px;
-    flex: 1;
-    justify-content: center;
-  }
-
-  /* 单场比赛卡片 */
-  .bracketMatchCard {
-    width: calc(50% - 4px);
-    min-width: 130px;
-    max-width: 200px;
-    padding: 8px 10px;
-  }
-
-  /* 单场比赛轮次（半决赛、决赛）卡片占满 */
-  .sf-left-column .bracketMatchCard,
-  .sf-right-column .bracketMatchCard,
-  .f-center-column .bracketMatchCard {
-    width: 100%;
-    max-width: 260px;
-  }
-
-  /* 决赛列 */
-  .centerColumn {
-    width: 100%;
-  }
-  .finalGroup {
-    height: auto !important;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 0;
+    padding: 10px 4px;
   }
 
-  /* 隐藏桌面端水平连接线 */
-  .bracketMatchCard::before,
-  .bracketMatchCard::after,
-  .matchGroups::before,
-  .matchGroups::after {
+  /* ========== 每轮 ========== */
+  .treeRound {
+    width: 100%;
+  }
+
+  .treeSectionLabel {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    padding: 10px 0 6px;
+    letter-spacing: 1px;
+  }
+
+  .treePair {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .treePair .treeMatchCell {
+    flex: 1;
+    max-width: 170px;
+  }
+
+  .treeSingle {
+    display: flex;
+    justify-content: center;
+  }
+  .treeSingle .treeMatchCell {
+    max-width: 210px;
+    width: 100%;
+  }
+
+  .treeMatchCell {
+    width: 100%;
+  }
+
+  /* ========== 紧凑卡片 ========== */
+  .bracketCardCompact {
+    padding: 4px 6px !important;
+    min-width: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 5px !important;
+    box-shadow: none !important;
+  }
+  .bracketCardCompact:hover {
+    transform: none !important;
+  }
+  .bracketCardCompact .bracketMatchHeader {
+    font-size: 0.52rem;
+    margin-bottom: 1px;
+    padding-bottom: 2px;
+  }
+  .bracketCardCompact .bracketTeamRow {
+    margin-bottom: 0;
+    padding: 1px 0;
+  }
+  .bracketCardCompact .bracketTeamInfo {
+    gap: 3px;
+  }
+  .bracketCardCompact .bracketTeamName {
+    font-size: 0.6rem;
+    max-width: 68px;
+  }
+  .bracketCardCompact .bracketTeamScore {
+    font-size: 0.65rem;
+  }
+  .bracketCardCompact .bracketTeamLogo {
+    width: 12px;
+    height: 12px;
+  }
+  .bracketCardCompact .bracketLogoPlaceholder {
+    font-size: 0.5rem;
+  }
+  .bracketCardCompact .liveBadge,
+  .bracketCardCompact .completedBadge,
+  .bracketCardCompact .scheduledBadge {
+    font-size: 0.45rem;
+    padding: 0 2px;
+  }
+
+  /* ========== 冠军卡片（在 treePair 中） ========== */
+  .treePair .championCard {
+    width: 100%;
+    max-width: 170px;
+    padding: 6px 8px;
+    margin: 0;
+  }
+  .treePair .championCard .championCrown {
+    font-size: 0.9rem;
+    margin-bottom: 1px;
+  }
+  .treePair .championCard .championTitle {
+    font-size: 0.48rem;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+  .treePair .championCard .championName {
+    font-size: 0.6rem;
+  }
+  .treePair .championCard .championLogo {
+    width: 18px;
+    height: 18px;
+    margin-bottom: 2px;
+  }
+
+  /* ========== 隐藏桌面端伪元素连接线 ========== */
+  .bracketDesktop .bracketMatchCard::before,
+  .bracketDesktop .bracketMatchCard::after,
+  .bracketDesktop .matchGroups::before,
+  .bracketDesktop .matchGroups::after {
     display: none !important;
   }
 
-  /* 移动端隐藏 1/8 决赛（轮次过多） */
-  .r16-left-column,
-  .r16-right-column {
-    display: none;
+  /* 移动端树也隐藏伪元素连接线 */
+  .bracketTreeMobile .bracketMatchCard::before,
+  .bracketTreeMobile .bracketMatchCard::after {
+    display: none !important;
   }
 
-  /* 队名字号缩小 */
-  .bracketTeamName {
-    font-size: 0.75rem;
-    max-width: 90px;
-  }
-  .bracketTeamScore {
-    font-size: 0.8rem;
-  }
-  .bracketTeamLogo {
-    width: 16px;
-    height: 16px;
-  }
-  .bracketLogoPlaceholder {
-    font-size: 0.7rem;
-  }
-
-  /* 卡片头部 */
-  .bracketMatchHeader {
-    font-size: 0.68rem;
-    margin-bottom: 4px;
-    padding-bottom: 2px;
-  }
-
-  /* 时间 */
-  .bracketTime {
-    font-size: 0.62rem;
-    margin-top: 2px;
-  }
-
-  /* 冠军卡片 */
-  .championCard {
-    width: 100%;
-    max-width: 260px;
-    margin: 0 auto;
-    padding: 14px;
-  }
-  .championCrown {
-    font-size: 1.4rem;
-  }
-  .championTitle {
-    font-size: 0.7rem;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
-  .championName {
-    font-size: 0.85rem;
-  }
-  .championLogo {
-    width: 36px;
-    height: 36px;
-  }
-
-  /* 徽章缩小 */
-  .liveBadge,
-  .completedBadge,
-  .scheduledBadge {
-    font-size: 0.6rem;
-  }
-
-  /* 外层容器取消横向滚动 */
   .bracketWrapper {
     overflow-x: visible;
-    padding: 8px 0;
+    padding: 4px 0;
   }
 }
 
