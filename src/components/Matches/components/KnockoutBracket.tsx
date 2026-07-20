@@ -227,8 +227,8 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
           <div className="bracketColumn f-center-column centerColumn">
             <div className="columnHeader championHeader">🏆 决赛</div>
             <div className="matchGroups finalGroup">
-              {renderMatchCard(findMatch('F', 1), 'F', 1)}
               {renderChampionCard()}
+              <div style={{ marginTop: '-4px', marginBottom: 'auto' }}>{renderMatchCard(findMatch('F', 1), 'F', 1)}</div>
             </div>
           </div>
 
