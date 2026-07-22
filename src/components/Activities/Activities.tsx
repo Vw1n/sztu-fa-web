@@ -3,13 +3,7 @@ import { SectionHeader } from '../common';
 import { useActivities } from './hooks/useActivities';
 
 const Activities: React.FC = () => {
-  const { displayList, currentPage, totalPages, setCurrentPage, isLoading } = useActivities();
-
-  const changePage = (page: number) => {
-    if (page < 1 || page > totalPages || page === currentPage) return;
-    setCurrentPage(page);
-    document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const { displayList } = useActivities();
 
   return (
     <section className="activities" id="activities">
@@ -27,7 +21,7 @@ const Activities: React.FC = () => {
               <div className="activityImageWrapper">
                 <img src={activity.image} alt={activity.title} className="activityImage" loading="lazy" />
                 <span className="activityCategory">{activity.category}</span>
-                {currentPage === 1 && index === 0 && <span className="activityLatestBadge">最新发布</span>}
+                {index === 0 && <span className="activityLatestBadge">最新发布</span>}
               </div>
               <div className="activityContent">
                 <div className="activityDate">
@@ -66,38 +60,20 @@ const Activities: React.FC = () => {
           ))}
         </div>
 
-        {totalPages > 1 && (
-          <nav className="activitiesPagination" aria-label="活动资讯分页">
-            <button
-              type="button"
-              className="paginationButton paginationDirection"
-              disabled={currentPage === 1 || isLoading}
-              onClick={() => changePage(currentPage - 1)}
-            >
-              上一页
-            </button>
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-              <button
-                type="button"
-                key={page}
-                className={`paginationButton${page === currentPage ? ' active' : ''}`}
-                aria-current={page === currentPage ? 'page' : undefined}
-                disabled={isLoading}
-                onClick={() => changePage(page)}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="paginationButton paginationDirection"
-              disabled={currentPage === totalPages || isLoading}
-              onClick={() => changePage(currentPage + 1)}
-            >
-              下一页
-            </button>
-          </nav>
-        )}
+        <div className="viewMoreWrapper">
+          <a
+            href={displayList[0]?.wechatUrl || '#'}
+            target={displayList[0]?.wechatUrl === '#' ? '_self' : '_blank'}
+            rel="noopener noreferrer"
+            className="viewMoreButton"
+          >
+            查看更多活动
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </div>
       </div>
     </section>
   );
