@@ -1,7 +1,9 @@
 import React from 'react';
 import type { Match } from '../../../types';
 import { formatMatchDate, matchStatusColors, matchStatusLabels } from '../utils/matchPresentation';
+import { getPenaltyScore } from '../utils/matchOutcome';
 import { MatchEventTimeline } from './MatchEventTimeline';
+import { PenaltyShootoutTimeline } from './PenaltyShootoutTimeline';
 
 interface MatchCardProps {
   match: Match;
@@ -9,7 +11,10 @@ interface MatchCardProps {
   onPlayerClick: (playerId: string, playerName: string) => void;
 }
 
-export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPlayerClick }) => (
+export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPlayerClick }) => {
+  const penaltyScore = getPenaltyScore(match);
+
+  return (
   <div className="matchCard" onClick={() => onMatchClick(match)}>
     <div className="matchHeader">
       <span className="matchStatus" style={{ backgroundColor: matchStatusColors[match.status] }}>
@@ -30,6 +35,11 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
           <span className="matchScoreSeparator">:</span>
           <span className="matchScoreNumber">{match.status === 'scheduled' ? '-' : match.awayScore}</span>
         </div>
+        {match.status !== 'scheduled' && penaltyScore && (
+          <span className="matchPenaltyScore">
+            点球 {penaltyScore.home}-{penaltyScore.away}
+          </span>
+        )}
         {match.status === 'in_progress' && <span className="liveBadge">LIVE</span>}
       </div>
       <div className="matchTeam">
@@ -47,6 +57,11 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
           <div className="eventsGridDivider" />
           <MatchEventTimeline events={match.events} teamType="away" teamName={match.awayTeam.teamName} onPlayerClick={onPlayerClick} />
         </div>
+        <PenaltyShootoutTimeline
+          match={match}
+          onPlayerClick={onPlayerClick}
+          compact
+        />
       </div>
     )}
 
@@ -78,4 +93,5 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
       )}
     </div>
   </div>
-);
+  );
+};

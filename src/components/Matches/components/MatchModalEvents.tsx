@@ -1,5 +1,7 @@
 import React from 'react';
 import type { Match, MatchEvent } from '../../../types';
+import { getEventSortKey, isShootoutEvent } from '../utils/matchOutcome';
+import { PenaltyShootoutTimeline } from './PenaltyShootoutTimeline';
 
 interface MatchModalEventsProps {
   match: Match;
@@ -10,13 +12,6 @@ const eventIcons: Record<string, string> = {
   goal: '⚽', own_goal: '🥅', penalty: '🎯', yellow_card: '🟨', red_card: '🟥',
   yellow_to_red: '🟨🟥', substitution: '🔄', penalty_shootout_goal: '⚽',
   penalty_shootout_miss: '❌', penalty_miss: '❌',
-};
-
-const parseEventTime = (time: string) => {
-  const cleaned = String(time || '').replace(/'/g, '');
-  if (!cleaned.includes('+')) return parseInt(cleaned, 10) || 0;
-  const parts = cleaned.split('+');
-  return (parseInt(parts[0], 10) || 0) + (parseInt(parts[1], 10) || 0) / 100;
 };
 
 const PlayerLink: React.FC<{
@@ -57,13 +52,14 @@ const EventDescription: React.FC<{
 
 export const MatchModalEvents: React.FC<MatchModalEventsProps> = ({ match, onPlayerClick }) => {
   if (!match.events?.length) return <div className="noEventsMessage">⚽ 暂无比赛事件记录</div>;
+  const regularEvents = match.events
+    .filter((event) => !isShootoutEvent(event))
+    .sort((first, second) => getEventSortKey(first) - getEventSortKey(second));
   return (
     <div className="matchEventsSection modalEvents" style={{ marginTop: 0 }}>
       <h3 className="eventsTitle">📝 比赛关键事件回顾</h3>
       <div className="unifiedTimeline">
-        {[...match.events]
-          .sort((first, second) => parseEventTime(first.eventTime) - parseEventTime(second.eventTime))
-          .map((event, index) => {
+        {regularEvents.map((event, index) => {
             const isHome = event.teamType === 'home';
             const team = isHome ? match.homeTeam : match.awayTeam;
             return (
@@ -83,6 +79,7 @@ export const MatchModalEvents: React.FC<MatchModalEventsProps> = ({ match, onPla
             );
           })}
       </div>
+      <PenaltyShootoutTimeline match={match} onPlayerClick={onPlayerClick} />
     </div>
   );
 };

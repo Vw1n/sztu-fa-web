@@ -1,4 +1,5 @@
 import type { MatchEvent } from '../../../types';
+import { getEventSortKey, isShootoutEvent } from '../utils/matchOutcome';
 
 interface MatchEventTimelineProps {
   events: MatchEvent[];
@@ -29,9 +30,6 @@ const eventLabels: Partial<Record<MatchEvent['eventType'], string>> = {
   penalty_shootout_miss: '点球大战罚失',
   penalty_miss: '点球罚失',
 };
-
-const parseEventTime = (time: string): number =>
-  parseInt(time.replace(/'/g, ''), 10) || 0;
 
 interface PlayerLinkProps {
   playerId?: string | null;
@@ -122,8 +120,8 @@ export const MatchEventTimeline: React.FC<MatchEventTimelineProps> = ({
   onPlayerClick,
 }) => {
   const teamEvents = events
-    .filter((event) => event.teamType === teamType)
-    .sort((left, right) => parseEventTime(left.eventTime) - parseEventTime(right.eventTime));
+    .filter((event) => event.teamType === teamType && !isShootoutEvent(event))
+    .sort((left, right) => getEventSortKey(left) - getEventSortKey(right));
   const isHome = teamType === 'home';
 
   return (

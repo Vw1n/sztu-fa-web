@@ -3,6 +3,7 @@ import type { Match } from '../../../types';
 import { formatMatchDate, matchStatusColors, matchStatusLabels } from '../utils/matchPresentation';
 import { MatchModalEvents } from './MatchModalEvents';
 import { MatchModalLineups } from './MatchModalLineups';
+import { getPenaltyScore } from '../utils/matchOutcome';
 
 interface MatchDetailModalProps {
   selectedMatchForModal: Match | null;
@@ -23,6 +24,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
   selectedMatchForModal: match, modalTab, onClose, onTabChange, onPlayerClick,
 }) => {
   if (!match) return null;
+  const penaltyScore = getPenaltyScore(match);
   return (
     <div className="matchModalOverlay" onClick={onClose}>
       <div className="matchModal" onClick={(event) => event.stopPropagation()}>
@@ -43,9 +45,16 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
               <span className="modalTeamName">{match.homeTeam.teamName}</span>
             </div>
             <div className="modalScore">
-              <span className="modalScoreNumber">{match.status === 'scheduled' ? '-' : match.homeScore}</span>
-              <span className="modalScoreSeparator">:</span>
-              <span className="modalScoreNumber">{match.status === 'scheduled' ? '-' : match.awayScore}</span>
+              <div>
+                <span className="modalScoreNumber">{match.status === 'scheduled' ? '-' : match.homeScore}</span>
+                <span className="modalScoreSeparator">:</span>
+                <span className="modalScoreNumber">{match.status === 'scheduled' ? '-' : match.awayScore}</span>
+              </div>
+              {penaltyScore && (
+                <span className="modalPenaltyScore">
+                  点球 {penaltyScore.home}-{penaltyScore.away}
+                </span>
+              )}
             </div>
             <div className="modalTeam">
               <div className="modalTeamLogo"><img src={match.awayTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'} alt={match.awayTeam.teamName} /></div>

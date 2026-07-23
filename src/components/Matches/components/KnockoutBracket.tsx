@@ -1,6 +1,7 @@
 import React from 'react';
 import { LoadingSpinner } from '../../common';
 import type { Match } from '../../../types';
+import { getPenaltyScore, getWinnerTeamId } from '../utils/matchOutcome';
 
 interface KnockoutBracketProps {
   bracketMatches: Match[];
@@ -50,8 +51,11 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
       );
     }
 
-    const isHomeWinner = match.status === 'completed' && match.homeScore > match.awayScore;
-    const isAwayWinner = match.status === 'completed' && match.awayScore > match.homeScore;
+    const winnerTeamId =
+      match.status === 'completed' ? getWinnerTeamId(match) : null;
+    const isHomeWinner = winnerTeamId === match.homeTeamId;
+    const isAwayWinner = winnerTeamId === match.awayTeamId;
+    const penaltyScore = getPenaltyScore(match);
 
     const cardClasses = [
       'bracketMatchCard',
@@ -85,6 +89,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
           </div>
           <span className="bracketTeamScore">
             {match.status === 'completed' || match.status === 'in_progress' ? match.homeScore : '-'}
+            {penaltyScore ? ` (${penaltyScore.home})` : ''}
           </span>
         </div>
         <div className={`bracketTeamRow ${isAwayWinner ? 'winnerRow' : ''}`}>
@@ -98,6 +103,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
           </div>
           <span className="bracketTeamScore">
             {match.status === 'completed' || match.status === 'in_progress' ? match.awayScore : '-'}
+            {penaltyScore ? ` (${penaltyScore.away})` : ''}
           </span>
         </div>
         {!compact && (
@@ -112,7 +118,13 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
   const renderChampionCard = () => {
     const finalMatch = findMatch('F', 1);
     if (!finalMatch || finalMatch.status !== 'completed') return null;
-    const champion = finalMatch.homeScore > finalMatch.awayScore ? finalMatch.homeTeam : finalMatch.awayTeam;
+    const winnerTeamId = getWinnerTeamId(finalMatch);
+    const champion =
+      winnerTeamId === finalMatch.homeTeamId
+        ? finalMatch.homeTeam
+        : winnerTeamId === finalMatch.awayTeamId
+          ? finalMatch.awayTeam
+          : null;
     if (!champion) return null;
     return (
       <div className="championCard">

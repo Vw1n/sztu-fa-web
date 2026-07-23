@@ -250,6 +250,17 @@
   color: var(--text-light);
 }
 
+.matchPenaltyScore {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(0, 184, 92, 0.1);
+  color: #00a653;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
 .liveBadge {
   padding: var(--spacing-xs) var(--spacing-sm);
   background-color: var(--primary-color);
