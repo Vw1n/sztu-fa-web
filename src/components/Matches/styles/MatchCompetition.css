@@ -283,7 +283,8 @@
 }
 
 .finalGroup {
-  height: 480px;
+  min-height: 480px;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -646,6 +647,23 @@
 @keyframes shineGold {
   0% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.2); }
   100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
+}
+
+/* Third-place match section */
+.thirdPlaceSection {
+  width: 100%;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(205, 127, 50, 0.4);
+}
+
+.thirdPlaceLabel {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #cd7f32;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
 }
 
 /* ==========================================================================

@@ -180,6 +180,14 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
           </div>
         </div>
 
+        {/* 三四名决赛 */}
+        <div className="treeRound">
+          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#cd7f32', padding: '10px 0 6px', letterSpacing: 1 }}>🥉 三四名决赛</div>
+          <div className="treeSingle">
+            <div className="treeMatchCell">{renderMatchCard(findMatch('3RD', 1), '3RD', 1, true)}</div>
+          </div>
+        </div>
+
         {/* SF2 */}
         <div className="treeRound">
           <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>半决赛</div>
@@ -239,6 +247,10 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
             <div className="matchGroups finalGroup">
               {renderChampionCard()}
               <div style={{ marginTop: '-4px', marginBottom: 'auto' }}>{renderMatchCard(findMatch('F', 1), 'F', 1)}</div>
+              <div className="thirdPlaceSection">
+                <div className="thirdPlaceLabel">🥉 三四名决赛</div>
+                {renderMatchCard(findMatch('3RD', 1), '3RD', 1)}
+              </div>
             </div>
           </div>
 

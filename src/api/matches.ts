@@ -17,13 +17,33 @@ export async function fetchMatches(
     else if (status === 'in_progress') backendStatus = 'ongoing';
     url += `&status=${backendStatus}`;
   }
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('获取比赛列表失败');
-  const result = await response.json();
-  if (result && Array.isArray(result.data)) {
-    result.data = result.data.map(normalizeMatchStatus);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn(`[fetchMatches] 接口响应失败, 状态码: ${response.status}`);
+      return {
+        data: [],
+        total: 0,
+        page,
+        limit,
+        stats: { total: 0, completed: 0, scheduled: 0, ongoing: 0 },
+      };
+    }
+    const result = await response.json();
+    if (result && Array.isArray(result.data)) {
+      result.data = result.data.map(normalizeMatchStatus);
+    }
+    return result;
+  } catch (err) {
+    console.error('[fetchMatches] 网络或接口调取失败:', err);
+    return {
+      data: [],
+      total: 0,
+      page,
+      limit,
+      stats: { total: 0, completed: 0, scheduled: 0, ongoing: 0 },
+    };
   }
-  return result;
 }
 
 export async function fetchMatchById(id: string): Promise<Match> {
