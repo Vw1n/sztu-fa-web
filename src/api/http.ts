@@ -1,4 +1,13 @@
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/$/, '');
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+const BASE_URL = (
+  configuredApiBaseUrl ||
+  (typeof window !== 'undefined' && window.location.hostname.includes('dev.sztufa.xyz')
+    ? 'https://api-dev.sztufa.xyz/api/v1'
+    : typeof window !== 'undefined' && window.location.hostname.endsWith('sztufa.xyz')
+      ? 'https://api.sztufa.xyz/api/v1'
+      : '/api/v1')
+).replace(/\/$/, '');
 
 export { BASE_URL };
 
