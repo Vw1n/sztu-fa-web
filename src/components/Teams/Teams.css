@@ -180,23 +180,23 @@
 /* 球队网格 */
 .teamsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-xl);
 }
 
 .teamCard {
   position: relative;
   background-color: var(--bg-primary);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   transition: all var(--transition-normal);
   cursor: pointer;
 }
 
 .teamCard:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
 }
 
 .teamCard.selected {
@@ -205,23 +205,8 @@
 
 .teamImageWrapper {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 200px;
   overflow: hidden;
-  background-color: var(--bg-tertiary);
-}
-
-.teamGenderBadge {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: #fff;
-  z-index: 2;
-  line-height: 1.4;
 }
 
 .teamImage {
@@ -231,43 +216,82 @@
   transition: transform var(--transition-normal);
 }
 
-.teamLogoPlaceholder {
-  width: 100%;
-  height: 100%;
+.teamCard:hover .teamImage {
+  transform: scale(1.1);
+}
+
+.teamOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, rgba(30, 58, 138, 0.95), transparent);
+}
+
+.teamBadge {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  box-shadow: var(--shadow-md);
 }
 
-.teamLogoPlaceholder span {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--text-white);
-  opacity: 0.85;
-}
-
-.teamCard:hover .teamImage {
-  transform: scale(1.08);
+.teamBadge svg {
+  width: 30px;
+  height: 30px;
 }
 
 .teamContent {
-  padding: var(--spacing-sm) var(--spacing-xs);
-  text-align: center;
+  padding: var(--spacing-lg);
 }
 
 .teamName {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: var(--text-primary);
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-bottom: var(--spacing-md);
+}
+
+.teamInfo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.teamInfoItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.teamInfoLabel {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-bottom: 2px;
+}
+
+.teamInfoValue {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .teamDetailsButton {
-  display: none;
+  width: 100%;
+  padding: var(--spacing-sm);
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
 .teamDetailsButton:hover {
@@ -411,8 +435,7 @@
 /* 响应式 */
 @media (max-width: 1024px) {
   .teamsGrid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -448,12 +471,9 @@
     gap: var(--spacing-sm);
   }
 
-  .teamName {
-    font-size: 0.75rem;
-  }
-
-  .teamLogoPlaceholder span {
-    font-size: 1.4rem;
+  /* 移动端隐藏翻页 */
+  .teamsContainer > .pagination {
+    display: none;
   }
 
   .modalInfoGrid {
@@ -481,18 +501,6 @@
   .teamsGrid {
     grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-xs);
-  }
-
-  .teamContent {
-    padding: var(--spacing-xs);
-  }
-
-  .teamName {
-    font-size: 0.7rem;
-  }
-
-  .teamLogoPlaceholder span {
-    font-size: 1.2rem;
   }
 
   .modalInfoGrid {

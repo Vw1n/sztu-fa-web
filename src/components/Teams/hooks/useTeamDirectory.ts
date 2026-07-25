@@ -1,23 +1,35 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchSeasons, fetchTeams, searchTeams } from '../../../api';
 import type { Season, Team } from '../../../types';
 
+const PAGE_SIZE = 6;
+
 export const useTeamDirectory = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 8;
   const [globalSeasons, setGlobalSeasons] = useState<Season[]>([]);
   const [globalSeasonId, setGlobalSeasonId] = useState('all');
   const [selectedGender, setSelectedGender] = useState('all');
   const latestRequestId = useRef(0);
 
+  // 移动端检测（≤768px）
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const loadTeams = useCallback(async (
-    page: number,
+    _page: number,
     seasonId: string,
     gender: string,
     search?: string,
@@ -33,17 +45,18 @@ export const useTeamDirectory = () => {
           (seasonId === 'all' || team.groupTeams?.some((item) => item.seasonId === seasonId)),
         );
         if (requestId !== latestRequestId.current) return;
-        setTeams(filtered);
+        setAllTeams(filtered);
         setTotal(filtered.length);
       } else {
+        // 一次拉取全部球队
         const response = await fetchTeams(
-          page,
-          limit,
+          1,
+          50,
           seasonId === 'all' ? undefined : seasonId,
           gender === 'all' ? undefined : gender,
         );
         if (requestId !== latestRequestId.current) return;
-        setTeams(response.data);
+        setAllTeams(response.data);
         setTotal(response.total);
       }
     } catch (loadError) {
@@ -72,6 +85,13 @@ export const useTeamDirectory = () => {
   useEffect(() => {
     void loadTeams(currentPage, globalSeasonId, selectedGender, appliedSearchTerm || undefined);
   }, [currentPage, globalSeasonId, selectedGender, appliedSearchTerm, loadTeams]);
+
+  // PC 端前端分页，移动端全部展示
+  const teams = useMemo(() => {
+    if (appliedSearchTerm || isMobile) return allTeams;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return allTeams.slice(start, start + PAGE_SIZE);
+  }, [allTeams, currentPage, appliedSearchTerm, isMobile]);
 
   const changeGender = (gender: string) => {
     setCurrentPage(1);
@@ -105,10 +125,10 @@ export const useTeamDirectory = () => {
 
   return {
     teams, loading, error, searchTerm, setSearchTerm, appliedSearchTerm,
-    currentPage, setCurrentPage, total, limit, globalSeasons, globalSeasonId,
+    currentPage, setCurrentPage, total, limit: PAGE_SIZE, globalSeasons, globalSeasonId,
     selectedGender, changeGender, search, reset, loadTeams,
     changeSeason: (id: string) => { setCurrentPage(1); setGlobalSeasonId(id); },
-    totalPages: appliedSearchTerm ? 1 : Math.ceil(total / limit),
+    totalPages: appliedSearchTerm ? 1 : Math.ceil(total / PAGE_SIZE),
     isSearching: appliedSearchTerm.length > 0,
   };
 };

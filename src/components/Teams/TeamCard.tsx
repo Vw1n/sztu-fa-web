@@ -1,4 +1,5 @@
 import type { Team } from '../../types';
+import './TeamCard.css';
 
 interface TeamCardProps {
   team: Team;
@@ -13,27 +14,34 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, isSelected, onClick }) => {
       onClick={onClick}
     >
       <div className="teamImageWrapper" style={{ position: 'relative' }}>
-        <span
-          className="teamGenderBadge"
-          style={{ background: team.gender === 'FEMALE' ? '#ff4d4f' : '#1890ff' }}
-        >
-          {team.gender === 'FEMALE' ? '女' : '男'}
-        </span>
-        {team.teamLogo ? (
-          <img
-            src={team.teamLogo}
-            alt={team.teamName}
-            className="teamImage"
-            loading="lazy"
-          />
-        ) : (
-          <div className="teamLogoPlaceholder">
-            <span>{team.teamName.charAt(0)}</span>
-          </div>
-        )}
+        <img
+          src={team.teamLogo || 'https://picsum.photos/seed/team/300/200'}
+          alt={team.teamName}
+          className="teamImage"
+          loading="lazy"
+        />
       </div>
       <div className="teamContent">
         <h3 className="teamName">{team.teamName}</h3>
+        <div className="teamInfo">
+          <div className="teamInfoItem">
+            <span className="teamInfoLabel">主教练</span>
+            <span className="teamInfoValue">{team.headCoach || '暂无'}</span>
+          </div>
+          <div className="teamInfoItem">
+            <span className="teamInfoLabel">队长</span>
+            <span className="teamInfoValue">{team.teamLeader || '暂无'}</span>
+          </div>
+          <div className="teamInfoItem">
+            <span className="teamInfoLabel">队医</span>
+            <span className="teamInfoValue">{team.teamDoctor || '暂无'}</span>
+          </div>
+          <div className="teamInfoItem">
+            <span className="teamInfoLabel">主场球衣</span>
+            <span className="teamInfoValue">{team.homeJerseyColor || '暂无'}</span>
+          </div>
+        </div>
+        <button className="teamDetailsButton">查看详情</button>
       </div>
     </div>
   );
