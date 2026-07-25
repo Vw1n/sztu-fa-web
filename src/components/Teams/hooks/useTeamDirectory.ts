@@ -10,7 +10,7 @@ export const useTeamDirectory = () => {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 6;
+  const limit = 8;
   const [globalSeasons, setGlobalSeasons] = useState<Season[]>([]);
   const [globalSeasonId, setGlobalSeasonId] = useState('all');
   const [selectedGender, setSelectedGender] = useState('all');
