@@ -151,7 +151,9 @@
 .modalTeamLogo img {
   width: 60px;
   height: 60px;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--bg-primary);
+  border-radius: 8px;
 }
 
 .modalTeamName {
@@ -620,9 +622,10 @@
 .miniTeamLogo {
   width: 20px;
   height: 20px;
-  object-fit: cover;
-  border-radius: 50%;
+  object-fit: contain;
+  border-radius: 4px;
   border: 1px solid var(--border-color);
+  background: var(--bg-primary);
 }
 
 .miniTeamName {
