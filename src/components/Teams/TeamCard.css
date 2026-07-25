@@ -1,0 +1,41 @@
+/* TeamCard 组件样式 — 移动端响应式覆盖 */
+
+/* ===== 手机端（≤768px）：紧凑布局，隐藏详细信息 ===== */
+@media (max-width: 768px) {
+  .teamImageWrapper {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .teamContent {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    text-align: center;
+  }
+
+  .teamName {
+    font-size: 0.75rem;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .teamInfo {
+    display: none;
+  }
+
+  .teamDetailsButton {
+    display: none;
+  }
+}
+
+/* ===== 小屏手机（≤375px）：进一步紧凑 ===== */
+@media (max-width: 375px) {
+  .teamContent {
+    padding: var(--spacing-xs);
+  }
+
+  .teamName {
+    font-size: 0.68rem;
+  }
+}

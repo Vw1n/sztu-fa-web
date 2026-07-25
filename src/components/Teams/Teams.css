@@ -466,12 +466,14 @@
     white-space: nowrap !important;
   }
 
-  .teamImageWrapper {
-    height: 180px;
+  .teamsGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
   }
 
-  .teamInfo {
-    grid-template-columns: repeat(2, 1fr) !important;
+  /* 移动端隐藏翻页 */
+  .teamsContainer > .pagination {
+    display: none;
   }
 
   .modalInfoGrid {
@@ -493,20 +495,16 @@
 
 @media (max-width: 480px) {
   .teamsContainer {
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--spacing-sm);
   }
 
   .teamsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xs);
   }
 
-  .modalInfoGrid, .teamInfo {
+  .modalInfoGrid {
     grid-template-columns: 1fr !important;
-  }
-
-  .teamImageWrapper {
-    height: 160px;
   }
 
   .modalHeader {
