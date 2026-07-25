@@ -2,8 +2,6 @@ import React from 'react';
 import type { Match } from '../../../types';
 import { formatMatchDate, matchStatusColors, matchStatusLabels } from '../utils/matchPresentation';
 import { getPenaltyScore } from '../utils/matchOutcome';
-import { MatchEventTimeline } from './MatchEventTimeline';
-import { PenaltyShootoutTimeline } from './PenaltyShootoutTimeline';
 
 interface MatchCardProps {
   match: Match;
@@ -49,21 +47,6 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
         <span className="matchTeamName">{match.awayTeam.teamName}</span>
       </div>
     </div>
-
-    {match.status === 'completed' && match.events && match.events.length > 0 && (
-      <div className="matchEventsSection">
-        <div className="eventsGrid">
-          <MatchEventTimeline events={match.events} teamType="home" teamName={match.homeTeam.teamName} onPlayerClick={onPlayerClick} />
-          <div className="eventsGridDivider" />
-          <MatchEventTimeline events={match.events} teamType="away" teamName={match.awayTeam.teamName} onPlayerClick={onPlayerClick} />
-        </div>
-        <PenaltyShootoutTimeline
-          match={match}
-          onPlayerClick={onPlayerClick}
-          compact
-        />
-      </div>
-    )}
 
     <div className="matchFooter">
       <div className="matchDetail">

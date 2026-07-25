@@ -6,6 +6,7 @@ interface PenaltyShootoutTimelineProps {
   match: Match;
   onPlayerClick: (playerId: string, playerName: string) => void;
   compact?: boolean;
+  showEndMarker?: boolean;
 }
 
 const KickIcon: React.FC<{ scored: boolean }> = ({ scored }) => (
@@ -22,6 +23,7 @@ export const PenaltyShootoutTimeline: React.FC<PenaltyShootoutTimelineProps> = (
   match,
   onPlayerClick,
   compact = false,
+  showEndMarker = false,
 }) => {
   const events = (match.events || [])
     .filter(isShootoutEvent)
@@ -96,6 +98,15 @@ export const PenaltyShootoutTimeline: React.FC<PenaltyShootoutTimelineProps> = (
             </div>
           );
         })}
+        {showEndMarker && (
+          <div className="shootoutRow shootoutRowEnd">
+            <div className="shootoutEndMarker">
+              <span className="timelineEndDot" />
+              <span className="timelineEndIcon">🏁</span>
+              <span className="timelineEndLabel">比赛结束</span>
+            </div>
+          </div>
+        )}
       </div>
       {!compact && (
         <div className="eventLegend" aria-label="比赛事件图例">
