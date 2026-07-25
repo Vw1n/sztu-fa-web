@@ -25,7 +25,35 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
   }
 
   const findMatch = (round: string, index: number) => {
-    return matches.find(m => m.knockoutRound === round && m.knockoutMatchIndex === index);
+    return matches.find((m) => {
+      const matchRound = (m.knockoutRound || '').toUpperCase();
+      const targetRound = round.toUpperCase();
+
+      const isRoundMatch =
+        matchRound === targetRound ||
+        (targetRound === '3RD' &&
+          (matchRound === '3RD_PLACE' ||
+            matchRound === 'THIRD_PLACE' ||
+            matchRound === '34' ||
+            matchRound === '34名' ||
+            (m.matchName && (m.matchName.includes('三四名') || m.matchName.includes('季军') || m.matchName.includes('3/4')))));
+
+      if (!isRoundMatch) return false;
+
+      if (targetRound === '3RD') {
+        return (
+          m.knockoutMatchIndex === undefined ||
+          m.knockoutMatchIndex === null ||
+          Number(m.knockoutMatchIndex) === index ||
+          Number(m.knockoutMatchIndex) === 0
+        );
+      }
+
+      return (
+        Number(m.knockoutMatchIndex) === index ||
+        (!m.knockoutMatchIndex && index === 1)
+      );
+    });
   };
 
   const hasR16 = matches.some(m => m.knockoutRound === 'R16');

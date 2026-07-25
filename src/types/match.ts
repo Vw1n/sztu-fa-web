@@ -67,6 +67,7 @@ export interface Match {
   groupName?: string;
   knockoutRound?: string;
   knockoutMatchIndex?: number;
+  matchName?: string;
   createdAt: string;
   updatedAt: string;
 }
