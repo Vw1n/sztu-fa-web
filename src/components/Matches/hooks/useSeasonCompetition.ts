@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchMatches, fetchSeasonStandings, fetchSeasonStats } from '../../../api';
 import type { CupStandings, Match, SeasonStats, StandingRow } from '../../../types';
 import type { AssistRow, MatchTab, ScorerRow } from '../types';
+import { getWinnerTeamId } from '../utils/matchOutcome';
 
 export const useSeasonCompetition = (selectedSeasonId: string) => {
   const [activeTab, setActiveTab] = useState<MatchTab>('matches');
@@ -66,20 +67,30 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
           (m) => m.knockoutRound === 'SF' && Number(m.knockoutMatchIndex) === 2,
         );
         if (sf1 && sf2 && sf1.status === 'completed' && sf2.status === 'completed') {
-          const sf1Winner =
-            sf1.winnerTeamId || (sf1.homeScore > sf1.awayScore ? sf1.homeTeamId : sf1.awayTeamId);
+          const sf1Winner = getWinnerTeamId(sf1);
           const sf1Loser = sf1Winner === sf1.homeTeamId ? sf1.awayTeamId : sf1.homeTeamId;
 
-          const sf2Winner =
-            sf2.winnerTeamId || (sf2.homeScore > sf2.awayScore ? sf2.homeTeamId : sf2.awayTeamId);
+          const sf2Winner = getWinnerTeamId(sf2);
           const sf2Loser = sf2Winner === sf2.homeTeamId ? sf2.awayTeamId : sf2.homeTeamId;
 
-          if (sf1Loser && sf2Loser) {
-            const thirdPlaceMatch = allMatches.find(
-              (m) =>
-                (m.homeTeamId === sf1Loser && m.awayTeamId === sf2Loser) ||
-                (m.homeTeamId === sf2Loser && m.awayTeamId === sf1Loser),
+          if (sf1Winner && sf2Winner && sf1Loser && sf2Loser) {
+            const semifinalEnd = Math.max(
+              new Date(sf1.matchDate).getTime(),
+              new Date(sf2.matchDate).getTime(),
             );
+            const thirdPlaceMatch = allMatches
+              .filter(
+                (m) =>
+                  m.stage !== 'GROUP' &&
+                  new Date(m.matchDate).getTime() >= semifinalEnd &&
+                  ((m.homeTeamId === sf1Loser && m.awayTeamId === sf2Loser) ||
+                    (m.homeTeamId === sf2Loser && m.awayTeamId === sf1Loser)),
+              )
+              .sort(
+                (first, second) =>
+                  new Date(first.matchDate).getTime() -
+                  new Date(second.matchDate).getTime(),
+              )[0];
             if (thirdPlaceMatch) {
               knockoutMatches.push({
                 ...thirdPlaceMatch,

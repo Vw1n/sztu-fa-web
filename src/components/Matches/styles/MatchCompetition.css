@@ -247,9 +247,9 @@
 }
 
 .centerColumn {
-  flex: 1.2 1 0;
-  min-width: 130px;
-  max-width: 220px;
+  flex: 1.5 1 0;
+  min-width: 190px;
+  max-width: 260px;
 }
 
 .columnHeader {
@@ -526,6 +526,8 @@
   align-items: center;
   gap: var(--spacing-sm);
   overflow: hidden;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .bracketTeamLogo {
@@ -545,12 +547,16 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .bracketTeamScore {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-light);
+  flex: 0 0 auto;
+  white-space: nowrap;
+  margin-left: var(--spacing-xs);
 }
 
 .winnerRow .bracketTeamName {
