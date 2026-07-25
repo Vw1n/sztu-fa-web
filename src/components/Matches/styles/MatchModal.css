@@ -164,6 +164,7 @@
 
 .modalScore {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: var(--spacing-md);
   justify-content: center;
@@ -293,6 +294,53 @@
   color: var(--primary-color);
   font-size: 0.85rem;
   line-height: 1;
+}
+
+/* ── 时间线起始 / 结束标记 ── */
+
+.timelineStartLabel,
+.timelineEndLabel {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.timelineStartClock {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.timelineEndIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.timelineStartDot,
+.timelineEndDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+/* 起始标记覆蓋竖线上方，回到正常流不遮挡 */
+.timelineRowStart {
+  justify-content: center;
+}
+
+.timelineRowStart .timelineDotContainer {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  padding-top: 0;
+}
+
+/* 结束标记覆蓋竖线下方 */
+.timelineRowEnd .timelineDotContainer {
+  padding-bottom: 12px;
 }
 
 .eventIconContainer {
@@ -453,6 +501,21 @@
 
 .shootoutPlayer:disabled {
   cursor: default;
+}
+
+/* 点球大战结束标记 */
+.shootoutRowEnd {
+  justify-content: center;
+}
+
+.shootoutEndMarker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+  background-color: var(--bg-secondary);
+  padding: 4px 8px;
 }
 
 .shootoutRunningScore {
@@ -752,6 +815,15 @@
   
   .timelineRow:hover .timelineEventCard {
     transform: none !important;
+  }
+
+  /* 起始标记在移动端重置为正常流，防止被通用 !important 规则覆盖 */
+  .timelineRowStart .timelineDotContainer {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    padding-top: 0 !important;
   }
 }
 
