@@ -55,10 +55,21 @@ export const MatchModalEvents: React.FC<MatchModalEventsProps> = ({ match, onPla
   const regularEvents = match.events
     .filter((event) => !isShootoutEvent(event))
     .sort((first, second) => getEventSortKey(first) - getEventSortKey(second));
+  const hasShootout = match.events.some(isShootoutEvent);
+
   return (
     <div className="matchEventsSection modalEvents" style={{ marginTop: 0 }}>
       <h3 className="eventsTitle">📝 比赛关键事件回顾</h3>
       <div className="unifiedTimeline">
+        {regularEvents.length > 0 && (
+          <div className="timelineRow timelineRowStart">
+            <div className="timelineDotContainer">
+              <span className="timelineStartLabel">比赛开始</span>
+              <span className="timelineStartClock">🕐</span>
+              <span className="timelineStartDot" />
+            </div>
+          </div>
+        )}
         {regularEvents.map((event, index) => {
             const isHome = event.teamType === 'home';
             const team = isHome ? match.homeTeam : match.awayTeam;
@@ -78,8 +89,21 @@ export const MatchModalEvents: React.FC<MatchModalEventsProps> = ({ match, onPla
               </div>
             );
           })}
+        {regularEvents.length > 0 && !hasShootout && (
+          <div className="timelineRow timelineRowEnd">
+            <div className="timelineDotContainer">
+              <span className="timelineEndDot" />
+              <span className="timelineEndIcon">🏁</span>
+              <span className="timelineEndLabel">比赛结束</span>
+            </div>
+          </div>
+        )}
       </div>
-      <PenaltyShootoutTimeline match={match} onPlayerClick={onPlayerClick} />
+      <PenaltyShootoutTimeline
+        match={match}
+        onPlayerClick={onPlayerClick}
+        showEndMarker={regularEvents.length > 0 && hasShootout}
+      />
     </div>
   );
 };
