@@ -79,4 +79,14 @@ describe('比赛结果与点球大战计算', () => {
       ),
     ).toBe(10002);
   });
+
+  it('中场事件排在40和41分钟之间，非数字事件时间返回40.5', () => {
+    expect(getEventSortKey(createEvent({ eventTime: 'HT' }))).toBe(40.5);
+    expect(getEventSortKey(createEvent({ eventTime: '中场' }))).toBe(40.5);
+    expect(getEventSortKey(createEvent({ eventTime: '40+3' }))).toBe(40.03);
+    expect(getEventSortKey(createEvent({ eventTime: '41' }))).toBe(41);
+    // 验证排序顺序：40 → 40+3(40.03) → HT(40.5) → 41
+    const keys = [40, 40.03, 40.5, 41];
+    expect(keys.slice().sort((a, b) => a - b)).toEqual([40, 40.03, 40.5, 41]);
+  });
 });

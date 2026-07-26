@@ -25,7 +25,7 @@ export interface CupStandings {
 }
 
 export interface SeasonStats {
-  scorers?: Array<{ playerId?: string; playerName: string; jerseyNumber: string; teamName: string; teamLogo: string; goals: number }>;
+  scorers?: Array<{ playerId?: string; playerName: string; jerseyNumber: string; teamName: string; teamLogo: string; goals: number; penaltyGoals?: number }>;
   assists?: Array<{ playerId?: string; playerName: string; jerseyNumber: string; teamName: string; teamLogo: string; assists: number }>;
   cards?: unknown[];
 }

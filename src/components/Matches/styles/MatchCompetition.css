@@ -6,10 +6,11 @@
 .matchesTabs {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-sm);
+  margin-bottom: 0;
   border-bottom: 2px solid var(--border-color);
   padding-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
 .tabButton {
@@ -55,55 +56,75 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-md) var(--spacing-sm);
+  padding: var(--spacing-md) 0;
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(10px);
   overflow: hidden;
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-xs);
 }
 
 @media (min-width: 769px) {
   .standingsSection, .scorersSection {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-lg) 0;
   }
 }
 
 .standingsTableContainer, .scorersTableContainer {
-  overflow-x: auto;
-  /* 隐藏滚动条滑轨 */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.standingsTableContainer::-webkit-scrollbar,
-.scorersTableContainer::-webkit-scrollbar {
-  display: none;
+  overflow: hidden;
 }
 
 .standingsTable, .scorersTable {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: center;
   font-size: 0.9rem;
-  table-layout: auto;
+  table-layout: fixed;
+  margin: 0;
+  padding: 0;
 }
 
 .standingsTable th, .scorersTable th {
-  padding: var(--spacing-sm) 4px;
+  padding: 12px 0;
   font-weight: 600;
   color: var(--text-secondary);
-  border-bottom: 2px solid var(--border-color);
-  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.7rem;
   white-space: nowrap;
+  overflow: hidden;
 }
 
 .standingsTable td, .scorersTable td {
-  padding: var(--spacing-sm) 4px;
+  padding: 12px 0;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+/* 桌面端 7 列固定宽度（留 5% 缓冲吸收取整误差） */
+.standingsTable th:nth-child(1),
+.standingsTable td:nth-child(1) { width: 5%; }
+
+.standingsTable th:nth-child(2),
+.standingsTable td:nth-child(2) { width: 27%; }
+
+.standingsTable th:nth-child(3),
+.standingsTable td:nth-child(3) { width: 8%; }
+
+.standingsTable th:nth-child(4),
+.standingsTable td:nth-child(4) { width: 17%; }
+
+.standingsTable th:nth-child(5),
+.standingsTable td:nth-child(5) { width: 15%; }
+
+.standingsTable th:nth-child(6),
+.standingsTable td:nth-child(6) { width: 10%; }
+
+.standingsTable th:nth-child(7),
+.standingsTable td:nth-child(7) { width: 13%; }
 
 /* 球队列左对齐 */
 .standingsTable th:nth-child(2),
@@ -115,56 +136,50 @@
   background-color: rgba(26, 86, 219, 0.03);
 }
 
-/* 排名徽章 */
+/* 排名数字 */
 .rankBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
   font-weight: 700;
-  font-size: 0.8rem;
-  background-color: var(--bg-secondary);
+  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 
 .rank-gold {
-  background: linear-gradient(135deg, #ffd700, #ffa500);
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+  color: #f59e0b;
+  font-weight: 800;
 }
 
 .rank-silver {
-  background: linear-gradient(135deg, #c0c0c0, #a9a9a9);
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(192, 192, 192, 0.3);
+  color: #94a3b8;
+  font-weight: 700;
 }
 
 .rank-bronze {
-  background: linear-gradient(135deg, #cd7f32, #8b4513);
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(205, 127, 50, 0.3);
+  color: #cd7f32;
+  font-weight: 700;
 }
 /* 球队行样式 */
 .tableTeamCell {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 3px;
 }
 
 .tableTeamLogo {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  border: none;
+  flex-shrink: 0;
 }
 
 .tableTeamName {
   font-weight: 600;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pointsCell {
@@ -178,6 +193,20 @@
   color: var(--text-primary);
   text-align: center;
   font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.goalsNum {
+  display: inline-block;
+  min-width: 1.5em;
+  text-align: right;
+}
+
+.penaltyGoals {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-left: 2px;
 }
 
 .text-positive {
@@ -200,20 +229,24 @@
   font-size: 1rem;
 }
 
-/* Cup Standings Group Layout */
-.cupGroupsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--spacing-xl);
+/* 联赛 A/B 组上下堆叠 */
+.leagueSplitContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: var(--spacing-md);
 }
 
+/* Cup Standings Group Layout */
+.cupGroupsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+
 .cupGroupCard {
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-color);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg) 0;
 }
 
 .cupGroupHeader {
@@ -222,8 +255,9 @@
   color: var(--primary-color);
   margin-bottom: var(--spacing-md);
   border-bottom: 2px solid var(--border-color);
-  padding-bottom: var(--spacing-sm);
+  padding: 0 0 var(--spacing-sm) 0;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .miniTable {
@@ -954,113 +988,233 @@
     display: none !important;
   }
 
-  .standingsSection, .scorersSection {
-    padding: var(--spacing-sm);
+  .matchesContainer {
+    padding: 0;
   }
 
-  .standingsTable, .scorersTable {
-    font-size: 0.6rem;
+  .tabButton {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .standingsSection, .scorersSection {
+    padding: 2px 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    overflow: hidden;
+    margin-top: 0;
+  }
+
+  .standingsTableContainer {
+    overflow: hidden;
+  }
+
+  .standingsTable, .scorersTable, .miniTable {
+    font-size: 0.5rem;
+    table-layout: fixed;
   }
 
   .standingsTable th, .scorersTable th {
-    padding: 4px 1px;
-    font-size: 0.55rem;
+    padding: 6px 0;
+    font-size: 0.42rem;
+    border-bottom-width: 1px;
   }
 
   .standingsTable td, .scorersTable td {
-    padding: 4px 1px;
+    padding: 6px 0;
   }
 
+  /* 7 列宽度 — 留 5% 缓冲吸收取整误差 */
+  .standingsTable th:nth-child(1),
+  .standingsTable td:nth-child(1) { width: 6%; }
+
+  .standingsTable th:nth-child(2),
+  .standingsTable td:nth-child(2) { width: 27%; }
+
+  .standingsTable th:nth-child(3),
+  .standingsTable td:nth-child(3) { width: 7%; }
+
+  .standingsTable th:nth-child(4),
+  .standingsTable td:nth-child(4) { width: 17%; }
+
+  .standingsTable th:nth-child(5),
+  .standingsTable td:nth-child(5) { width: 14%; }
+
+  .standingsTable th:nth-child(6),
+  .standingsTable td:nth-child(6) { width: 10%; }
+
+  .standingsTable th:nth-child(7),
+  .standingsTable td:nth-child(7) { width: 14%; }
+
   .rankBadge {
-    width: 16px;
-    height: 16px;
     font-size: 0.55rem;
   }
 
+  .tableTeamCell {
+    gap: 1px;
+  }
+
   .tableTeamLogo {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
+    width: 13px;
+    height: 13px;
+    border-radius: 2px;
+    border: none;
+    flex-shrink: 0;
   }
 
   .tableTeamName {
-    font-size: 0.58rem;
-    max-width: 70px;
+    font-size: 0.46rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .tableTeamCell {
-    gap: 3px;
-  }
-
   .pointsCell {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
   }
 
   .cupGroupsContainer {
-    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  .cupGroupCard {
+    padding: var(--spacing-sm) 0;
+  }
+
+  .cupGroupHeader {
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-xs);
+    padding: 0 0 var(--spacing-xs) 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .standingsTable, .scorersTable, .miniTable {
+    font-size: 0.42rem;
+  }
+
+  .standingsTable th, .scorersTable th {
+    padding: 5px 0;
+    font-size: 0.34rem;
+  }
+
+  .standingsTable td, .scorersTable td {
+    padding: 5px 0;
+  }
+
+  .standingsTable th:nth-child(1),
+  .standingsTable td:nth-child(1) { width: 8%; }
+
+  .standingsTable th:nth-child(2),
+  .standingsTable td:nth-child(2) { width: 27%; }
+
+  .standingsTable th:nth-child(3),
+  .standingsTable td:nth-child(3) { width: 8%; }
+
+  .standingsTable th:nth-child(4),
+  .standingsTable td:nth-child(4) { width: 17%; }
+
+  .standingsTable th:nth-child(5),
+  .standingsTable td:nth-child(5) { width: 15%; }
+
+  .standingsTable th:nth-child(6),
+  .standingsTable td:nth-child(6) { width: 10%; }
+
+  .standingsTable th:nth-child(7),
+  .standingsTable td:nth-child(7) { width: 15%; }
+
+  .rankBadge {
+    font-size: 0.48rem;
+  }
+
+  .tableTeamLogo {
+    width: 11px;
+    height: 11px;
+    border: none;
+  }
+
+  .tableTeamName {
+    font-size: 0.4rem;
+  }
+
+  .pointsCell {
+    font-size: 0.48rem;
   }
 }
 
 @media (max-width: 375px) {
-  .hideMobileXs {
-    display: none !important;
+  /* 强制消除全链路滚动 */
+  /* 强制消除全链路滚动 */
+  .matches,
+  .matchesContainer,
+  .standingsSection,
+  .scorersSection,
+  .standingsTableContainer,
+  .scorersTableContainer {
+    overflow: hidden !important;
   }
 
-  .standingsSection, .scorersSection {
-    padding: var(--spacing-xs);
-  }
-
-  .standingsTable, .scorersTable {
-    font-size: 0.58rem;
+  .standingsTable, .scorersTable, .miniTable {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 0.42rem;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .standingsTable th, .scorersTable th {
-    padding: 3px 1px;
-    font-size: 0.52rem;
+    font-size: 0.3rem;
+    padding: 4px 0;
   }
 
   .standingsTable td, .scorersTable td {
-    padding: 3px 1px;
+    padding: 4px 0;
   }
 
+  /* 7 列宽度 — 总和 80%，20% 缓冲 */
+  .standingsTable th:nth-child(1),
+  .standingsTable td:nth-child(1) { width: 4%; }
+
+  .standingsTable th:nth-child(2),
+  .standingsTable td:nth-child(2) { width: 24%; }
+
+  .standingsTable th:nth-child(3),
+  .standingsTable td:nth-child(3) { width: 6%; }
+
+  .standingsTable th:nth-child(4),
+  .standingsTable td:nth-child(4) { width: 14%; }
+
+  .standingsTable th:nth-child(5),
+  .standingsTable td:nth-child(5) { width: 13%; }
+
+  .standingsTable th:nth-child(6),
+  .standingsTable td:nth-child(6) { width: 8%; }
+
+  .standingsTable th:nth-child(7),
+  .standingsTable td:nth-child(7) { width: 11%; }
+
   .rankBadge {
-    width: 15px;
-    height: 15px;
-    font-size: 0.5rem;
+    font-size: 0.42rem;
   }
 
   .tableTeamLogo {
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
-  }
-
-  .tableTeamName {
-    font-size: 0.55rem;
-    max-width: 50px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 1px;
   }
 
   .tableTeamCell {
-    gap: 2px;
+    gap: 1px;
+  }
+
+  .tableTeamName {
+    font-size: 0.38rem;
   }
 
   .pointsCell {
-    font-size: 0.6rem;
-  }
-
-  /* 移动端小组卡片紧凑 */
-  .cupGroupCard {
-    padding: var(--spacing-xs);
-  }
-
-  .cupGroupHeader {
-    font-size: 0.9rem;
-    margin-bottom: var(--spacing-xs);
+    font-size: 0.46rem;
   }
 }

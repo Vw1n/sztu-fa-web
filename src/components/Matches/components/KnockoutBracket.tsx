@@ -57,6 +57,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
   };
 
   const hasR16 = matches.some(m => m.knockoutRound === 'R16');
+  const hasQF = matches.some(m => m.knockoutRound === 'QF');
 
   const renderMatchCard = (match: Match | undefined, round: string, index: number, compact?: boolean) => {
     const side = round === 'R16' ? (index <= 4 ? 'left' : 'right') :
@@ -183,6 +184,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
       <div className="bracketTreeMobile">
 
         {/* 上半区：QF1、QF2 */}
+        {hasQF && (
         <div className="treeRound">
           <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>1/4 决赛</div>
           <div className="treePair">
@@ -190,6 +192,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
             <div className="treeMatchCell">{renderMatchCard(qf2, 'QF', 2, true)}</div>
           </div>
         </div>
+        )}
 
         {/* SF1 */}
         <div className="treeRound">
@@ -225,6 +228,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
         </div>
 
         {/* 下半区：QF3、QF4 */}
+        {hasQF && (
         <div className="treeRound">
           <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>1/4 决赛</div>
           <div className="treePair">
@@ -232,6 +236,7 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
             <div className="treeMatchCell">{renderMatchCard(qf4, 'QF', 4, true)}</div>
           </div>
         </div>
+        )}
 
       </div>
     );
@@ -255,13 +260,15 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
             </div>
           )}
 
-          <div className="bracketColumn qf-left-column">
-            <div className="columnHeader">1/4 决赛</div>
-            <div className="matchGroups">
-              {renderMatchCard(findMatch('QF', 1), 'QF', 1)}
-              {renderMatchCard(findMatch('QF', 2), 'QF', 2)}
+          {hasQF && (
+            <div className="bracketColumn qf-left-column">
+              <div className="columnHeader">1/4 决赛</div>
+              <div className="matchGroups">
+                {renderMatchCard(findMatch('QF', 1), 'QF', 1)}
+                {renderMatchCard(findMatch('QF', 2), 'QF', 2)}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="bracketColumn sf-left-column">
             <div className="columnHeader">半决赛</div>
@@ -289,13 +296,15 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
             </div>
           </div>
 
-          <div className="bracketColumn qf-right-column">
-            <div className="columnHeader">1/4 决赛</div>
-            <div className="matchGroups">
-              {renderMatchCard(findMatch('QF', 3), 'QF', 3)}
-              {renderMatchCard(findMatch('QF', 4), 'QF', 4)}
+          {hasQF && (
+            <div className="bracketColumn qf-right-column">
+              <div className="columnHeader">1/4 决赛</div>
+              <div className="matchGroups">
+                {renderMatchCard(findMatch('QF', 3), 'QF', 3)}
+                {renderMatchCard(findMatch('QF', 4), 'QF', 4)}
+              </div>
             </div>
-          </div>
+          )}
 
           {hasR16 && (
             <div className="bracketColumn r16-right-column">
