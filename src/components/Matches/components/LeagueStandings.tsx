@@ -43,7 +43,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                         else if (index === 1) rankClass = 'rank-silver';
                         else if (index === 2) rankClass = 'rank-bronze';
                         return (
-                          <tr key={row.teamId} className={index < 2 ? 'advancingRow' : ''}>
+                          <tr key={row.teamId} className={index < 2 ? 'advancingRow promotionRow' : ''}>
                             <td>
                               <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
                             </td>
@@ -94,7 +94,7 @@ export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
                 else if (index === 2) rankClass = 'rank-bronze';
                 
                 return (
-                  <tr key={row.teamId}>
+                  <tr key={row.teamId} className={index < 2 ? 'promotionRow' : ''}>
                     <td>
                       <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
                     </td>

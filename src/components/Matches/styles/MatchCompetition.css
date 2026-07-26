@@ -64,6 +64,14 @@
 
 .standingsTableContainer, .scorersTableContainer {
   overflow-x: auto;
+  /* 隐藏滚动条滑轨 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.standingsTableContainer::-webkit-scrollbar,
+.scorersTableContainer::-webkit-scrollbar {
+  display: none;
 }
 
 .standingsTable, .scorersTable {
@@ -213,6 +221,16 @@
 
 .advancingRow:hover {
   background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+/* 晋级区高亮（前两名） */
+.promotionRow {
+  background-color: rgba(16, 185, 129, 0.06);
+  border-left: 3px solid #10b981;
+}
+
+.promotionRow:hover {
+  background-color: rgba(16, 185, 129, 0.1) !important;
 }
 
 /* Bracket Section */
