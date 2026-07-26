@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchSeasons, fetchTeams, searchTeams } from '../../../api';
 import type { Season, Team } from '../../../types';
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 export const useTeamDirectory = () => {
   const [allTeams, setAllTeams] = useState<Team[]>([]);
