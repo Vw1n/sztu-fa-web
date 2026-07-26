@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Team } from '../../types';
 import './TeamCard.css';
 
@@ -8,18 +9,29 @@ interface TeamCardProps {
 }
 
 const TeamCard: React.FC<TeamCardProps> = ({ team, isSelected, onClick }) => {
+  const [imgError, setImgError] = useState(false);
+
+  const hasLogo = team.teamLogo && !imgError;
+
   return (
     <div
       className={`teamCard ${isSelected ? 'selected' : ''}`}
       onClick={onClick}
     >
       <div className="teamImageWrapper" style={{ position: 'relative' }}>
-        <img
-          src={team.teamLogo || 'https://picsum.photos/seed/team/300/200'}
-          alt={team.teamName}
-          className="teamImage"
-          loading="lazy"
-        />
+        {hasLogo ? (
+          <img
+            src={team.teamLogo}
+            alt={team.teamName}
+            className="teamImage"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="teamImage teamLogoPlaceholder">
+            <span className="teamLogoInitial">{team.teamName.charAt(0)}</span>
+          </div>
+        )}
       </div>
       <div className="teamContent">
         <h3 className="teamName">{team.teamName}</h3>

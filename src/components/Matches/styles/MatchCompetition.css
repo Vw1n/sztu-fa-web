@@ -133,8 +133,8 @@
 .tableTeamLogo {
   width: 32px;
   height: 32px;
-  object-fit: cover;
-  border-radius: 50%;
+  object-fit: contain;
+  border-radius: 6px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);

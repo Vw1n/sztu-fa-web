@@ -180,23 +180,23 @@
 /* 球队网格 */
 .teamsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-xl);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
 }
 
 .teamCard {
   position: relative;
   background-color: var(--bg-primary);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
   cursor: pointer;
 }
 
 .teamCard:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .teamCard.selected {
@@ -205,65 +205,39 @@
 
 .teamImageWrapper {
   position: relative;
-  height: 200px;
+  height: 160px;
   overflow: hidden;
+  background: var(--bg-primary);
 }
 
 .teamImage {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--bg-primary);
   transition: transform var(--transition-normal);
 }
 
 .teamCard:hover .teamImage {
-  transform: scale(1.1);
-}
-
-.teamOverlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60%;
-  background: linear-gradient(to top, rgba(30, 58, 138, 0.95), transparent);
-}
-
-.teamBadge {
-  position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  width: 50px;
-  height: 50px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
-}
-
-.teamBadge svg {
-  width: 30px;
-  height: 30px;
+  transform: scale(1.05);
 }
 
 .teamContent {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .teamName {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
+  text-align: center;
 }
 
 .teamInfo {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-xs) var(--spacing-sm);
 }
 
 .teamInfoItem {
@@ -272,9 +246,9 @@
 }
 
 .teamInfoLabel {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-light);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .teamInfoValue {
@@ -283,19 +257,42 @@
   color: var(--text-primary);
 }
 
-.teamDetailsButton {
-  width: 100%;
-  padding: var(--spacing-sm);
-  background-color: var(--primary-color);
-  color: var(--text-white);
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+/* PC 端文字对齐 */
+@media (min-width: 769px) {
+  .teamContent {
+    background: #f7f9fb;
+    display: flex;
+    flex-direction: column;
+    min-height: 130px;
+  }
+
+  .teamName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .teamInfo {
+    flex: 1;
+    align-content: start;
+  }
+
+  .teamInfoItem {
+    min-height: 32px;
+    justify-content: flex-start;
+  }
+
+  .teamInfoLabel {
+    line-height: 1.2;
+  }
+
+  .teamInfoValue {
+    line-height: 1.3;
+  }
 }
 
-.teamDetailsButton:hover {
-  background-color: var(--primary-light);
+.teamDetailsButton {
+  display: none;
 }
 
 
@@ -433,9 +430,9 @@
 }
 
 /* 响应式 */
-@media (max-width: 1024px) {
-  .teamsGrid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 900px) {
+  .teamImageWrapper {
+    height: 140px;
   }
 }
 
@@ -468,7 +465,7 @@
 
   .teamsGrid {
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
   }
 
   /* 移动端隐藏翻页 */
@@ -500,7 +497,7 @@
 
   .teamsGrid {
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
   }
 
   .modalInfoGrid {
