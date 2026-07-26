@@ -55,11 +55,17 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-sm);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(10px);
   overflow: hidden;
   margin-top: var(--spacing-md);
+}
+
+@media (min-width: 769px) {
+  .standingsSection, .scorersSection {
+    padding: var(--spacing-lg);
+  }
 }
 
 .standingsTableContainer, .scorersTableContainer {
@@ -77,23 +83,32 @@
 .standingsTable, .scorersTable {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
-  font-size: 0.95rem;
+  text-align: center;
+  font-size: 0.9rem;
+  table-layout: auto;
 }
 
 .standingsTable th, .scorersTable th {
-  padding: var(--spacing-md) var(--spacing-sm);
+  padding: var(--spacing-sm) 4px;
   font-weight: 600;
   color: var(--text-secondary);
   border-bottom: 2px solid var(--border-color);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .standingsTable td, .scorersTable td {
-  padding: var(--spacing-md) var(--spacing-sm);
+  padding: var(--spacing-sm) 4px;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* 球队列左对齐 */
+.standingsTable th:nth-child(2),
+.standingsTable td:nth-child(2) {
+  text-align: left;
 }
 
 .standingsTable tbody tr:hover, .scorersTable tbody tr:hover {
@@ -105,11 +120,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   background-color: var(--bg-secondary);
   color: var(--text-secondary);
 }
@@ -937,5 +952,115 @@
 @media (max-width: 600px) {
   .hideMobile {
     display: none !important;
+  }
+
+  .standingsSection, .scorersSection {
+    padding: var(--spacing-sm);
+  }
+
+  .standingsTable, .scorersTable {
+    font-size: 0.6rem;
+  }
+
+  .standingsTable th, .scorersTable th {
+    padding: 4px 1px;
+    font-size: 0.55rem;
+  }
+
+  .standingsTable td, .scorersTable td {
+    padding: 4px 1px;
+  }
+
+  .rankBadge {
+    width: 16px;
+    height: 16px;
+    font-size: 0.55rem;
+  }
+
+  .tableTeamLogo {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  .tableTeamName {
+    font-size: 0.58rem;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tableTeamCell {
+    gap: 3px;
+  }
+
+  .pointsCell {
+    font-size: 0.65rem;
+  }
+
+  .cupGroupsContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 375px) {
+  .hideMobileXs {
+    display: none !important;
+  }
+
+  .standingsSection, .scorersSection {
+    padding: var(--spacing-xs);
+  }
+
+  .standingsTable, .scorersTable {
+    font-size: 0.58rem;
+  }
+
+  .standingsTable th, .scorersTable th {
+    padding: 3px 1px;
+    font-size: 0.52rem;
+  }
+
+  .standingsTable td, .scorersTable td {
+    padding: 3px 1px;
+  }
+
+  .rankBadge {
+    width: 15px;
+    height: 15px;
+    font-size: 0.5rem;
+  }
+
+  .tableTeamLogo {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+  }
+
+  .tableTeamName {
+    font-size: 0.55rem;
+    max-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tableTeamCell {
+    gap: 2px;
+  }
+
+  .pointsCell {
+    font-size: 0.6rem;
+  }
+
+  /* 移动端小组卡片紧凑 */
+  .cupGroupCard {
+    padding: var(--spacing-xs);
+  }
+
+  .cupGroupHeader {
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
   }
 }
