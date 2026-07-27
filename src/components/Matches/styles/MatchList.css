@@ -560,12 +560,29 @@
   }
 
   .matchFooter {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
     gap: var(--spacing-md);
   }
 
   .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xs);
+  }
+
+  .statCard {
+    padding: var(--spacing-sm) 2px;
+    text-align: center;
+  }
+
+  .statValue {
+    font-size: 1.15rem;
+  }
+
+  .statLabel {
+    font-size: 0.72rem;
+    white-space: nowrap;
   }
 }
 
@@ -604,7 +621,8 @@
   }
 
   .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
   }
 }
 
