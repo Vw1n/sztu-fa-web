@@ -4,7 +4,9 @@ import type { Team } from '../../types';
 import TeamCard from './TeamCard';
 import TeamFilters from './TeamFilters';
 import TeamModal from './TeamModal';
+import { PlayerCareerCard } from '../Player';
 import { useTeamDirectory, useTeamRoster } from './hooks';
+import { usePlayerCareer } from '../../hooks/usePlayerCareer';
 import {
   LoadingSpinner,
   EmptyState,
@@ -17,6 +19,7 @@ import {
 
 const Teams: React.FC = () => {
   const directory = useTeamDirectory();
+  const career = usePlayerCareer();
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const roster = useTeamRoster(selectedTeam);
@@ -91,8 +94,17 @@ const Teams: React.FC = () => {
             onClose={() => setSelectedTeam(null)}
             onSeasonChange={roster.setSelectedSeasonId}
             onPreviewImage={setPreviewImage}
+            onPlayerClick={career.openCareer}
           />
         )}
+
+        <PlayerCareerCard
+          careerPlayerId={career.careerPlayerId}
+          careerPlayerName={career.careerPlayerName}
+          careerData={career.careerData}
+          careerLoading={career.careerLoading}
+          onClose={career.closeCareer}
+        />
 
         <ImagePreviewModal src={previewImage} onClose={() => setPreviewImage(null)} />
       </div>
