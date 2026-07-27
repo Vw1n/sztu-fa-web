@@ -1,4 +1,5 @@
 import type { Season, StandingRow, CupStandings, SeasonStats } from '../types';
+export type { Season, StandingRow, CupStandings, SeasonStats };
 import { BASE_URL } from './http';
 
 export async function fetchSeasons(): Promise<Season[]> {

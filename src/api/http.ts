@@ -11,6 +11,33 @@ const BASE_URL = (
 
 export { BASE_URL };
 
+export function handleUnauthorized(response: Response): void {
+  if (response.status === 401) {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('sztufa_user_token');
+      localStorage.removeItem('sztufa_user_profile');
+    }
+    const target = typeof window !== 'undefined' ? window : globalThis;
+    if (
+      target &&
+      typeof (target as unknown as { dispatchEvent?: (e: Event) => boolean })
+        .dispatchEvent === 'function'
+    ) {
+      (target as unknown as EventTarget).dispatchEvent(
+        new Event('sztufa_unauthorized'),
+      );
+    }
+  }
+}
+
+export async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const response = await fetch(input, init);
+  if (response.status === 401) {
+    handleUnauthorized(response);
+  }
+  return response;
+}
+
 /**
  * 统一后端 status → 前端 status 的映射。
  * 后端用 'finished'/'ongoing'，前端用 'completed'/'in_progress'。

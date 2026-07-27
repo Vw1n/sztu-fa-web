@@ -1,0 +1,852 @@
+/* 全局页面通用布局 */
+.pageLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.mainContent {
+  flex: 1;
+  padding-top: 90px;
+  padding-bottom: 60px;
+}
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pageContainer {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  font-weight: 800;
+  margin-bottom: var(--spacing-xs);
+}
+
+.pageSubtitle {
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+
+/* 筛选工具栏 */
+.filterBox,
+.subFilterRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.seasonSelect {
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.seasonSelect:focus {
+  border-color: var(--primary-color);
+}
+
+/* 提示 Banner */
+.noticeBanner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1a56db 100%);
+  color: #fff;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  box-shadow: var(--shadow-md);
+  font-size: 0.9rem;
+}
+
+.noticeBadge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* 登录提示区 */
+.loginNotice {
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.loginNotice.warning {
+  border-color: #f59e0b;
+  background-color: #fffbe6;
+  color: #92400e;
+}
+
+.noticeActions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.actionBtn {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.actionBtn.primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.actionBtn.primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.actionBtn.secondary {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.actionBtn.secondary:hover {
+  background-color: var(--border-color);
+}
+
+/* Toast Message */
+.toastMessage {
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.toastMessage.success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.toastMessage.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.closeToast {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* 竞猜卡片列表网格 */
+.matchCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.predictionCard {
+  background-color: #fff;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.predictionCard:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-dark);
+}
+
+.predictionCard.closedCard {
+  background-color: #fafafa;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+  font-size: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.stageTag {
+  background-color: var(--bg-tertiary);
+  color: var(--primary-color);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.locationTag,
+.timeTag {
+  color: var(--text-light);
+}
+
+/* 球队对阵 */
+.teamsVsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-lg);
+}
+
+.teamCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-xs);
+}
+
+.teamLogo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.teamLogoPlaceholder {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.teamName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scoreCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--spacing-sm);
+}
+
+.matchScoreDisplay {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  gap: 4px;
+}
+
+.vsTag {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.statusText {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+/* 竞猜按钮 */
+.predictionChoiceSection {
+  margin-top: auto;
+}
+
+.choiceTitle {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.closedNotice {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.choiceButtons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.choiceBtn {
+  background-color: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.choiceBtn:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  background-color: rgba(26, 86, 219, 0.05);
+}
+
+.choiceBtn.selected {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+}
+
+.choiceBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.choiceText {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.choiceBadge {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.myChoiceStatusFooter {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  border-top: 1px dashed var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.resultPointsBadge {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.resultPointsBadge.success {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.resultPointsBadge.wrong {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.resultPointsBadge.pending {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.resultPointsBadge.void {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* 个人中心 Profile Card */
+.userProfileCard {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.profileInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.profileAvatar {
+  width: 55px;
+  height: 55px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.profileDetails h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profileDetails p {
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.statItem {
+  background-color: var(--bg-secondary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--text-light);
+
+}
+
+.statValue {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.statValue.highlight {
+  color: var(--primary-color);
+}
+
+.statValue.rate {
+  color: #059669;
+}
+
+/* 排行榜 Tab & Table */
+.scopeTabGroup {
+  display: flex;
+  background-color: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.tabBtn {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.tabBtn.active {
+  background-color: #fff;
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.leaderboardCard {
+  background-color: #fff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.tableResponsive {
+  overflow-x: auto;
+}
+
+.leaderboardTable,
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.leaderboardTable th,
+.historyTable th {
+  background-color: var(--bg-secondary);
+  padding: 14px 18px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.leaderboardTable td,
+.historyTable td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.highlightRow {
+  background-color: #eff6ff;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.85rem;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.rankGold {
+  background-color: #fef08a;
+  color: #854d0e;
+}
+
+.rankSilver {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.rankBronze {
+  background-color: #fed7aa;
+  color: #9a3412;
+}
+
+.fontBold {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.stickyMyRankCard {
+  position: sticky;
+  bottom: 20px;
+  background: #1e293b;
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: var(--radius-xl);
+  margin-top: var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-xl);
+}
+
+.myRankBadge {
+  background-color: var(--primary-color);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-right: 12px;
+}
+
+.myRankStats {
+  display: flex;
+  gap: var(--spacing-lg);
+  font-size: 0.9rem;
+}
+
+/* Auth Cards */
+.authCard {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+}
+
+.authHeader h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.authHeader p {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 4px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.formGroup input {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.formGroup input:focus {
+  border-color: var(--primary-color);
+}
+
+.required {
+  color: #ef4444;
+}
+
+.fieldHint {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.submitBtn {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: var(--spacing-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.submitBtn:hover {
+  background-color: var(--primary-dark);
+}
+
+.authFooter {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.authLink {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.errorMessage {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.loadingContainer,
+.emptyContainer {
+  padding: 60px;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  background-color: #fff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   移动端响应式适配 (Mobile Responsive Styles)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .mainContent {
+    padding-top: 75px;
+    padding-bottom: 40px;
+  }
+
+  .pageContainer {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.85rem;
+  }
+
+  .noticeBanner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .predictionsGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .teamsVsRow {
+    padding: var(--spacing-xs) 0;
+  }
+
+  .teamLogo,
+  .teamLogoPlaceholder {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .matchScoreDisplay {
+    font-size: 1.5rem;
+  }
+
+  .vsTag {
+    font-size: 1.2rem;
+  }
+
+  .teamName {
+    font-size: 0.85rem;
+  }
+
+  .choiceButtons {
+    gap: 6px;
+  }
+
+  .choiceBtn {
+    padding: 6px 2px;
+  }
+
+  .choiceText {
+    font-size: 0.75rem;
+  }
+
+  .choiceBadge {
+    font-size: 0.65rem;
+  }
+
+  .tableResponsiveWrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .leaderboardTable,
+  .predictionsTable {
+    min-width: 600px;
+  }
+
+  .myRankCard,
+  .currentUserFloatBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .myRankStats {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-md);
+  }
+
+  .authCard {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .scopeSwitchBox {
+    width: 100%;
+    display: flex;
+  }
+
+  .scopeTab {
+    flex: 1;
+    text-align: center;
+  }
+
+  .seasonFilterRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .seasonSelect {
+    width: 100%;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
