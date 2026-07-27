@@ -8,6 +8,7 @@ export interface ScorerRow {
   teamName: string;
   teamLogo: string;
   goals: number;
+  penaltyGoals?: number;
 }
 
 export interface AssistRow {
@@ -85,7 +86,12 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
                             <span className="tableTeamName">{row.teamName}</span>
                           </div>
                         </td>
-                        <td className="goalsCell">{row.goals}</td>
+                        <td className="goalsCell">
+                          <span className="goalsNum">{row.goals}</span>
+                          {row.penaltyGoals != null && row.penaltyGoals > 0 && (
+                            <span className="penaltyGoals">（{row.penaltyGoals}）</span>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}

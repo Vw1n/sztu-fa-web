@@ -9,7 +9,12 @@ export const getEventSortKey = (event: MatchEvent): number => {
     return 10000 + (event.shootoutOrder || 0);
   }
   const cleaned = String(event.eventTime || '').replace(/'/g, '');
-  if (!cleaned.includes('+')) return parseInt(cleaned, 10) || 0;
+  if (!cleaned.includes('+')) {
+    const minute = parseInt(cleaned, 10);
+    // 非数字时间（如 "HT"、"中场"）视为中场事件，排在 40 和 41 之间
+    if (isNaN(minute)) return 40.5;
+    return minute;
+  }
   const [minute, stoppage] = cleaned.split('+');
   return (parseInt(minute, 10) || 0) + (parseInt(stoppage, 10) || 0) / 100;
 };

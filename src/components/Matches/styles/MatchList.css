@@ -2,12 +2,14 @@
 .matches {
   padding: var(--spacing-3xl) 0;
   background-color: var(--bg-primary);
+  overflow: hidden;
 }
 
 .matchesContainer {
   max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
+  overflow: hidden;
 }
 
 /* 筛选和排序栏 */
@@ -746,21 +748,7 @@
     display: inline !important;
   }
 
-  .standingsTableContainer, .scorersTableContainer {
-    width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  .standingsTable, .scorersTable {
-    min-width: 580px !important;
-  }
-
-  .standingsTable th, .standingsTable td,
-  .scorersTable th, .scorersTable td {
-    white-space: nowrap !important;
-    padding: var(--spacing-sm) 8px !important;
-  }
+  /* standings/scorers table — use MatchCompetition.css rules */
 
   .matchesTabs {
     display: flex !important;
