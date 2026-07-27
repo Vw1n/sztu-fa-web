@@ -964,13 +964,29 @@
 
 @media (max-width: 768px) {
   .matches-filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 15px;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    padding: 10px 8px;
+    gap: 6px;
+    margin-bottom: 16px;
   }
   .filter-item-wrapper {
+    min-width: 0;
     width: 100%;
+    gap: 3px;
+  }
+  .filter-item-wrapper span {
+    font-size: 0.72rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .filter-select {
+    padding: 6px 4px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    text-overflow: ellipsis;
   }
   .season-selector-container {
     flex-direction: column;
