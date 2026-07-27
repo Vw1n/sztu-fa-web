@@ -4,6 +4,19 @@ import type { CupStandings, Match, SeasonStats, StandingRow } from '../../../typ
 import type { AssistRow, MatchTab, ScorerRow } from '../types';
 import { getWinnerTeamId } from '../utils/matchOutcome';
 
+/** 从比赛事件中统计每位球员的常规时间点球进球数（不含点球大战） */
+function countPenaltyGoals(matches: Match[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const match of matches) {
+    for (const event of match.events || []) {
+      if (event.eventType === 'penalty' && event.playerName) {
+        counts[event.playerName] = (counts[event.playerName] || 0) + 1;
+      }
+    }
+  }
+  return counts;
+}
+
 export const useSeasonCompetition = (selectedSeasonId: string) => {
   const [activeTab, setActiveTab] = useState<MatchTab>('matches');
   const [standings, setStandings] = useState<StandingRow[] | CupStandings>([]);
@@ -18,13 +31,25 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
       if (!selectedSeasonId) return;
       setStatsLoading(true);
       try {
-        const [standingsData, statsData] = await Promise.all([
+        const [standingsData, statsData, matchesResponse] = await Promise.all([
           fetchSeasonStandings(selectedSeasonId),
           fetchSeasonStats(selectedSeasonId),
+          fetchMatches(1, 200, undefined, selectedSeasonId),
         ]);
         if (!active) return;
         setStandings(standingsData);
-        setStats(statsData);
+
+        // 统计常规时间点球进球并合并到射手榜
+        const allMatches = matchesResponse.data || [];
+        const penaltyMap = countPenaltyGoals(allMatches);
+        const enrichedStats: SeasonStats = {
+          ...statsData,
+          scorers: (statsData.scorers || []).map(s => ({
+            ...s,
+            penaltyGoals: s.penaltyGoals ?? (s.playerName ? penaltyMap[s.playerName] || 0 : 0),
+          })),
+        };
+        setStats(enrichedStats);
       } catch (loadError) {
         console.error('加载统计数据失败:', loadError);
       } finally {
@@ -112,7 +137,7 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
   }, [selectedSeasonId]);
 
   useEffect(() => {
-    if (activeTab === 'bracket') void loadBracketMatches();
+    if (activeTab === 'standings') void loadBracketMatches();
   }, [activeTab, loadBracketMatches]);
 
   return {

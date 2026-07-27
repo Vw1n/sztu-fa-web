@@ -36,7 +36,7 @@ const Matches: React.FC = () => {
           description="了解最新赛事安排，见证精彩对决"
         />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '12px' }}>
           <div className="matchesTabs" style={{ margin: 0 }}>
             <button className={`tabButton ${competition.activeTab === 'matches' ? 'active' : ''}`} onClick={() => competition.setActiveTab('matches')}>
               📅 赛程安排
@@ -44,11 +44,6 @@ const Matches: React.FC = () => {
             <button className={`tabButton ${competition.activeTab === 'standings' ? 'active' : ''}`} onClick={() => competition.setActiveTab('standings')}>
               🏆 积分榜
             </button>
-            {selectedSeason?.type === 'CUP' && (
-              <button className={`tabButton ${competition.activeTab === 'bracket' ? 'active' : ''}`} onClick={() => competition.setActiveTab('bracket')}>
-                🌳 淘汰赛对阵
-              </button>
-            )}
             <button className={`tabButton ${competition.activeTab === 'scorers' ? 'active' : ''}`} onClick={() => competition.setActiveTab('scorers')}>
               ⚽ 射手榜
             </button>
@@ -93,14 +88,16 @@ const Matches: React.FC = () => {
         )}
 
         {competition.activeTab === 'standings' && (
-          <LeagueStandings standings={competition.standings} statsLoading={competition.statsLoading} />
-        )}
-        {competition.activeTab === 'bracket' && (
-          <KnockoutBracket
-            bracketMatches={competition.bracketMatches}
-            bracketLoading={competition.bracketLoading}
-            onMatchClick={openMatch}
-          />
+          <>
+            {selectedSeason?.type === 'CUP' && (
+              <KnockoutBracket
+                bracketMatches={competition.bracketMatches}
+                bracketLoading={competition.bracketLoading}
+                onMatchClick={openMatch}
+              />
+            )}
+            <LeagueStandings standings={competition.standings} statsLoading={competition.statsLoading} />
+          </>
         )}
         {(competition.activeTab === 'scorers' || competition.activeTab === 'assists') && (
           <ScorerBoard
