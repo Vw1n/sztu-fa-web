@@ -73,7 +73,7 @@
 .navList {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -83,18 +83,21 @@
   position: relative;
 }
 
-.navLink {
+.navLinkBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
   display: inline-block;
   padding: var(--spacing-sm) var(--spacing-md);
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
-  text-decoration: none;
   transition: color var(--transition-fast);
   position: relative;
+  font-family: inherit;
 }
 
-.navLink::after {
+.navLinkBtn::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -106,20 +109,92 @@
   transition: width var(--transition-fast);
 }
 
-.navLink:hover {
+.navLinkBtn:hover {
   color: var(--primary-color);
 }
 
-.navLink:hover::after {
+.navLinkBtn:hover::after,
+.navLinkBtn.active::after {
   width: 80%;
 }
 
-.navLink.active {
+.navLinkBtn.active {
   color: var(--primary-color);
+  font-weight: 600;
 }
 
-.navLink.active::after {
-  width: 80%;
+/* 认证按钮与用户信息 */
+.headerAuth {
+  display: flex;
+  align-items: center;
+}
+
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.userInfoBox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background-color: var(--bg-secondary);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  border: 1px solid var(--border-color);
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.userStudentId {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+.authBtn {
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+.loginBtn {
+  color: var(--primary-color);
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+}
+
+.loginBtn:hover {
+  background-color: rgba(26, 86, 219, 0.08);
+}
+
+.registerBtn {
+  color: #fff;
+  background-color: var(--primary-color);
+}
+
+.registerBtn:hover {
+  background-color: var(--primary-dark);
+}
+
+.logoutBtn {
+  background-color: transparent;
+  color: var(--text-light);
+  padding: 2px 8px;
+  margin-left: 4px;
+}
+
+.logoutBtn:hover {
+  color: #ef4444;
 }
 
 /* 移动端菜单按钮 */
@@ -192,22 +267,48 @@
   border-bottom: 1px solid var(--border-light);
 }
 
-.mobileNavLink {
-  display: block;
+.mobileNavLinkBtn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
   padding: var(--spacing-md) 0;
   color: var(--text-secondary);
   font-weight: 500;
-  text-decoration: none;
-  transition: color var(--transition-fast);
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-.mobileNavLink:hover,
-.mobileNavLink.active {
+.mobileNavLinkBtn.active {
   color: var(--primary-color);
+  font-weight: 700;
+}
+
+.mobileAuthItem {
+  border-bottom: none;
+  padding-top: var(--spacing-md);
+}
+
+.mobileUserInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobileAuthButtons {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.mobileAuthButtons .authBtn {
+  flex: 1;
+  text-align: center;
+  padding: 8px 16px;
 }
 
 /* 响应式 */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .headerContainer {
     height: 60px;
   }
@@ -236,15 +337,5 @@
   .logoIcon {
     width: 38px;
     height: 38px;
-  }
-}
-
-@media (max-width: 480px) {
-  .headerContainer {
-    padding: 0 var(--spacing-md);
-  }
-
-  .logoSubtitle {
-    display: none;
   }
 }

@@ -1,104 +1,113 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts';
 import './Header.css';
 
-interface HeaderProps {
-  currentPage?: string;
-}
-
 const navItems = [
-  { id: 'home', label: '首页', href: '#home' },
-  { id: 'about', label: '协会简介', href: '#about' },
-  { id: 'activities', label: '活动动态', href: '#activities' },
-  { id: 'teams', label: '球队信息', href: '#teams' },
-  { id: 'matches', label: '赛事公告', href: '#matches' },
+  { id: 'home', label: '首页', path: '/' },
+  { id: 'about', label: '协会简介', path: '/#about' },
+  { id: 'news', label: '活动动态', path: '/#activities' },
+  { id: 'teams', label: '球队信息', path: '/#teams' },
+  { id: 'notice', label: '赛事公告', path: '/#matches' },
+  { id: 'predictions', label: '竞猜大厅', path: '/predictions' },
+  { id: 'leaderboard', label: '排行榜', path: '/leaderboard' },
+  { id: 'my-predictions', label: '我的竞猜', path: '/my-predictions' },
 ];
 
-const Header: React.FC<HeaderProps> = ({ currentPage: initialPage = 'home' }) => {
+const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState(initialPage);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
-
-      const headerHeight = window.innerWidth <= 768 ? 70 : 80;
-      const scrollPosition = window.scrollY + headerHeight;
-
-      for (let i = navItems.length - 1; i >= 0; i--) {
-        const item = navItems[i];
-        if (item.id === 'home') continue;
-        const element = document.getElementById(item.id);
-        if (element) {
-          const top = element.offsetTop;
-          if (scrollPosition >= top - 20) {
-            setActiveSection(item.id);
-            return;
-          }
-        }
-      }
-      if (window.scrollY < 200) {
-        setActiveSection('home');
-      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== '/' || !location.hash) return;
+    const element = document.getElementById(location.hash.slice(1));
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [location.pathname, location.hash]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
+  const handleNavClick = (path: string) => {
     setIsMobileMenuOpen(false);
-    setActiveSection(id);
-
-    if (id === 'home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (path === `${location.pathname}${location.hash}` && location.hash) {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
+    navigate(path);
+  };
 
-    const element = document.getElementById(id);
-    if (element) {
-      const headerHeight = window.innerWidth <= 768 ? 60 : 70;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - headerHeight;
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    if (path.includes('#')) return false;
+    return location.pathname.startsWith(path);
   };
 
   return (
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="headerContainer">
-        <a href="#home" className="logo" onClick={(e) => handleNavClick(e, 'home')}>
+        <Link to="/" className="logo" onClick={() => setIsMobileMenuOpen(false)}>
           <img className="logoIcon" src="/logo.jpg" alt="SZTU足球协会" />
           <div className="logoText">
             <span className="logoTitle">SZTU足球协会</span>
             <span className="logoSubtitle">Shenzhen Tech University FA</span>
           </div>
-        </a>
+        </Link>
 
         <nav className="nav">
           <ul className="navList">
             {navItems.map((item) => (
               <li key={item.id} className="navItem">
-                <a
-                  href={item.href}
-                  className={`navLink ${activeSection === item.id ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(e, item.id)}
+                <button
+                  type="button"
+                  className={`navLinkBtn ${isActive(item.path) ? 'active' : ''}`}
+                  onClick={() => handleNavClick(item.path)}
                 >
                   {item.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
+
+          <div className="headerAuth">
+            {isAuthenticated && user ? (
+              <div className="userInfoBox">
+                <span className="userName">{user.nickname || user.username}</span>
+                {user.studentId && <span className="userStudentId">({user.studentId})</span>}
+                <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
+                  退出
+                </button>
+              </div>
+            ) : (
+              <div className="authButtons">
+                <Link to="/login" className="authBtn loginBtn">
+                  登录
+                </Link>
+                <Link to="/register" className="authBtn registerBtn">
+                  注册绑定学号
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
         <button
@@ -116,15 +125,37 @@ const Header: React.FC<HeaderProps> = ({ currentPage: initialPage = 'home' }) =>
         <ul className="mobileNavList">
           {navItems.map((item) => (
             <li key={item.id} className="mobileNavItem">
-              <a
-                href={item.href}
-                className={`mobileNavLink ${activeSection === item.id ? 'active' : ''}`}
-                onClick={(e) => handleNavClick(e, item.id)}
+              <button
+                type="button"
+                className={`mobileNavLinkBtn ${isActive(item.path) ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.path)}
               >
                 {item.label}
-              </a>
+              </button>
             </li>
           ))}
+          <li className="mobileNavItem mobileAuthItem">
+            {isAuthenticated && user ? (
+              <div className="mobileUserInfo">
+                <div>
+                  <strong>{user.nickname || user.username}</strong>
+                  {user.studentId && <span> ({user.studentId})</span>}
+                </div>
+                <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
+                  退出登录
+                </button>
+              </div>
+            ) : (
+              <div className="mobileAuthButtons">
+                <Link to="/login" className="authBtn loginBtn" onClick={() => setIsMobileMenuOpen(false)}>
+                  登录
+                </Link>
+                <Link to="/register" className="authBtn registerBtn" onClick={() => setIsMobileMenuOpen(false)}>
+                  注册绑定学号
+                </Link>
+              </div>
+            )}
+          </li>
         </ul>
       </nav>
     </header>
