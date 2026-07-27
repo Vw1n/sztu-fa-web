@@ -10,6 +10,7 @@ interface TeamModalProps {
   onClose: () => void;
   onSeasonChange: (seasonId: string) => void;
   onPreviewImage: (url: string) => void;
+  onPlayerClick?: (playerId: string, playerName: string) => void;
 }
 
 const TeamModal: React.FC<TeamModalProps> = ({
@@ -22,6 +23,7 @@ const TeamModal: React.FC<TeamModalProps> = ({
   onClose,
   onSeasonChange,
   onPreviewImage,
+  onPlayerClick,
 }) => {
   return (
     <div className="teamModalOverlay" onClick={onClose}>
@@ -128,12 +130,27 @@ const TeamModal: React.FC<TeamModalProps> = ({
               <div className="modalPlayersList">
                 {displayPlayers.map((player) => {
                   const isSuspended = player.status === 'suspended';
+                  const canClick = Boolean(player.id && onPlayerClick);
                   return (
                     <div 
                       key={player.id || `${player.name}_${player.jerseyNumber}`} 
-                      className="modalPlayerCard"
-                      style={isSuspended ? { borderLeft: '3px solid #fa5252', backgroundColor: '#fff5f5' } : undefined}
-                      title={isSuspended ? '该球员本赛季因红黄牌停赛' : undefined}
+                      className={`modalPlayerCard ${canClick ? 'clickable' : ''}`}
+                      style={{
+                        cursor: canClick ? 'pointer' : 'default',
+                        ...(isSuspended ? { borderLeft: '3px solid #fa5252', backgroundColor: '#fff5f5' } : {}),
+                      }}
+                      onClick={() => {
+                        if (player.id && onPlayerClick) {
+                          onPlayerClick(player.id, player.name);
+                        }
+                      }}
+                      title={
+                        isSuspended
+                          ? '该球员本赛季因红黄牌停赛 (点击查看球星卡)'
+                          : canClick
+                          ? '点击查看球星卡'
+                          : undefined
+                      }
                     >
                       {player.photo ? (
                         <img src={player.photo} alt={player.name} className="modalPlayerPhoto" />
