@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './About.css';
 import { SectionHeader } from '../common';
-import { fetchMatches, fetchTeams, fetchPlayers } from '../../api';
+import { fetchMatches, fetchPlayers } from '../../api';
 
 interface Feature {
   icon: React.ReactNode;
