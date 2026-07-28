@@ -292,11 +292,12 @@
 
 @media (max-width: 768px) {
   .activities {
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-xl) 0;
   }
 
   .activitiesGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .featuredActivityContent {
@@ -304,7 +305,7 @@
   }
 
   .featuredActivityTitle {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .featuredActivityInfo {
@@ -312,18 +313,142 @@
     gap: var(--spacing-md);
   }
 
+  /* 移动端双列 (一排两个) 卡片布局 */
+  .activityCard {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
   .activityImageWrapper {
-    height: 180px;
+    width: 100%;
+    height: 105px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .activityImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .activityCategory {
+    top: 6px;
+    left: 6px;
+    padding: 1px 6px;
+    font-size: 0.65rem;
+  }
+
+  .activityLatestBadge {
+    top: 6px;
+    right: 6px;
+    bottom: auto;
+    left: auto;
+    padding: 1px 6px;
+    font-size: 0.65rem;
+  }
+
+  .activityContent {
+    padding: 8px 8px 10px 8px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .activityDate {
+    font-size: 0.7rem;
+    margin-bottom: 2px;
+  }
+
+  .activityDate svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .activityTitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    height: auto;
+    max-height: 2.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .activityDescription {
+    display: none;
+  }
+
+  .activityMeta {
+    padding-top: 4px;
+    border-top: 1px solid var(--border-light);
+    margin-top: auto;
+    font-size: 0.7rem;
+  }
+
+  .activityLocation {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55%;
+  }
+
+  .activityLocation svg,
+  .activityLink svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .activityLink {
+    font-size: 0.7rem;
+    white-space: nowrap;
   }
 }
 
 @media (max-width: 480px) {
+  .activities {
+    padding: var(--spacing-lg) 0;
+  }
+
   .activitiesContainer {
-    padding: 0 var(--spacing-md);
+    padding: 0 8px;
+  }
+
+  .activitiesGrid {
+    gap: 8px;
+  }
+
+  .activityImageWrapper {
+    height: 95px;
+  }
+
+  .activityContent {
+    padding: 6px 6px 8px 6px;
+  }
+
+  .activityTitle {
+    font-size: 0.8rem;
+    line-height: 1.25;
+  }
+
+  .activityMeta {
+    font-size: 0.65rem;
+  }
+
+  .activityLocation,
+  .activityLink {
+    font-size: 0.65rem;
   }
 
   .featuredActivityImage {
-    height: 200px;
+    height: 160px;
   }
 
   .featuredActivityInfo {

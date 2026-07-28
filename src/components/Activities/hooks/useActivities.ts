@@ -49,17 +49,21 @@ export const useActivities = () => {
   const hasNews = newsList.length > 0;
 
   const displayList: ActivityDisplay[] = hasNews
-    ? newsList.map((n) => ({
-        id: n.id,
-        title: n.title,
-        description: n.description,
-        image: n.coverImage || '/activity1.jpg',
-        date: n.date,
-        location: '微信公众号',
-        category: n.category,
-        wechatUrl: n.wechatUrl,
-      }))
-    : mockActivities.slice((currentPage - 1) * limit, currentPage * limit);
+    ? newsList
+        .map((n) => ({
+          id: n.id,
+          title: n.title,
+          description: n.description,
+          image: n.coverImage || '/activity1.jpg',
+          date: n.date,
+          location: '微信公众号',
+          category: n.category,
+          wechatUrl: n.wechatUrl,
+        }))
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+    : [...mockActivities]
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+        .slice((currentPage - 1) * limit, currentPage * limit);
 
   const totalPages = Math.ceil(total / limit) || 1;
 
