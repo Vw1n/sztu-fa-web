@@ -48,23 +48,22 @@ export const useActivities = () => {
 
   const hasNews = newsList.length > 0;
 
-  const rawList: ActivityDisplay[] = hasNews
-    ? newsList.map((n) => ({
-        id: n.id,
-        title: n.title,
-        description: n.description,
-        image: n.coverImage || '/activity1.jpg',
-        date: n.date,
-        location: '微信公众号',
-        category: n.category,
-        wechatUrl: n.wechatUrl,
-      }))
-    : mockActivities;
-
-  // 确保按时间倒序排列（最新的活动排在最前面）
-  const sortedList = [...rawList].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-  const displayList: ActivityDisplay[] = sortedList.slice((currentPage - 1) * limit, currentPage * limit);
+  const displayList: ActivityDisplay[] = hasNews
+    ? newsList
+        .map((n) => ({
+          id: n.id,
+          title: n.title,
+          description: n.description,
+          image: n.coverImage || '/activity1.jpg',
+          date: n.date,
+          location: '微信公众号',
+          category: n.category,
+          wechatUrl: n.wechatUrl,
+        }))
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+    : [...mockActivities]
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+        .slice((currentPage - 1) * limit, currentPage * limit);
 
   const totalPages = Math.ceil(total / limit) || 1;
 
