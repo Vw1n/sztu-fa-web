@@ -14,7 +14,7 @@ export const useTeamDirectory = () => {
   const [total, setTotal] = useState(0);
   const [globalSeasons, setGlobalSeasons] = useState<Season[]>([]);
   const [globalSeasonId, setGlobalSeasonId] = useState('all');
-  const [selectedGender, setSelectedGender] = useState('all');
+  const [selectedGender, setSelectedGender] = useState('MALE');
   const latestRequestId = useRef(0);
 
   // 移动端检测（≤768px）
@@ -73,8 +73,42 @@ export const useTeamDirectory = () => {
       try {
         const seasons = await fetchSeasons();
         setGlobalSeasons(seasons);
-        const active = seasons.find((season) => season.status === 'active');
-        if (active) setGlobalSeasonId(active.id);
+        if (seasons.length > 0) {
+          // 从赛季名称解析年份（如 2026 赛季）
+          const getYear = (name: string) => {
+            const match = (name || '').match(/(\d{4})/);
+            return match ? parseInt(match[1], 10) : 0;
+          };
+
+          // 优先挑选最新年份且属于男子组的赛季
+          const sortedSeasons = [...seasons].sort((a, b) => {
+            const yearA = getYear(a.name);
+            const yearB = getYear(b.name);
+            if (yearA !== yearB) return yearB - yearA;
+
+            const isMaleA = a.name.includes('男') || a.name.includes('男子');
+            const isMaleB = b.name.includes('男') || b.name.includes('男子');
+            if (isMaleA !== isMaleB) return isMaleA ? -1 : 1;
+
+            return (b.name || '').localeCompare(a.name || '');
+          });
+
+          // 优先拿激活的男子组赛季，否则拿年份最新的男子组赛季
+          const activeMale = seasons.find(
+            (season) => season.status === 'active' && (season.name.includes('男') || season.name.includes('男子')),
+          );
+          const active = seasons.find((season) => season.status === 'active');
+
+          const targetSeason = activeMale || active || sortedSeasons[0] || seasons[0];
+          if (targetSeason) {
+            setGlobalSeasonId(targetSeason.id);
+            if (targetSeason.name.includes('女') || targetSeason.name.includes('女子')) {
+              setSelectedGender('FEMALE');
+            } else {
+              setSelectedGender('MALE');
+            }
+          }
+        }
       } catch (loadError) {
         console.error('获取赛季列表失败:', loadError);
       }
