@@ -59,7 +59,8 @@
 .aboutImage {
   width: 100%;
   height: 400px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: top center;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 }
@@ -109,7 +110,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
 }
 
 .aboutFeature {
@@ -136,6 +137,7 @@
   background-color: var(--primary-light);
   color: var(--text-white);
   border-radius: var(--radius-md);
+  flex-shrink: 0;
 }
 
 .aboutFeatureIcon svg {
@@ -152,7 +154,7 @@
 /* 统计数据 */
 .aboutStats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-xl);
   margin-top: var(--spacing-3xl);
   padding: var(--spacing-2xl);
@@ -199,61 +201,155 @@
   }
 
   .aboutStats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   .about {
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-xl) 0;
+  }
+
+  .about .sectionHeader {
+    margin-bottom: 20px;
+  }
+
+  .sectionTag {
+    margin-bottom: 6px;
   }
 
   .sectionTitle {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+  }
+
+  .sectionDescription {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .aboutContent {
+    gap: var(--spacing-md);
   }
 
   .aboutImage {
-    height: 280px;
+    height: auto;
+    max-height: 240px;
+    object-fit: contain;
+    object-position: top center;
+    border-radius: var(--radius-lg);
   }
 
   .aboutImageBadge {
-    bottom: -15px;
-    right: 15px;
-    padding: var(--spacing-md);
+    bottom: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
   }
 
   .aboutImageBadgeNumber {
-    font-size: 2rem;
+    font-size: 1.3rem;
+  }
+
+  .aboutImageBadgeText {
+    font-size: 0.7rem;
+  }
+
+  .aboutText {
+    gap: var(--spacing-xs);
+  }
+
+  .aboutTitle {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+
+  .aboutParagraph {
+    font-size: 0.85rem;
+    line-height: 1.45;
   }
 
   .aboutFeatures {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .aboutFeature {
+    padding: 8px 10px;
+  }
+
+  .aboutFeatureIcon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .aboutFeatureIcon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .aboutFeatureText {
+    font-size: 0.78rem;
   }
 
   .aboutStats {
-    padding: var(--spacing-lg);
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(3, 1fr);
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
   }
 
   .statNumber {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
+  .about {
+    padding: var(--spacing-lg) 0;
+  }
+
   .aboutContainer {
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--spacing-sm);
+  }
+
+  .about .sectionHeader {
+    margin-bottom: 16px;
+  }
+
+  .aboutImage {
+    max-height: 210px;
   }
 
   .aboutImageBadge {
-    right: 10px;
+    right: 6px;
+    bottom: 6px;
+    padding: 3px 8px;
+  }
+
+  .aboutImageBadgeNumber {
+    font-size: 1.1rem;
+  }
+
+  .aboutImageBadgeText {
+    font-size: 0.65rem;
+  }
+
+  .aboutParagraph {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .aboutFeatures {
+    margin-top: 14px;
   }
 
   .statNumber {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
   }
 
   .statLabel {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 }
