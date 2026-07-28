@@ -1,5 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import './About.css';
 import { SectionHeader } from '../common';
+import { fetchMatches, fetchTeams, fetchPlayers } from '../../api';
 
 interface Feature {
   icon: React.ReactNode;
@@ -47,7 +49,56 @@ const features: Feature[] = [
   },
 ];
 
+interface StatItem {
+  value: string;
+  suffix: string;
+  label: string;
+}
+
 const About: React.FC = () => {
+  const [stats, setStats] = useState<StatItem[]>([
+    { value: '2017', suffix: '年', label: '成立年份' },
+    { value: '0', suffix: '场', label: '举办赛事' },
+    { value: '0', suffix: '名', label: '覆盖球员' },
+  ]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadRealStats = async () => {
+      try {
+        const [matchRes, playerRes] = await Promise.allSettled([
+          fetchMatches(1, 1),
+          fetchPlayers(1, 1),
+        ]);
+
+        let matchTotal = 0;
+        let playerTotal = 0;
+
+        if (matchRes.status === 'fulfilled' && matchRes.value && typeof matchRes.value.total === 'number') {
+          matchTotal = matchRes.value.total;
+        }
+
+        if (playerRes.status === 'fulfilled' && playerRes.value && typeof playerRes.value.total === 'number') {
+          playerTotal = playerRes.value.total;
+        }
+
+        if (isMounted) {
+          setStats([
+            { value: '2017', suffix: '年', label: '成立年份' },
+            { value: String(matchTotal), suffix: '场', label: '举办赛事' },
+            { value: String(playerTotal), suffix: '名', label: '覆盖球员' },
+          ]);
+        }
+      } catch (error) {
+        console.error('获取关于我们真实统计数据失败:', error);
+      }
+    };
+
+    loadRealStats();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   return (
     <section className="about" id="about">
       <div className="aboutContainer">
@@ -66,10 +117,6 @@ const About: React.FC = () => {
               className="aboutImage"
               loading="lazy"
             />
-            <div className="aboutImageBadge">
-              <div className="aboutImageBadgeNumber">5<span>年</span></div>
-              <div className="aboutImageBadgeText">发展历程</div>
-            </div>
           </div>
 
           <div className="aboutText">
@@ -91,6 +138,17 @@ const About: React.FC = () => {
               ))}
             </div>
           </div>
+        </div>
+
+        <div className="aboutStats">
+          {stats.map((stat) => (
+            <div key={stat.label} className="statItem">
+              <div className="statNumber">
+                {stat.value}<span>{stat.suffix}</span>
+              </div>
+              <div className="statLabel">{stat.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
