@@ -4,6 +4,12 @@ import type { Season, Team } from '../../../types';
 
 const PAGE_SIZE = 8;
 
+const getSeasonGender = (seasonName: string) => {
+  if (seasonName.includes('女')) return 'FEMALE';
+  if (seasonName.includes('男')) return 'MALE';
+  return null;
+};
+
 export const useTeamDirectory = () => {
   const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,11 +108,7 @@ export const useTeamDirectory = () => {
           const targetSeason = activeMale || active || sortedSeasons[0] || seasons[0];
           if (targetSeason) {
             setGlobalSeasonId(targetSeason.id);
-            if (targetSeason.name.includes('女') || targetSeason.name.includes('女子')) {
-              setSelectedGender('FEMALE');
-            } else {
-              setSelectedGender('MALE');
-            }
+            setSelectedGender(getSeasonGender(targetSeason.name) || 'MALE');
           }
         }
       } catch (loadError) {
@@ -139,6 +141,14 @@ export const useTeamDirectory = () => {
     if (invalid) setGlobalSeasonId('all');
   };
 
+  const changeSeason = (id: string) => {
+    setCurrentPage(1);
+    setGlobalSeasonId(id);
+    const season = globalSeasons.find((item) => item.id === id);
+    const seasonGender = season ? getSeasonGender(season.name) : null;
+    if (seasonGender) setSelectedGender(seasonGender);
+  };
+
   const search = () => {
     setCurrentPage(1);
     const next = searchTerm.trim();
@@ -161,7 +171,7 @@ export const useTeamDirectory = () => {
     teams, loading, error, searchTerm, setSearchTerm, appliedSearchTerm,
     currentPage, setCurrentPage, total, limit: PAGE_SIZE, globalSeasons, globalSeasonId,
     selectedGender, changeGender, search, reset, loadTeams,
-    changeSeason: (id: string) => { setCurrentPage(1); setGlobalSeasonId(id); },
+    changeSeason,
     totalPages: appliedSearchTerm ? 1 : Math.ceil(total / PAGE_SIZE),
     isSearching: appliedSearchTerm.length > 0,
   };
