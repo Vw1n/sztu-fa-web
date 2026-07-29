@@ -63,42 +63,11 @@
   margin: var(--spacing-md) 0;
 }
 
-/* 社交媒体 */
-.footerSocial {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
-}
-
-.socialLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
-  transition: all var(--transition-fast);
-}
-
-.socialLink:hover {
-  background-color: var(--primary-color);
-  transform: translateY(-2px);
-}
-
-.socialLink:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-  background-color: var(--primary-color);
-}
-
-.socialLink svg {
-  width: 20px;
-  height: 20px;
-}
-
 /* ========================= 链接区域 ========================= */
+.footerLinksGroup {
+  display: contents;
+}
+
 .footerSection {
   display: flex;
   flex-direction: column;
@@ -167,11 +136,49 @@
   line-height: 1.5;
 }
 
-.contactItem svg {
+.contactIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.contactIcon svg {
   width: 18px;
   height: 18px;
-  flex-shrink: 0;
-  margin-top: 2px;
+  color: var(--accent-color);
+}
+
+.contactText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contactLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contactValue {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+}
+
+.contactItemLink {
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  margin: calc(-1 * var(--spacing-sm));
+  transition: background-color var(--transition-fast);
+}
+
+.contactItemLink:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.contactItemLink:hover .contactValue {
   color: var(--accent-color);
 }
 
@@ -188,7 +195,7 @@
 
 .copyright {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .copyright a {
@@ -199,26 +206,24 @@
   text-decoration: underline;
 }
 
-.footerBottomLinks {
+.footerLegal {
   display: flex;
-  gap: var(--spacing-lg);
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
-.footerBottomLink {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
+.icpInfo {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.icpInfo a {
+  color: rgba(255, 255, 255, 0.4);
   transition: color var(--transition-fast);
-  border-radius: var(--radius-sm);
 }
 
-.footerBottomLink:hover {
-  color: var(--text-white);
-}
-
-.footerBottomLink:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-  color: var(--text-white);
+.icpInfo a:hover {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ========================= 响应式 ========================= */
@@ -243,21 +248,30 @@
 
   .footerTop {
     grid-template-columns: 1fr;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-lg);
   }
 
   .footerBrand {
     grid-column: auto;
   }
 
+  .footerLinksGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .footerTitle {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .footerLinks {
+    gap: var(--spacing-xs);
+  }
+
   .footerBottom {
     flex-direction: column;
     text-align: center;
-  }
-
-  .footerBottomLinks {
-    flex-wrap: wrap;
-    justify-content: center;
   }
 }
 
@@ -265,6 +279,10 @@
 @media (max-width: 480px) {
   .footerContainer {
     padding: 0 var(--spacing-md);
+  }
+
+  .footerTop {
+    gap: var(--spacing-lg);
   }
 
   .footerLogo {
@@ -277,12 +295,7 @@
   }
 
   .footerDescription {
-    text-align: center;
-  }
-
-  .footerSocial {
-    justify-content: center;
-    flex-wrap: wrap;
+    display: none;
   }
 
   .footerTitle::after {
@@ -294,8 +307,21 @@
     text-align: center;
   }
 
+  .footerLinksGroup .footerTitle {
+    text-align: left;
+  }
+
+  .footerLinksGroup .footerTitle::after {
+    left: 0;
+    transform: none;
+  }
+
   .footerLinks {
     align-items: center;
+  }
+
+  .footerLinksGroup .footerLinks {
+    align-items: flex-start;
   }
 
   .contactInfo {
@@ -304,24 +330,40 @@
 
   .contactItem {
     justify-content: center;
-    text-align: center;
   }
 
-  .footerBottomLinks {
-    flex-direction: column;
-    align-items: center;
+  .contactText {
+    flex-direction: row;
+    align-items: baseline;
     gap: var(--spacing-sm);
+    text-align: left;
+  }
+
+  .contactLabel {
+    flex-shrink: 0;
+  }
+
+  .contactValue {
+    font-size: 0.85rem;
+  }
+
+  .footerLegal {
+    align-items: center;
+  }
+
+  .copyright {
+    text-align: center;
   }
 }
 
 /* -- 窄屏手机（375px 以下）-- */
 @media (max-width: 375px) {
   .footer {
-    padding: var(--spacing-xl) 0 var(--spacing-md);
+    padding: var(--spacing-lg) 0 var(--spacing-md);
   }
 
   .footerTop {
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
   }
 
   .footerLogoTitle {
@@ -342,11 +384,15 @@
     font-size: 0.8rem;
   }
 
+  .contactValue {
+    font-size: 0.8rem;
+  }
+
   .copyright {
     font-size: 0.75rem;
   }
 
-  .footerBottomLink {
-    font-size: 0.8rem;
+  .icpInfo {
+    font-size: 0.7rem;
   }
 }
