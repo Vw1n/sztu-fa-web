@@ -67,7 +67,8 @@ const About: React.FC = () => {
     const loadRealStats = async () => {
       try {
         const [matchRes, playerRes] = await Promise.allSettled([
-          fetchMatches(1, 1),
+          // “举办赛事”是协会累计数据，不能沿用接口默认的当前赛季筛选。
+          fetchMatches(1, 1, undefined, 'all'),
           fetchPlayers(1, 1),
         ]);
 
