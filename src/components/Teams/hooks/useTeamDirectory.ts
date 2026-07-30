@@ -146,7 +146,7 @@ export const useTeamDirectory = () => {
     setGlobalSeasonId(id);
     const season = globalSeasons.find((item) => item.id === id);
     const seasonGender = season ? getSeasonGender(season.name) : null;
-    if (seasonGender) setSelectedGender(seasonGender);
+    setSelectedGender(seasonGender || 'all');
   };
 
   const search = () => {
