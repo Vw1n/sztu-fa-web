@@ -56,7 +56,7 @@ const TeamModal: React.FC<TeamModalProps> = ({
               <span className="modalInfoValue">{team.headCoach || '暂无'}</span>
             </div>
             <div className="modalInfoItem">
-              <span className="modalInfoLabel">队长</span>
+              <span className="modalInfoLabel">领队</span>
               <span className="modalInfoValue">{team.teamLeader || '暂无'}</span>
             </div>
             <div className="modalInfoItem">
@@ -68,7 +68,7 @@ const TeamModal: React.FC<TeamModalProps> = ({
               <span className="modalInfoValue">{team.coachPhone || '暂无'}</span>
             </div>
             <div className="modalInfoItem">
-              <span className="modalInfoLabel">队长电话</span>
+              <span className="modalInfoLabel">领队电话</span>
               <span className="modalInfoValue">{team.leaderPhone || '暂无'}</span>
             </div>
             <div className="modalInfoItem">

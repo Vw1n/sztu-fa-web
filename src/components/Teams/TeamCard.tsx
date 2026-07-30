@@ -41,7 +41,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, isSelected, onClick }) => {
             <span className="teamInfoValue">{team.headCoach || '暂无'}</span>
           </div>
           <div className="teamInfoItem">
-            <span className="teamInfoLabel">队长</span>
+            <span className="teamInfoLabel">领队</span>
             <span className="teamInfoValue">{team.teamLeader || '暂无'}</span>
           </div>
           <div className="teamInfoItem">
