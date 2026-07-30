@@ -91,8 +91,10 @@ const Header: React.FC = () => {
           <div className="headerAuth">
             {isAuthenticated && user ? (
               <div className="userInfoBox">
-                <span className="userName">{user.nickname || user.username}</span>
-                {user.studentId && <span className="userStudentId">({user.studentId})</span>}
+                <div className="userIdentity">
+                  <span className="userName">{user.nickname || user.username}</span>
+                  {user.studentId && <span className="userStudentId">{user.studentId}</span>}
+                </div>
                 <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
                   退出
                 </button>
