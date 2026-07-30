@@ -2,11 +2,13 @@ const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const BASE_URL = (
   configuredApiBaseUrl ||
-  (typeof window !== 'undefined' && window.location.hostname.includes('dev.sztufa.xyz')
-    ? 'https://api-dev.sztufa.xyz/api/v1'
-    : typeof window !== 'undefined' && window.location.hostname.endsWith('sztufa.xyz')
-      ? 'https://api.sztufa.xyz/api/v1'
-      : '/api/v1')
+  (import.meta.env.DEV
+    ? '/api/v1'
+    : typeof window !== 'undefined' && window.location.hostname.includes('dev.sztufa.xyz')
+      ? 'https://api-dev.sztufa.xyz/api/v1'
+      : typeof window !== 'undefined' && window.location.hostname.endsWith('sztufa.xyz')
+        ? 'https://api.sztufa.xyz/api/v1'
+        : '/api/v1')
 ).replace(/\/$/, '');
 
 export { BASE_URL };
@@ -35,6 +37,10 @@ export async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Pr
   if (response.status === 401) {
     handleUnauthorized(response);
   }
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('text/html')) {
+    throw new Error('API 地址配置错误：服务器返回了 HTML 内容而不是预期 JSON。请检查 VITE_API_BASE_URL 配置。');
+  }
   return response;
 }
 
@@ -52,3 +58,4 @@ export function normalizeMatchStatus<T extends { status: string }>(match: T): T 
   }
   return { ...match, status } as T;
 }
+

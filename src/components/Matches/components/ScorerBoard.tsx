@@ -1,5 +1,5 @@
 import React from 'react';
-import { LoadingSpinner } from '../../common';
+import { LoadingSpinner, ErrorMessage } from '../../common';
 
 export interface ScorerRow {
   playerId?: string;
@@ -25,6 +25,8 @@ interface ScorerBoardProps {
   scorers: ScorerRow[];
   assists: AssistRow[];
   statsLoading: boolean;
+  statsError?: string | null;
+  onRetry?: () => void;
   onPlayerClick: (playerId: string, playerName: string) => void;
 }
 
@@ -33,6 +35,8 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
   scorers,
   assists,
   statsLoading,
+  statsError,
+  onRetry,
   onPlayerClick,
 }) => {
   return (
@@ -42,7 +46,10 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
         <div className="scorersSection">
           {statsLoading ? (
             <LoadingSpinner message="正在计算射手榜..." />
+          ) : statsError ? (
+            <ErrorMessage message={statsError} onRetry={onRetry} />
           ) : (
+
             <div className="scorersTableContainer">
               <table className="scorersTable">
                 <thead>
@@ -114,8 +121,11 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
         <div className="scorersSection">
           {statsLoading ? (
             <LoadingSpinner message="正在计算助攻榜..." />
+          ) : statsError ? (
+            <ErrorMessage message={statsError} onRetry={onRetry} />
           ) : (
             <div className="scorersTableContainer">
+
               <table className="scorersTable">
                 <thead>
                   <tr>

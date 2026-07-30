@@ -1,21 +1,28 @@
 import React from 'react';
-import { LoadingSpinner } from '../../common';
+import { LoadingSpinner, ErrorMessage } from '../../common';
 import type { CupStandings, StandingRow } from '../../../types';
 
 interface LeagueStandingsProps {
   standings: StandingRow[] | CupStandings;
   statsLoading: boolean;
+  statsError?: string | null;
+  onRetry?: () => void;
 }
 
 export const LeagueStandings: React.FC<LeagueStandingsProps> = ({
   standings,
   statsLoading,
+  statsError,
+  onRetry,
 }) => {
   return (
     <div className="standingsSection">
       {statsLoading ? (
         <LoadingSpinner message="正在计算积分榜..." />
+      ) : statsError ? (
+        <ErrorMessage message={statsError} onRetry={onRetry} />
       ) : !Array.isArray(standings) && standings.type === 'CUP' && standings.groups ? (
+
         <div className="cupGroupsContainer">
           {Object.keys(standings.groups).sort().map(groupName => {
             const groupRows = standings.groups[groupName];

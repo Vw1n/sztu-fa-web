@@ -58,8 +58,8 @@ interface StatItem {
 const About: React.FC = () => {
   const [stats, setStats] = useState<StatItem[]>([
     { value: '2017', suffix: '年', label: '成立年份' },
-    { value: '0', suffix: '场', label: '举办赛事' },
-    { value: '0', suffix: '名', label: '覆盖球员' },
+    { value: '--', suffix: '场', label: '举办赛事' },
+    { value: '--', suffix: '名', label: '覆盖球员' },
   ]);
 
   useEffect(() => {
@@ -72,26 +72,33 @@ const About: React.FC = () => {
           fetchPlayers(1, 1),
         ]);
 
-        let matchTotal = 0;
-        let playerTotal = 0;
+        let matchValue = '暂时无法获取';
+        let playerValue = '暂时无法获取';
 
         if (matchRes.status === 'fulfilled' && matchRes.value && typeof matchRes.value.total === 'number') {
-          matchTotal = matchRes.value.total;
+          matchValue = String(matchRes.value.total);
         }
 
         if (playerRes.status === 'fulfilled' && playerRes.value && typeof playerRes.value.total === 'number') {
-          playerTotal = playerRes.value.total;
+          playerValue = String(playerRes.value.total);
         }
 
         if (isMounted) {
           setStats([
             { value: '2017', suffix: '年', label: '成立年份' },
-            { value: String(matchTotal), suffix: '场', label: '举办赛事' },
-            { value: String(playerTotal), suffix: '名', label: '覆盖球员' },
+            { value: matchValue, suffix: '场', label: '举办赛事' },
+            { value: playerValue, suffix: '名', label: '覆盖球员' },
           ]);
         }
       } catch (error) {
         console.error('获取关于我们真实统计数据失败:', error);
+        if (isMounted) {
+          setStats([
+            { value: '2017', suffix: '年', label: '成立年份' },
+            { value: '暂时无法获取', suffix: '场', label: '举办赛事' },
+            { value: '暂时无法获取', suffix: '名', label: '覆盖球员' },
+          ]);
+        }
       }
     };
 
@@ -145,7 +152,8 @@ const About: React.FC = () => {
           {stats.map((stat) => (
             <div key={stat.label} className="statItem">
               <div className="statNumber">
-                {stat.value}<span>{stat.suffix}</span>
+                {stat.value}
+                {stat.value !== '暂时无法获取' && <span>{stat.suffix}</span>}
               </div>
               <div className="statLabel">{stat.label}</div>
             </div>
@@ -154,6 +162,7 @@ const About: React.FC = () => {
       </div>
     </section>
   );
+
 };
 
 export default About;

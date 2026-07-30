@@ -118,10 +118,15 @@ export const useMatchDirectory = () => {
     setSelectedSeasonId(seasonId);
   };
 
+  const reloadMatches = useCallback(() => {
+    void loadMatches(currentPage, statusFilter, teamFilter, sortBy, selectedSeasonId);
+  }, [currentPage, statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
+
   return {
     matches, matchStats, loading, error, currentPage, total, limit,
     sortBy, setSortBy, statusFilter, setStatusFilter, teamFilter, setTeamFilter,
     availableTeams, seasons, selectedSeasonId, setSelectedSeasonId: changeSeason,
-    upcomingMatches: selectUpcomingMatches(matches), changePage,
+    upcomingMatches: selectUpcomingMatches(matches), changePage, reloadMatches,
   };
 };
+

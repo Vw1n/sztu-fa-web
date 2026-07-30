@@ -54,10 +54,20 @@ const Teams: React.FC = () => {
           )}
         />
 
-        {directory.error && <ErrorMessage message={directory.error} />}
-
         {directory.loading ? (
           <LoadingSpinner />
+        ) : directory.error ? (
+          <ErrorMessage
+            message={directory.error}
+            onRetry={() =>
+              directory.loadTeams(
+                directory.currentPage,
+                directory.globalSeasonId,
+                directory.selectedGender,
+                directory.isSearching ? directory.searchTerm : undefined,
+              )
+            }
+          />
         ) : directory.teams.length === 0 ? (
           <EmptyState message="暂无球队数据" />
         ) : (
@@ -82,6 +92,7 @@ const Teams: React.FC = () => {
             )}
           </>
         )}
+
 
         {selectedTeam && (
           <TeamModal
