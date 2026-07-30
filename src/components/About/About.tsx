@@ -119,12 +119,18 @@ const About: React.FC = () => {
 
         <div className="aboutContent">
           <div className="aboutImageWrapper">
-            <img
-              src="/poster.png"
-              alt="足球协会活动"
-              className="aboutImage"
-              loading="lazy"
-            />
+            <picture>
+              <source srcSet="/poster.webp" type="image/webp" />
+              <img
+                src="/poster.png"
+                alt="足球协会活动"
+                className="aboutImage"
+                width="2048"
+                height="1152"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
 
           <div className="aboutText">
