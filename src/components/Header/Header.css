@@ -15,9 +15,9 @@
 }
 
 .headerContainer {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   height: 70px;
   max-width: 1600px;
   margin: 0 auto;
@@ -27,6 +27,7 @@
 
 .logo {
   display: flex;
+  justify-self: start;
   align-items: center;
   flex-shrink: 0;
   gap: var(--spacing-sm);
@@ -69,17 +70,14 @@
 .nav {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  flex: 1;
-  min-width: 0;
-  gap: var(--spacing-md);
+  justify-self: center;
 }
 
 .navList {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: var(--spacing-xs);
+  justify-content: center;
+  gap: clamp(0.25rem, 0.8vw, var(--spacing-md));
   list-style: none;
   margin: 0;
   padding: 0;
@@ -95,7 +93,7 @@
   border: none;
   cursor: pointer;
   display: inline-block;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) clamp(0.4rem, 0.7vw, var(--spacing-md));
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.95rem;
@@ -136,6 +134,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  justify-self: end;
 }
 
 .authButtons {

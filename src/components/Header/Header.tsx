@@ -57,8 +57,11 @@ const Header: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/';
-    if (path.includes('#')) return false;
+    if (path === '/') return location.pathname === '/' && !location.hash;
+    if (path.includes('#')) {
+      const [pathname, hash] = path.split('#');
+      return location.pathname === pathname && location.hash === `#${hash}`;
+    }
     return location.pathname.startsWith(path);
   };
 
@@ -87,30 +90,30 @@ const Header: React.FC = () => {
               </li>
             ))}
           </ul>
-
-          <div className="headerAuth">
-            {isAuthenticated && user ? (
-              <div className="userInfoBox">
-                <div className="userIdentity">
-                  <span className="userName">{user.nickname || user.username}</span>
-                  {user.studentId && <span className="userStudentId">{user.studentId}</span>}
-                </div>
-                <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
-                  退出
-                </button>
-              </div>
-            ) : (
-              <div className="authButtons">
-                <Link to="/login" className="authBtn loginBtn">
-                  登录
-                </Link>
-                <Link to="/register" className="authBtn registerBtn">
-                  注册绑定学号
-                </Link>
-              </div>
-            )}
-          </div>
         </nav>
+
+        <div className="headerAuth">
+          {isAuthenticated && user ? (
+            <div className="userInfoBox">
+              <div className="userIdentity">
+                <span className="userName">{user.nickname || user.username}</span>
+                {user.studentId && <span className="userStudentId">{user.studentId}</span>}
+              </div>
+              <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
+                退出
+              </button>
+            </div>
+          ) : (
+            <div className="authButtons">
+              <Link to="/login" className="authBtn loginBtn">
+                登录
+              </Link>
+              <Link to="/register" className="authBtn registerBtn">
+                注册绑定学号
+              </Link>
+            </div>
+          )}
+        </div>
 
         <button
           className={`menuButton ${isMobileMenuOpen ? 'active' : ''}`}
