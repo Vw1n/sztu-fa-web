@@ -12,6 +12,8 @@ const Activities: React.FC = () => {
     error,
     total,
     limit,
+    isMock,
+    reloadNews,
   } = useActivities();
 
   return (
@@ -21,13 +23,30 @@ const Activities: React.FC = () => {
           tag="活动动态"
           title="最新"
           emphasis="活动资讯"
-          description="了解协会最新活动动态，参与丰富多彩 of 足球活动"
+          description="了解协会最新活动动态，参与丰富多彩的足球活动"
         />
 
-        {error && <ErrorMessage message={error} />}
+        {isMock && (
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+            <span
+              style={{
+                backgroundColor: 'rgba(255, 152, 0, 0.15)',
+                color: '#e65100',
+                padding: '4px 12px',
+                borderRadius: '12px',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+              }}
+            >
+              ⚠️ 当前页面展示的是开发模拟数据
+            </span>
+          </div>
+        )}
 
         {loading ? (
           <LoadingSpinner />
+        ) : error ? (
+          <ErrorMessage message={error} onRetry={reloadNews} />
         ) : (
           <>
             {displayList.length === 0 ? (
@@ -94,5 +113,6 @@ const Activities: React.FC = () => {
     </section>
   );
 };
+
 
 export default Activities;

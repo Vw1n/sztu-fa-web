@@ -52,6 +52,7 @@ describe('http.ts 401 Interception', () => {
   it('should not clear token when status is 200 OK', async () => {
     const mockResponse = new Response(JSON.stringify({ success: true }), {
       status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
     globalThis.fetch = vi.fn().mockResolvedValue(mockResponse);
 
@@ -59,4 +60,15 @@ describe('http.ts 401 Interception', () => {
 
     expect(store['sztufa_user_token']).toBe('test-token');
   });
+
+  it('should throw an API configuration error when response content-type is text/html', async () => {
+    const mockHtmlResponse = new Response('<html><body>404 Not Found</body></html>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
+    globalThis.fetch = vi.fn().mockResolvedValue(mockHtmlResponse);
+
+    await expect(apiFetch('/api/v1/teams')).rejects.toThrow('API 地址配置错误');
+  });
 });
+

@@ -25,13 +25,15 @@ export const useTeamDirectory = () => {
 
   // 移动端检测（≤768px）
   const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+    () => typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 768px)')?.matches,
   );
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
     const mq = window.matchMedia('(max-width: 768px)');
+    if (!mq) return;
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    mq.addEventListener?.('change', handler);
+    return () => mq.removeEventListener?.('change', handler);
   }, []);
 
   const loadTeams = useCallback(async (

@@ -22,43 +22,49 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
   const [standings, setStandings] = useState<StandingRow[] | CupStandings>([]);
   const [stats, setStats] = useState<SeasonStats>({ scorers: [], assists: [], cards: [] });
   const [statsLoading, setStatsLoading] = useState(false);
+  const [statsError, setStatsError] = useState<string | null>(null);
   const [bracketMatches, setBracketMatches] = useState<Match[]>([]);
   const [bracketLoading, setBracketLoading] = useState(false);
 
+  const loadStats = useCallback(async (seasonId: string, active = true) => {
+    if (!seasonId) return;
+    setStatsLoading(true);
+    setStatsError(null);
+    try {
+      const [standingsData, statsData, matchesResponse] = await Promise.all([
+        fetchSeasonStandings(seasonId),
+        fetchSeasonStats(seasonId),
+        fetchMatches(1, 200, undefined, seasonId),
+      ]);
+      if (!active) return;
+      setStandings(standingsData);
+
+      // 统计常规时间点球进球并合并到射手榜
+      const allMatches = matchesResponse.data || [];
+      const penaltyMap = countPenaltyGoals(allMatches);
+      const enrichedStats: SeasonStats = {
+        ...statsData,
+        scorers: (statsData.scorers || []).map(s => ({
+          ...s,
+          penaltyGoals: s.penaltyGoals ?? (s.playerName ? penaltyMap[s.playerName] || 0 : 0),
+        })),
+      };
+      setStats(enrichedStats);
+    } catch (loadError) {
+      if (active) {
+        setStatsError(loadError instanceof Error ? loadError.message : '加载赛季统计数据失败');
+      }
+      console.error('加载统计数据失败:', loadError);
+    } finally {
+      if (active) setStatsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     let active = true;
-    const loadStats = async () => {
-      if (!selectedSeasonId) return;
-      setStatsLoading(true);
-      try {
-        const [standingsData, statsData, matchesResponse] = await Promise.all([
-          fetchSeasonStandings(selectedSeasonId),
-          fetchSeasonStats(selectedSeasonId),
-          fetchMatches(1, 200, undefined, selectedSeasonId),
-        ]);
-        if (!active) return;
-        setStandings(standingsData);
-
-        // 统计常规时间点球进球并合并到射手榜
-        const allMatches = matchesResponse.data || [];
-        const penaltyMap = countPenaltyGoals(allMatches);
-        const enrichedStats: SeasonStats = {
-          ...statsData,
-          scorers: (statsData.scorers || []).map(s => ({
-            ...s,
-            penaltyGoals: s.penaltyGoals ?? (s.playerName ? penaltyMap[s.playerName] || 0 : 0),
-          })),
-        };
-        setStats(enrichedStats);
-      } catch (loadError) {
-        console.error('加载统计数据失败:', loadError);
-      } finally {
-        if (active) setStatsLoading(false);
-      }
-    };
-    void loadStats();
+    void loadStats(selectedSeasonId, active);
     return () => { active = false; };
-  }, [selectedSeasonId]);
+  }, [selectedSeasonId, loadStats]);
 
   const loadBracketMatches = useCallback(async () => {
     if (!selectedSeasonId) return;
@@ -145,9 +151,12 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
     setActiveTab,
     standings,
     statsLoading,
+    statsError,
+    reloadStats: () => void loadStats(selectedSeasonId),
     bracketMatches,
     bracketLoading,
     scorers: (stats.scorers || []).slice(0, 10) as ScorerRow[],
     assists: (stats.assists || []).slice(0, 10) as AssistRow[],
   };
 };
+

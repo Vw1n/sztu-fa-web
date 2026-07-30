@@ -25,13 +25,14 @@ interface MatchListProps {
   onPageChange: (page: number) => void;
   onMatchClick: (match: Match) => void;
   onPlayerClick: (playerId: string, playerName: string) => void;
+  onRetry?: () => void;
 }
 
 export const MatchList: React.FC<MatchListProps> = ({
   matches, loading, error, teamFilter, statusFilter, sortBy, availableTeams,
   currentPage, limit, total, matchStats, upcomingMatches,
   onTeamFilterChange, onStatusFilterChange, onSortByChange,
-  onPageChange, onMatchClick, onPlayerClick,
+  onPageChange, onMatchClick, onPlayerClick, onRetry,
 }) => {
   const totalPages = Math.ceil(total / limit);
   return (
@@ -45,9 +46,10 @@ export const MatchList: React.FC<MatchListProps> = ({
         onStatusFilterChange={onStatusFilterChange}
         onSortByChange={onSortByChange}
       />
-      {error && <ErrorMessage message={error} />}
       {loading ? (
         <LoadingSpinner />
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={onRetry} />
       ) : matches.length === 0 ? (
         <EmptyState
           icon={(
@@ -71,3 +73,4 @@ export const MatchList: React.FC<MatchListProps> = ({
     </>
   );
 };
+

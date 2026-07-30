@@ -84,8 +84,10 @@ const Matches: React.FC = () => {
             onPageChange={directory.changePage}
             onMatchClick={openMatch}
             onPlayerClick={career.openCareer}
+            onRetry={directory.reloadMatches}
           />
         )}
+
 
         {competition.activeTab === 'standings' && (
           <>
@@ -96,7 +98,12 @@ const Matches: React.FC = () => {
                 onMatchClick={openMatch}
               />
             )}
-            <LeagueStandings standings={competition.standings} statsLoading={competition.statsLoading} />
+            <LeagueStandings
+              standings={competition.standings}
+              statsLoading={competition.statsLoading}
+              statsError={competition.statsError}
+              onRetry={competition.reloadStats}
+            />
           </>
         )}
         {(competition.activeTab === 'scorers' || competition.activeTab === 'assists') && (
@@ -105,9 +112,12 @@ const Matches: React.FC = () => {
             scorers={competition.scorers}
             assists={competition.assists}
             statsLoading={competition.statsLoading}
+            statsError={competition.statsError}
+            onRetry={competition.reloadStats}
             onPlayerClick={career.openCareer}
           />
         )}
+
 
         <MatchDetailModal
           selectedMatchForModal={selectedMatchForModal}

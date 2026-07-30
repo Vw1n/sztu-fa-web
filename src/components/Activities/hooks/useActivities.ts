@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchNews } from '../../../api';
 import type { News } from '../../../types';
 import { mockActivities } from '../../../data/mockNews';
@@ -20,36 +20,50 @@ export const useActivities = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMock, setIsMock] = useState(false);
   const limit = 6;
 
-  useEffect(() => {
-    const loadNewsData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetchNews(currentPage, limit);
-        if (res && res.data) {
-          setNewsList(res.data);
-          setTotal(res.total || 0);
-        } else {
-          setNewsList([]);
-          setTotal(0);
-        }
-      } catch (err) {
-        console.error('获取前台资讯列表失败，采用本地 Mock 数据 fallback:', err);
+  const isMockEnabled = import.meta.env.DEV && import.meta.env.VITE_ENABLE_NEWS_MOCK === 'true';
+
+  const loadNewsData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setIsMock(false);
+    try {
+      const res = await fetchNews(currentPage, limit);
+      if (res && res.data) {
+        setNewsList(res.data);
+        setTotal(res.total || 0);
+      } else {
+        setNewsList([]);
+        setTotal(0);
+      }
+    } catch (err) {
+      if (isMockEnabled) {
+        console.warn('[useActivities] 接口请求失败，采用开发环境 Mock 数据');
         setNewsList([]);
         setTotal(mockActivities.length);
-      } finally {
-        setLoading(false);
+        setIsMock(true);
+      } else {
+        console.error('[useActivities] 获取前台资讯列表失败:', err);
+        setError(err instanceof Error ? err.message : '获取活动资讯失败');
+        setNewsList([]);
+        setTotal(0);
       }
-    };
-    loadNewsData();
-  }, [currentPage]);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, isMockEnabled]);
 
-  const hasNews = newsList.length > 0;
+  useEffect(() => {
+    void loadNewsData();
+  }, [loadNewsData]);
 
-  const displayList: ActivityDisplay[] = hasNews
-    ? newsList
+  const displayList: ActivityDisplay[] = isMock
+    ? [...mockActivities]
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+        .slice((currentPage - 1) * limit, currentPage * limit)
+    : newsList
         .map((n) => ({
           id: n.id,
           title: n.title,
@@ -60,10 +74,7 @@ export const useActivities = () => {
           category: n.category,
           wechatUrl: n.wechatUrl,
         }))
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
-    : [...mockActivities]
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
-        .slice((currentPage - 1) * limit, currentPage * limit);
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
   const totalPages = Math.ceil(total / limit) || 1;
 
@@ -76,5 +87,8 @@ export const useActivities = () => {
     error,
     limit,
     total,
+    isMock,
+    reloadNews: loadNewsData,
   };
 };
+
