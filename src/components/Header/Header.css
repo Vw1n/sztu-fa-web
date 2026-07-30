@@ -49,6 +49,7 @@
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .logoTitle {
@@ -93,7 +94,7 @@
   padding: var(--spacing-sm) clamp(0.4rem, 0.7vw, var(--spacing-md));
   color: var(--text-secondary);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   transition: color var(--transition-fast);
   position: relative;
   font-family: inherit;
@@ -313,15 +314,22 @@
 /* 响应式 */
 @media (max-width: 900px) {
   .headerContainer {
+    grid-template-columns: minmax(0, 1fr) auto;
     height: 60px;
+    gap: var(--spacing-md);
   }
 
   .nav {
     display: none;
   }
 
+  .headerAuth {
+    display: none;
+  }
+
   .menuButton {
     display: flex;
+    justify-self: end;
   }
 
   .mobileNav {
@@ -340,5 +348,15 @@
   .logoIcon {
     width: 38px;
     height: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerContainer {
+    padding: 0 var(--spacing-md);
+  }
+
+  .logoSubtitle {
+    display: none;
   }
 }
