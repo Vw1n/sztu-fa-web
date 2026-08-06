@@ -7,6 +7,7 @@ import Activities from './components/Activities';
 import Teams from './components/Teams';
 import Matches from './components/Matches';
 import Footer from './components/Footer';
+import MotionEffects from './components/common/MotionEffects';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -61,6 +62,7 @@ function MobileDock() {
 function App() {
   return (
     <AuthProvider>
+      <MotionEffects />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
