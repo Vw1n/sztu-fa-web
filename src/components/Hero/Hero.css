@@ -1,46 +1,25 @@
-/* Hero 轮播区域样式 - 全面优化版 */
-
-/* ===== 基础容器 ===== */
 .hero {
   position: relative;
-  height: 100vh;
-  min-height: 600px;
-  max-height: 900px;
+  min-height: min(860px, calc(100svh - 76px));
   overflow: hidden;
-  margin-top: 0;
+  isolation: isolate;
+  color: #fff;
+  background: #06142f;
 }
 
-/* 背景装饰 - 增加视觉层次 */
-.heroBgDecoration {
+.heroMedia,
+.heroSlide,
+.heroImagePlaceholder,
+.heroImage,
+.heroWash {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(26, 86, 219, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(59, 130, 246, 0.12) 0%, transparent 50%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ===== 轮播容器 ===== */
-.heroSlider {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
+  inset: 0;
 }
 
 .heroSlide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   opacity: 0;
-  transform: scale(1.05);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transform: scale(1.04);
+  transition: opacity 900ms ease, transform 1.4s cubic-bezier(.22, 1, .36, 1);
 }
 
 .heroSlide.active {
@@ -48,680 +27,196 @@
   transform: scale(1);
 }
 
-/* 图片加载占位 */
 .heroImagePlaceholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1A56DB 50%, #2563EB 100%);
-  z-index: 1;
+  background: linear-gradient(135deg, #0d2860, #06142f);
 }
 
 .heroImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 40%;
   opacity: 0;
-  transition: opacity 0.4s ease-out;
-  will-change: opacity;
+  filter: saturate(.88) contrast(1.05);
+  transition: opacity 500ms ease;
 }
 
-.heroImage.loaded {
-  opacity: 1;
+.heroImage.loaded { opacity: 1; }
+
+.heroWash {
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(3, 13, 34, .96) 0%, rgba(3, 13, 34, .78) 34%, rgba(3, 13, 34, .18) 72%),
+    linear-gradient(0deg, rgba(3, 13, 34, .78) 0%, transparent 45%);
 }
 
-/* ===== 内容区域 ===== */
+.heroFrame {
+  position: relative;
+  z-index: 2;
+  width: min(100% - 64px, 1440px);
+  min-height: min(860px, calc(100svh - 76px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  grid-template-rows: auto 1fr;
+  border-inline: 1px solid rgba(255, 255, 255, .18);
+}
+
+.heroEyebrow {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, .18);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
 .heroContent {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: var(--text-white);
-  z-index: 10;
-  width: 90%;
-  max-width: 900px;
-  padding: var(--spacing-3xl) var(--spacing-2xl);
-  background: 
-    radial-gradient(ellipse 120% 80% at center, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.6) 40%, transparent 70%);
-  border-radius: var(--radius-xl);
-  opacity: 0;
-  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  align-self: center;
+  max-width: 960px;
+  padding: 56px clamp(28px, 5.5vw, 88px) 80px;
 }
 
-.heroContent.loaded {
-  opacity: 1;
-}
-
-/* 入场动画 */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -45%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-/* ===== 标签 ===== */
-.heroTagline {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(26, 86, 219, 0.8) 0%, rgba(59, 130, 246, 0.7) 100%);
-  border: 1px solid rgba(191, 219, 254, 0.4);
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-white);
-  margin-bottom: var(--spacing-xl);
-  letter-spacing: 2px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3);
-}
-
-.heroTaglineIcon {
-  font-size: 1rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-/* ===== 标题 ===== */
-.heroTitle {
-  font-size: 3.8rem;
-  font-weight: 900;
-  line-height: 1.15;
-  margin-bottom: var(--spacing-xl);
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
-  text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.9),
-    0 3px 8px rgba(0, 0, 0, 0.7),
-    0 0 30px rgba(59, 130, 246, 0.4);
-  position: relative;
-  padding: var(--spacing-lg) 0;
-}
-
-.heroTitle::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #60A5FA, transparent);
-  border-radius: var(--radius-full);
-  opacity: 0.8;
-}
-
-.heroTitle::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(191, 219, 254, 0.6), transparent);
-  border-radius: var(--radius-full);
-}
-
-/* 左侧文字样式 */
-.heroTitle::first-line {
-  color: #F0F9FF;
-  text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.9),
-    0 3px 8px rgba(0, 0, 0, 0.7),
-    0 0 25px rgba(147, 197, 253, 0.3);
-}
-
-.heroTitle span {
-  color: #BAE6FD;
+.heroIndex {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 24px;
+  color: #d8ff3e;
+  font-size: 1.05rem;
   font-weight: 800;
-  text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.9),
-    0 3px 8px rgba(0, 0, 0, 0.7),
-    0 0 35px rgba(147, 197, 253, 0.6);
-  position: relative;
-  filter: drop-shadow(0 0 15px rgba(147, 197, 253, 0.4));
-  padding: 0 var(--spacing-sm);
-  margin: 0 var(--spacing-xs);
+  letter-spacing: .12em;
 }
 
-/* 标题强调文字下划线装饰 */
-.heroTitle span::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 10%;
-  right: 10%;
-  height: 3px;
-  background: linear-gradient(90deg, #7DD3FC, #38BDF8, #7DD3FC);
-  border-radius: var(--radius-full);
-  opacity: 0.85;
-  box-shadow: 0 0 15px rgba(147, 197, 253, 0.7);
+.heroIndex span { color: rgba(255,255,255,.52); font-size: .72rem; }
+
+.heroTitle {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(4.6rem, 8.5vw, 8.6rem);
+  font-weight: 900;
+  line-height: .86;
+  letter-spacing: -.075em;
+  text-transform: uppercase;
 }
 
-/* ===== 描述 ===== */
+.heroTitle span,
+.heroTitle strong {
+  color: inherit;
+  font: inherit;
+}
+
+.heroTitle strong {
+  margin-left: clamp(0px, 7vw, 110px);
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255,255,255,.9);
+}
+
 .heroDescription {
-  font-size: 1.25rem;
-  line-height: 1.9;
-  margin-bottom: var(--spacing-2xl);
-  opacity: 0.92;
-  max-width: 650px;
-  margin-left: auto;
-  margin-right: auto;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  max-width: 560px;
+  margin: 38px 0 0 clamp(0px, 7vw, 110px);
+  color: rgba(255,255,255,.78);
+  font-size: 1.05rem;
+  line-height: 1.8;
 }
 
-/* ===== 按钮 ===== */
 .heroButtons {
   display: flex;
-  gap: var(--spacing-lg);
-  justify-content: center;
-  flex-wrap: wrap;
+  gap: 12px;
+  margin: 30px 0 0 clamp(0px, 7vw, 110px);
 }
 
 .heroButton {
+  min-height: 52px;
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-2xl);
-  font-size: 1.05rem;
-  font-weight: 600;
-  border-radius: var(--radius-lg);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  letter-spacing: 0.02em;
-  position: relative;
-  overflow: hidden;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 0 20px;
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 0;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 700;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-/* 主按钮 */
-.heroButtonPrimary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-  color: var(--text-white);
-  border: none;
-  box-shadow: 
-    0 4px 16px rgba(26, 86, 219, 0.5),
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
+.heroButton:hover { transform: translateY(-2px); color: #fff; }
+.heroButtonPrimary { background: #d8ff3e; border-color: #d8ff3e; color: #06142f; }
+.heroButtonPrimary:hover { background: #fff; color: #06142f; }
+.heroButtonSecondary:hover { background: #fff; color: #06142f; }
 
-.heroButtonPrimary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.heroButtonPrimary:hover {
-  transform: translateY(-3px);
-  box-shadow: 
-    0 8px 24px rgba(26, 86, 219, 0.6),
-    0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.heroButtonPrimary:hover::before {
-  left: 100%;
-}
-
-/* 次按钮 */
-.heroButtonSecondary {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--text-white);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.heroButtonSecondary:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-}
-
-.heroButton svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-/* ===== 轮播指示器 ===== */
-.heroIndicators {
-  position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: var(--spacing-md);
-  z-index: 20;
-}
-
-.heroIndicator {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--radius-full);
-  background-color: rgba(255, 255, 255, 0.35);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.heroIndicator:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.1);
-}
-
-.heroIndicator.active {
-  background-color: var(--accent-light);
-  width: 40px;
-  border-radius: var(--radius-full);
-  border-color: var(--accent-light);
-  box-shadow: 0 2px 8px rgba(191, 219, 254, 0.4);
-}
-
-/* ===== 轮播箭头 ===== */
-.heroArrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  color: var(--text-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 20;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-}
-
-.heroArrow:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: var(--accent-light);
-  transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-.heroArrowPrev {
-  left: 40px;
-}
-
-.heroArrowNext {
-  right: 40px;
-}
-
-.heroArrow svg {
-  width: 26px;
-  height: 26px;
-  transition: transform 0.2s ease;
-}
-
-.heroArrow:hover svg {
-  transform: scale(1.1);
-}
-
-/* ===== 滚动提示 ===== */
-.scrollIndicator {
-  position: absolute;
-  bottom: 110px;
-  left: 50%;
-  transform: translateX(-50%);
+.heroRail {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-sm);
-  color: var(--text-white);
-  opacity: 0.75;
-  animation: bounce 2.5s ease-in-out infinite;
-  z-index: 15;
-  cursor: pointer;
-  transition: opacity 0.3s ease;
+  justify-content: space-between;
+  padding: 28px 0;
+  border-left: 1px solid rgba(255,255,255,.18);
 }
 
-.scrollIndicator:hover {
-  opacity: 1;
+.heroRailLabel {
+  writing-mode: vertical-rl;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  opacity: .68;
 }
 
-.scrollIndicator span {
-  font-size: 0.85rem;
-  letter-spacing: 1.5px;
-  font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+.heroControls { display: grid; gap: 8px; }
+.heroControls button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,.44);
+  color: #fff;
+  font-size: 1.1rem;
+  transition: background 180ms ease, color 180ms ease;
 }
+.heroControls button:hover { background: #d8ff3e; border-color: #d8ff3e; color: #06142f; }
 
-.scrollIndicator svg {
-  width: 26px;
-  height: 26px;
-}
+.heroIndicators { display: grid; gap: 10px; }
+.heroIndicators button { width: 22px; height: 2px; background: rgba(255,255,255,.35); }
+.heroIndicators button.active { width: 38px; background: #d8ff3e; }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateX(-50%) translateY(0);
-  }
-  40% {
-    transform: translateX(-50%) translateY(-12px);
-  }
-  60% {
-    transform: translateX(-50%) translateY(-6px);
-  }
-}
-
-/* ===== 响应式设计 ===== */
-
-/* 大屏幕优化 */
-@media (min-width: 1400px) {
-  .heroTitle {
-    font-size: 4.2rem;
-  }
-  
-  .heroDescription {
-    font-size: 1.35rem;
-    max-width: 700px;
-  }
-  
-  .heroContent {
-    max-width: 1000px;
-  }
-}
-
-/* 平板适配 */
-@media (max-width: 1024px) {
-  .heroTitle {
-    font-size: 3rem;
-  }
-  
-  .heroDescription {
-    font-size: 1.15rem;
-  }
-  
-  .heroContent {
-    padding: var(--spacing-2xl) var(--spacing-xl);
-    max-width: 800px;
-  }
-  
-  .heroArrow {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .heroArrowPrev {
-    left: 25px;
-  }
-  
-  .heroArrowNext {
-    right: 25px;
-  }
-}
-
-/* 移动端适配 */
 @media (max-width: 768px) {
-  .hero {
-    min-height: 520px;
-    max-height: 750px;
+  .hero { min-height: calc(100svh - 60px); }
+  .heroFrame {
+    width: calc(100% - 28px);
+    min-height: calc(100svh - 60px);
+    grid-template-columns: 1fr;
   }
-
-  .heroBgDecoration {
-    opacity: 0.5;
-  }
-
-  .heroTitle {
-    font-size: 2.4rem;
-    letter-spacing: -0.01em;
-  }
-
-  .heroTitle span::after {
-    height: 2px;
-  }
-
-  .heroDescription {
-    font-size: 1rem;
-    line-height: 1.8;
-    max-width: 500px;
-  }
-
-  .heroTagline {
-    font-size: 0.75rem;
-    padding: var(--spacing-xs) var(--spacing-md);
-    letter-spacing: 1px;
-  }
-
-  .heroTaglineIcon {
-    font-size: 0.85rem;
-  }
-
-  .heroContent {
-    padding: var(--spacing-xl) var(--spacing-lg);
-    width: 95%;
-    max-width: 600px;
-  }
-
-  .heroButton {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: 0.95rem;
-  }
-
-  .heroArrow {
-    width: 44px;
-    height: 44px;
-  }
-
-  .heroArrowPrev {
-    left: 12px;
-  }
-
-  .heroArrowNext {
-    right: 12px;
-  }
-
-  .heroArrow svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .heroIndicators {
-    bottom: 35px;
-  }
-
-  .heroIndicator {
-    width: 12px;
-    height: 12px;
-  }
-
-  .heroIndicator.active {
-    width: 32px;
-  }
-
-  .scrollIndicator {
-    bottom: 85px;
-  }
-  
-  .scrollIndicator span {
-    font-size: 0.75rem;
-  }
-  
-  .scrollIndicator svg {
-    width: 22px;
-    height: 22px;
-  }
-}
-
-/* 小屏手机适配 */
-@media (max-width: 480px) {
-  .hero {
-    min-height: 480px;
-    max-height: 650px;
-  }
-
-  .heroTitle {
-    font-size: 1.9rem;
-    line-height: 1.2;
-  }
-
-  .heroDescription {
-    font-size: 0.9rem;
-    line-height: 1.7;
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .heroTagline {
-    font-size: 0.7rem;
-    gap: var(--spacing-xs);
-  }
-
-  .heroContent {
-    padding: var(--spacing-lg) var(--spacing-md);
-    border-radius: var(--radius-lg);
-  }
-
-  .heroButtons {
-    flex-direction: column;
-    width: 100%;
-    gap: var(--spacing-md);
-  }
-
-  .heroButton {
-    width: 100%;
-    justify-content: center;
-    padding: var(--spacing-md) var(--spacing-lg);
-  }
-
-  .heroButtonSecondary {
-    order: 2;
-  }
-
-  /* 移动端隐藏箭头 */
-  .heroArrow {
-    display: none;
-  }
-
-  .heroIndicators {
-    bottom: 25px;
-    gap: var(--spacing-sm);
-  }
-
-  .heroIndicator {
-    width: 10px;
-    height: 10px;
-  }
-
-  .heroIndicator.active {
-    width: 28px;
-  }
-
-  .scrollIndicator {
-    bottom: 65px;
-  }
-}
-
-/* 超小屏适配 */
-@media (max-width: 360px) {
-  .hero {
-    min-height: 420px;
-  }
-
-  .heroTitle {
-    font-size: 1.6rem;
-  }
-
-  .heroDescription {
-    font-size: 0.85rem;
-  }
-
-  .heroTagline {
-    font-size: 0.65rem;
-  }
-}
-
-/* 横屏手机优化 */
-@media (max-height: 500px) and (orientation: landscape) {
-  .hero {
-    min-height: 100vh;
-    max-height: none;
-  }
-
-  .heroContent {
-    padding: var(--spacing-lg) var(--spacing-xl);
-    max-width: 700px;
-  }
-
-  .heroTitle {
-    font-size: 2rem;
-    margin-bottom: var(--spacing-md);
-  }
-
-  .heroDescription {
-    font-size: 0.9rem;
-    margin-bottom: var(--spacing-md);
-  }
-
-  .heroButtons {
+  .heroEyebrow { padding: 18px 16px; font-size: .6rem; }
+  .heroContent { padding: 44px 16px 116px; }
+  .heroTitle { font-size: clamp(3.45rem, 17vw, 5.7rem); line-height: .9; }
+  .heroTitle strong { margin-left: 0; }
+  .heroDescription { margin: 28px 0 0; max-width: 34rem; font-size: .95rem; line-height: 1.7; }
+  .heroButtons { margin: 24px 0 0; }
+  .heroButton { flex: 1; min-height: 48px; gap: 12px; padding: 0 14px; }
+  .heroRail {
+    position: absolute;
+    inset: auto 16px 24px;
     flex-direction: row;
+    padding: 14px 0 0;
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,.22);
   }
-
-  .scrollIndicator {
-    display: none;
-  }
+  .heroRailLabel { writing-mode: initial; }
+  .heroControls { display: none; }
+  .heroIndicators { display: flex; }
+  .heroWash { background: linear-gradient(90deg, rgba(3,13,34,.93), rgba(3,13,34,.28)), linear-gradient(0deg, rgba(3,13,34,.8), transparent 55%); }
 }
 
-/* 高对比度模式支持 */
-@media (prefers-contrast: high) {
-  .heroContent {
-    background: rgba(15, 23, 42, 0.95);
-  }
-
-  .heroButtonPrimary {
-    border: 2px solid var(--text-white);
-  }
-
-  .heroButtonSecondary {
-    border-width: 3px;
-  }
+@media (max-width: 420px) {
+  .heroEyebrow span:last-child { display: none; }
+  .heroButtons { flex-direction: column; }
+  .heroContent { padding-top: 36px; }
 }
 
-/* 减少动画偏好 */
 @media (prefers-reduced-motion: reduce) {
-  .heroSlide {
-    transition: opacity 0.3s ease;
-    transform: none;
-  }
-
-  .heroSlide.active {
-    transform: none;
-  }
-
-  .heroContent {
-    animation: none;
-    opacity: 1;
-  }
-
-  .scrollIndicator {
-    animation: none;
-  }
-
-  .heroButton::before {
-    display: none;
-  }
-
-  .heroArrow:hover {
-    transform: translateY(-50%);
-  }
+  .heroSlide, .heroImage, .heroButton { transition: none; }
 }

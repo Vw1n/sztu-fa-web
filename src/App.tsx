@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, Link, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -26,7 +26,35 @@ function HomePage() {
         <Matches />
       </main>
       <Footer />
+      <MobileDock />
     </div>
+  );
+}
+
+function MobileDock() {
+  const location = useLocation();
+  const items = [
+    { label: '首页', to: '/', icon: '⌂' },
+    { label: '赛事', to: '/#matches', icon: '◷' },
+    { label: '球队', to: '/#teams', icon: '◉' },
+    { label: '竞猜', to: '/predictions', icon: '◇' },
+    { label: '我的', to: '/my-predictions', icon: '○' },
+  ];
+
+  return (
+    <nav className="mobileDock" aria-label="移动端快捷导航">
+      {items.map((item) => {
+        const [pathname, hash = ''] = item.to.split('#');
+        const active = location.pathname === pathname
+          && (hash ? location.hash === `#${hash}` : !location.hash);
+        return (
+          <Link key={item.label} to={item.to} className={active ? 'active' : ''}>
+            <span className="mobileDockIcon" aria-hidden="true">{item.icon}</span>
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 
