@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { LeagueStandings } from './LeagueStandings';
 import type { CupStandings, LeagueStandings as LeagueStandingsType, StandingRow } from '../../../types';
+import type { UserProfile } from '../../../api/auth';
+import type { AuthContextType } from '../../../contexts/AuthContext.types';
 
 vi.mock('../../../contexts', () => ({
   useAuth: vi.fn().mockReturnValue({
@@ -12,6 +14,17 @@ vi.mock('../../../contexts', () => ({
 }));
 
 import { useAuth } from '../../../contexts';
+
+const createAuthContext = (user: UserProfile): AuthContextType => ({
+  user,
+  token: 'test-token',
+  isAuthenticated: true,
+  loading: false,
+  login: async () => ({ user, token: 'test-token' }),
+  register: async () => ({ user, token: 'test-token' }),
+  logout: () => undefined,
+  refreshUser: async () => undefined,
+});
 
 describe('LeagueStandings Component', () => {
   const mockRows: StandingRow[] = [
@@ -105,18 +118,16 @@ describe('LeagueStandings Component', () => {
       champion: null,
     };
 
-    vi.mocked(useAuth).mockReturnValue({
-      user: { id: 'admin', username: 'admin', role: 'super_admin' },
-      isAuthenticated: true,
-    } as any);
+    vi.mocked(useAuth).mockReturnValue(
+      createAuthContext({ id: 'admin', username: 'admin', role: 'super_admin' }),
+    );
 
     const { rerender } = render(<LeagueStandings seasonId="s-1" standings={standingsObj} statsLoading={false} />);
     expect(screen.getByText('⚙️ 管理冠军')).toBeInTheDocument();
 
-    vi.mocked(useAuth).mockReturnValue({
-      user: { id: 'user1', username: 'user1', role: 'user' },
-      isAuthenticated: true,
-    } as any);
+    vi.mocked(useAuth).mockReturnValue(
+      createAuthContext({ id: 'user1', username: 'user1', role: 'user' }),
+    );
 
     rerender(<LeagueStandings seasonId="s-1" standings={standingsObj} statsLoading={false} />);
     expect(screen.queryByText('⚙️ 管理冠军')).not.toBeInTheDocument();
