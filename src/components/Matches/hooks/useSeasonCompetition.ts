@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchMatches, fetchSeasonStandings, fetchSeasonStats } from '../../../api';
-import type { CupStandings, Match, SeasonStats, StandingRow } from '../../../types';
+import type { CupStandings, LeagueStandings, Match, SeasonStats, StandingRow } from '../../../types';
 import type { AssistRow, MatchTab, ScorerRow } from '../types';
 import { getWinnerTeamId } from '../utils/matchOutcome';
 
@@ -19,7 +19,7 @@ function countPenaltyGoals(matches: Match[]): Record<string, number> {
 
 export const useSeasonCompetition = (selectedSeasonId: string) => {
   const [activeTab, setActiveTab] = useState<MatchTab>('matches');
-  const [standings, setStandings] = useState<StandingRow[] | CupStandings>([]);
+  const [standings, setStandings] = useState<StandingRow[] | CupStandings | LeagueStandings>([]);
   const [stats, setStats] = useState<SeasonStats>({ scorers: [], assists: [], cards: [] });
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsError, setStatsError] = useState<string | null>(null);
