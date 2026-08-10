@@ -24,15 +24,6 @@ export interface CupStandings {
   groups: Record<string, StandingRow[]>;
 }
 
-export interface LeagueStandings {
-  type: 'LEAGUE';
-  rows: StandingRow[];
-  isFinished: boolean;
-  champion?: StandingRow | null;
-  championSource?: 'AUTO' | 'MANUAL' | null;
-  championResolved?: boolean;
-}
-
 export interface SeasonStats {
   scorers?: Array<{ playerId?: string; playerName: string; jerseyNumber: string; teamName: string; teamLogo: string; goals: number; penaltyGoals?: number }>;
   assists?: Array<{ playerId?: string; playerName: string; jerseyNumber: string; teamName: string; teamLogo: string; assists: number }>;

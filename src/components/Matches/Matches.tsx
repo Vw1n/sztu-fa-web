@@ -99,7 +99,6 @@ const Matches: React.FC = () => {
               />
             )}
             <LeagueStandings
-              seasonId={selectedSeason?.id}
               standings={competition.standings}
               statsLoading={competition.statsLoading}
               statsError={competition.statsError}
