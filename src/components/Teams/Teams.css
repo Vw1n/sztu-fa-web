@@ -260,7 +260,7 @@
 /* PC 端文字对齐 */
 @media (min-width: 769px) {
   .teamContent {
-    background: #f7f9fb;
+    background: var(--bg-secondary);
     display: flex;
     flex-direction: column;
     min-height: 130px;

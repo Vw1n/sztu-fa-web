@@ -21,7 +21,7 @@ export const useActivities = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMock, setIsMock] = useState(false);
-  const limit = 6;
+  const limit = 4;
 
   const isMockEnabled = import.meta.env.DEV && import.meta.env.VITE_ENABLE_NEWS_MOCK === 'true';
 

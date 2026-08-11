@@ -249,9 +249,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* About */
 .about { background: var(--bg-primary); }
 .aboutContent { grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); gap: clamp(36px, 6vw, 92px); align-items: start; }
-.aboutImageWrapper { overflow: hidden; }
-.aboutImage { min-height: 500px; aspect-ratio: 1.38; object-fit: cover; border-radius: 0; box-shadow: none; transition: transform 800ms cubic-bezier(.22,1,.36,1); }
-.aboutImageWrapper:hover .aboutImage { transform: scale(1.025); }
+.aboutImageWrapper { position: relative; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: clamp(16px, 2.5vw, 32px); }
+.aboutImageWrapper picture { display: block; width: 100%; max-width: 100%; height: auto; }
+.aboutImage { display: block; width: 100%; max-width: 100%; height: auto; max-height: none; min-height: 0; aspect-ratio: auto; object-fit: contain; border-radius: 0; box-shadow: none; transition: transform 800ms cubic-bezier(.22,1,.36,1); }
+.aboutImageWrapper:hover .aboutImage { transform: scale(1.015); transform-origin: center; }
 .aboutText { gap: 22px; padding-top: 8px; }
 .aboutTitle { max-width: 490px; margin: 0 0 12px; font-size: clamp(2rem, 3.2vw, 3.5rem); line-height: 1.08; letter-spacing: -.045em; }
 .aboutParagraph { font-size: .98rem; line-height: 1.9; }
@@ -264,36 +265,66 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   gap: 0;
   margin-top: 0;
   padding: 0;
-  background: var(--primary-dark);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 0;
-  box-shadow: none;
-  color: #fff;
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
 }
-.about .statItem { min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; padding: 30px; text-align: left; border-right: 1px solid rgba(255,255,255,.18); }
+.about .statItem {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  text-align: left;
+  border-right: 1px solid var(--border-color);
+  transition: background var(--transition-fast);
+}
 .about .statItem:last-child { border-right: 0; }
-.about .statNumber { color: #fff; font-size: clamp(2.7rem, 5vw, 5.4rem); letter-spacing: -.065em; }
-.about .statNumber span { color: var(--accent-color); font-size: .4em; }
-.about .statLabel { color: rgba(255,255,255,.65); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
+.about .statItem:hover { background: var(--bg-secondary); }
+.about .statNumber {
+  color: var(--primary-color);
+  font-size: clamp(2.7rem, 5vw, 5.4rem);
+  font-weight: 900;
+  letter-spacing: -.065em;
+  line-height: 1;
+}
+.about .statNumber span {
+  color: var(--text-light);
+  font-size: .42em;
+  margin-left: 4px;
+  font-weight: 700;
+}
+.about .statLabel {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 2px solid var(--accent-color);
+}
 
 /* Activities */
 .activities { background: var(--bg-secondary); border-block: 1px solid var(--border-color); }
-.activitiesGrid { grid-template-columns: repeat(12, 1fr); gap: 24px; }
-.activityCard { grid-column: span 4; background: transparent; border-top: 1px solid var(--text-primary); border-radius: 0; box-shadow: none; }
-.activityCard:first-child { grid-column: span 8; }
+.activityCard { background: transparent; border-top: 1px solid var(--text-primary); border-radius: 0; box-shadow: none; display: flex; flex-direction: column; }
+.activityCard:first-child { grid-column: auto; }
 .activityCard:hover { transform: none; box-shadow: none; }
-.activityImageWrapper { height: clamp(240px, 23vw, 370px); margin-top: 12px; }
-.activityCard:first-child .activityImageWrapper { height: clamp(330px, 38vw, 560px); }
+.activityImageWrapper { height: clamp(180px, 17vw, 260px); margin-top: 12px; }
+.activityCard:first-child .activityImageWrapper { height: clamp(180px, 17vw, 260px); }
 .activityImage { filter: saturate(.82); transition: transform 600ms cubic-bezier(.22,1,.36,1), filter 300ms ease; }
 .activityCard:hover .activityImage { transform: scale(1.025); filter: saturate(1); }
 .activityCategory, .activityLatestBadge { top: 12px; padding: 7px 10px; border-radius: 0; font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
 .activityCategory { left: 12px; background: var(--accent-color); color: var(--text-primary); }
 .activityLatestBadge { right: 12px; background: var(--primary-dark); color: #fff; }
-.activityContent { padding: 20px 0 4px; }
+.activityContent { padding: 20px 0 4px; display: flex; flex-direction: column; flex: 1; }
 .activityDate { color: var(--text-light); font-size: .72rem; letter-spacing: .08em; }
-.activityTitle { height: auto; margin: 12px 0; font-size: clamp(1.25rem, 2vw, 2rem); line-height: 1.18; letter-spacing: -.025em; }
-.activityCard:first-child .activityTitle { font-size: clamp(1.8rem, 3vw, 3.2rem); }
-.activityDescription { height: auto; max-width: 640px; color: var(--text-secondary); font-size: .9rem; line-height: 1.75; }
-.activityMeta { border-color: var(--border-color); }
+.activityTitle { height: auto; margin: 12px 0; font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.25; letter-spacing: -.02em; }
+.activityCard:first-child .activityTitle { font-size: clamp(1rem, 1.4vw, 1.3rem); }
+.activityDescription { height: auto; max-width: 100%; color: var(--text-secondary); font-size: .88rem; line-height: 1.65; flex: 1; }
+.activityMeta { border-color: var(--border-color); margin-top: auto; }
 .activityLink { color: var(--text-primary); font-weight: 800; }
 
 /* Teams */
@@ -312,8 +343,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .teamCard { background: var(--bg-primary); border-radius: 0; box-shadow: none; }
 .teamCard:hover { transform: none; box-shadow: none; background: #fff; }
 .teamCard.selected { border: 0; box-shadow: inset 0 -5px 0 var(--primary-color); }
-.teamImageWrapper { height: 230px; background: transparent; }
-.teamImage { padding: 34px; background: transparent; }
+.teamImageWrapper { height: 240px; background: transparent; display: flex; align-items: center; justify-content: center; }
+.teamImage {
+  padding: 12px;
+  background: transparent;
+  /* 柔和径向衬底：让透明背景队徽有视觉依托，避免浅色部分与底色融为一体 */
+  background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.25) 60%, transparent 90%);
+  transition: background-image var(--transition-normal), transform var(--transition-normal);
+}
+.teamCard:hover .teamImage {
+  background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.5) 60%, transparent 90%);
+  transform: scale(1.03);
+}
 .teamContent { padding: 18px 20px 22px; border-top: 1px solid var(--border-color); }
 .teamName { margin-bottom: 16px; text-align: left; font-size: 1.25rem; letter-spacing: -.025em; }
 .teamInfo { gap: 8px 14px; }
@@ -378,8 +419,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutContent { grid-template-columns: 1fr; }
   .aboutImage { min-height: 0; }
   .aboutText { max-width: 680px; }
-  .activityCard, .activityCard:first-child { grid-column: span 6; }
-  .activityCard:first-child .activityImageWrapper { height: clamp(300px, 52vw, 500px); }
+  .activityCard, .activityCard:first-child { grid-column: auto; }
+  .activityCard:first-child .activityImageWrapper { height: clamp(180px, 17vw, 260px); }
   .teamsGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -397,15 +438,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutStats { margin-top: 36px; }
   .about .statItem { min-height: 132px; padding: 18px 14px; }
   .about .statNumber { font-size: clamp(2rem, 10vw, 3.2rem); }
-  .activitiesGrid { grid-template-columns: 1fr; gap: 38px; }
-  .activityCard, .activityCard:first-child { grid-column: auto; display: block; }
-  .activityImageWrapper, .activityCard:first-child .activityImageWrapper { height: auto; aspect-ratio: 4 / 3; }
+  .about .statLabel { font-size: .88rem; padding-top: 10px; border-top-width: 2px; }
+  .activitiesGrid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .activityCard, .activityCard:first-child { grid-column: auto; display: flex; }
+  .activityImageWrapper, .activityCard:first-child .activityImageWrapper { height: clamp(150px, 30vw, 200px); }
   .activityContent { padding: 16px 0 0; }
-  .activityTitle, .activityCard:first-child .activityTitle { font-size: 1.5rem; }
-  .activityDescription { display: -webkit-box; font-size: .88rem; }
+  .activityTitle, .activityCard:first-child .activityTitle { font-size: 1.05rem; }
+  .activityDescription { display: -webkit-box; font-size: .85rem; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .teamsGrid { gap: 1px; }
-  .teamImageWrapper { height: 170px; }
-  .teamImage { padding: 24px; }
+  .teamImageWrapper { height: 180px; }
+  .teamImage { padding: 8px; }
   .teamContent { padding: 14px; }
   .teamInfo { grid-template-columns: 1fr; }
   .teamInfoItem:nth-child(n+3) { display: none; }
@@ -451,11 +493,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutFeature { padding: 14px 4px; }
   .aboutFeatureText { font-size: .78rem; }
   .aboutStats { grid-template-columns: 1fr; }
-  .about .statItem { min-height: 108px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.18); }
+  .about .statItem { min-height: 108px; border-right: 0; border-bottom: 1px solid var(--border-color); }
   .about .statItem:last-child { border-bottom: 0; }
   .teamsGrid { grid-template-columns: 1fr 1fr; }
-  .teamImageWrapper { height: 132px; }
-  .teamImage { padding: 18px; }
+  .teamImageWrapper { height: 140px; }
+  .teamImage { padding: 6px; }
   .teamName { font-size: .98rem; }
   .teamDetailsButton { font-size: .76rem; }
 }

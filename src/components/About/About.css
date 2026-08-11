@@ -60,6 +60,9 @@
   display: block;
   width: 100%;
   height: auto;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 }
@@ -195,6 +198,10 @@
     order: -1;
   }
 
+  .aboutImage {
+    max-height: 480px;
+  }
+
   .aboutStats {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -229,6 +236,9 @@
 
   .aboutImage {
     height: auto;
+    max-height: 420px;
+    object-fit: contain;
+    object-position: center;
     border-radius: var(--radius-lg);
   }
 
@@ -308,6 +318,10 @@
 
   .about .sectionHeader {
     margin-bottom: 16px;
+  }
+
+  .aboutImage {
+    max-height: 360px;
   }
 
   .aboutImageBadge {
