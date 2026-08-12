@@ -69,24 +69,24 @@
      赛事暗色主题变量 — 积分榜 / 射手榜 / 助攻榜 / 对阵图
      集中管理所有透明度和颜色，方便后续微调
      ========================================================================== */
-  --comp-bg-card: rgba(255, 255, 255, 0.03);
-  --comp-border-card: rgba(255, 255, 255, 0.12);
+  --comp-bg-card: #f8fafc;
+  --comp-border-card: #e5e7eb;
   --comp-radius-card: 8px;
-  --comp-header-bg: rgba(255, 255, 255, 0.08);
-  --comp-header-text: #E6EDF9;
-  --comp-header-divider: rgba(255, 255, 255, 0.15);
-  --comp-row-text: #D0D9EC;
-  --comp-row-divider: rgba(255, 255, 255, 0.08);
-  --comp-highlight-bg: rgba(64, 110, 190, 0.25);
-  --comp-text-primary: #FFFFFF;
-  --comp-text-secondary: #D0D9EC;
-  --comp-text-muted: #94A3B8;
-  --comp-bracket-card-bg: rgba(255, 255, 255, 0.05);
-  --comp-bracket-card-border: rgba(255, 255, 255, 0.1);
-  --comp-bracket-connector: rgba(255, 255, 255, 0.25);
-  --comp-bracket-col-header-bg: rgba(255, 255, 255, 0.08);
-  --comp-bracket-col-header-text: #E6EDF9;
-  --comp-bracket-col-header-border: rgba(255, 255, 255, 0.1);
+  --comp-header-bg: #f1f5f9;
+  --comp-header-text: #334155;
+  --comp-header-divider: #e5e7eb;
+  --comp-row-text: #334155;
+  --comp-row-divider: #f3f4f6;
+  --comp-highlight-bg: rgba(26, 86, 219, 0.06);
+  --comp-text-primary: #0f172a;
+  --comp-text-secondary: #64748b;
+  --comp-text-muted: #94a3b8;
+  --comp-bracket-card-bg: #f8fafc;
+  --comp-bracket-card-border: #e5e7eb;
+  --comp-bracket-connector: #cbd5e1;
+  --comp-bracket-col-header-bg: #f1f5f9;
+  --comp-bracket-col-header-text: #334155;
+  --comp-bracket-col-header-border: #e5e7eb;
 }
 
 /* 全局重置 */

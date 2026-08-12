@@ -134,7 +134,7 @@
 }
 
 .standingsTable tbody tr:hover, .scorersTable tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 /* 排名数字 */
@@ -170,7 +170,7 @@
   height: 26px;
   object-fit: contain;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #f1f5f9;
   border: none;
   flex-shrink: 0;
 }
@@ -276,13 +276,13 @@
 }
 
 .advancingRow:hover {
-  background-color: rgba(64, 110, 190, 0.35) !important;
+  background-color: rgba(26, 86, 219, 0.1) !important;
 }
 
 /* 晋级区高亮（前两名） */
 .promotionRow {
   background-color: var(--comp-highlight-bg);
-  border-left: 3px solid rgba(64, 110, 190, 0.6);
+  border-left: 3px solid rgba(26, 86, 219, 0.3);
 }
 
 .promotionRow td {
@@ -290,7 +290,7 @@
 }
 
 .promotionRow:hover {
-  background-color: rgba(64, 110, 190, 0.35) !important;
+  background-color: rgba(26, 86, 219, 0.1) !important;
 }
 
 /* Bracket Section */
@@ -396,8 +396,8 @@
 
 .bracketMatchCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  border-color: var(--primary-light);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Connection Lines Rules */
@@ -575,13 +575,13 @@
 /* Highlight connection colors on hover/winner */
 .bracketMatchCard:hover::after,
 .bracketMatchCard:hover::before {
-  background: rgba(255, 255, 255, 0.4) !important;
+  background: var(--primary-light) !important;
 }
 
 .emptyCard {
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8fafc;
   border-style: dashed;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .bracketMatchHeader {
@@ -591,7 +591,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-sm);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: var(--spacing-xs);
 }
 
@@ -669,7 +669,7 @@
 }
 
 .completedBadge {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.06);
   color: var(--comp-text-muted);
   font-size: 0.65rem;
   padding: 1px 4px;
@@ -796,7 +796,7 @@
     text-align: center;
     font-size: 0.7rem;
     font-weight: 700;
-    color: rgba(255,255,255,0.7);
+    color: #64748b;
     padding: 10px 0 6px;
     letter-spacing: 1px;
   }
@@ -921,10 +921,9 @@
   flex-wrap: wrap;
   margin-bottom: 25px;
   padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
+  background: var(--bg-secondary);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 .filter-item-wrapper {
