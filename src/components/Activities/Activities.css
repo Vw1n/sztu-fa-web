@@ -12,8 +12,42 @@
 
 .activitiesGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-xl);
+}
+
+/* 特色卡片（最新资讯） - 跨2列，横向布局 */
+.activityCardFeatured {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.activityCardFeatured .activityImageWrapper {
+  width: 50%;
+  height: auto;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.activityCardFeatured .activityImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.activityCardFeatured .activityContent {
+  flex: 1;
+  padding: 20px 24px;
+}
+
+.activityCardFeatured .activityTitle {
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+}
+
+.activityCardFeatured .activityDescription {
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .activityCard {
@@ -32,13 +66,13 @@
 .activityImageWrapper {
   position: relative;
   overflow: hidden;
-  height: 200px;
+  height: auto;
 }
 
 .activityImage {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   transition: transform var(--transition-normal);
 }
 
@@ -281,6 +315,40 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* 平板：特色卡片跨整行，横向布局，避免空白 */
+  .activityCardFeatured {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .activityCardFeatured .activityImageWrapper {
+    width: 45%;
+    height: auto;
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+
+  .activityCardFeatured .activityImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .activityCardFeatured .activityContent {
+    flex: 1;
+    padding: 16px 20px;
+  }
+
+  .activityCardFeatured .activityTitle {
+    font-size: 1.2rem;
+  }
+
+  .activityCardFeatured .activityDescription {
+    font-size: 0.9rem;
+  }
+
   .featuredActivity {
     grid-template-columns: 1fr;
   }
@@ -298,6 +366,42 @@
   .activitiesGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+  }
+
+  .activityCardFeatured {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .activityCardFeatured .activityImageWrapper {
+    width: 45%;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .activityCardFeatured .activityImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .activityCardFeatured .activityContent {
+    flex: 1;
+    padding: 8px 10px;
+  }
+
+  .activityCardFeatured .activityTitle {
+    font-size: 0.95rem;
+  }
+
+  .activityCardFeatured .activityDescription {
+    font-size: 0.78rem;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .featuredActivityContent {
@@ -323,15 +427,15 @@
 
   .activityImageWrapper {
     width: 100%;
-    height: 105px;
+    height: auto;
     position: relative;
     flex-shrink: 0;
   }
 
   .activityImage {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
   }
 
   .activityCategory {
@@ -426,7 +530,19 @@
   }
 
   .activityImageWrapper {
-    height: 95px;
+    height: auto;
+  }
+
+  .activityCardFeatured .activityImageWrapper {
+    height: auto;
+  }
+
+  .activityCardFeatured .activityTitle {
+    font-size: 0.88rem;
+  }
+
+  .activityCardFeatured .activityDescription {
+    font-size: 0.72rem;
   }
 
   .activityContent {

@@ -47,7 +47,7 @@
 
 .aboutContent {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr);
   gap: var(--spacing-2xl);
   align-items: center;
 }
@@ -199,7 +199,7 @@
   }
 
   .aboutImage {
-    max-height: 480px;
+    max-height: none;
   }
 
   .aboutStats {
@@ -236,7 +236,7 @@
 
   .aboutImage {
     height: auto;
-    max-height: 420px;
+    max-height: none;
     object-fit: contain;
     object-position: center;
     border-radius: var(--radius-lg);
@@ -321,7 +321,7 @@
   }
 
   .aboutImage {
-    max-height: 360px;
+    max-height: none;
   }
 
   .aboutImageBadge {

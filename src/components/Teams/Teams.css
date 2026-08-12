@@ -1,7 +1,7 @@
 /* Teams 球队信息样式 */
 .teams {
   padding: var(--spacing-3xl) 0;
-  background-color: var(--bg-secondary);
+  background-color: #fff;
 }
 
 .teamsContainer {
@@ -186,17 +186,21 @@
 
 .teamCard {
   position: relative;
-  background-color: var(--bg-primary);
+  background-color: #fff;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: all var(--transition-normal);
+  transition: transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s ease;
   cursor: pointer;
 }
 
 .teamCard:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.1);
+}
+
+.teamCard:active {
+  transform: scale(.97);
 }
 
 .teamCard.selected {
@@ -219,7 +223,12 @@
 }
 
 .teamCard:hover .teamImage {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.1));
+}
+
+.teamCard:active .teamImage {
+  transform: scale(1.03);
 }
 
 .teamContent {
@@ -354,7 +363,7 @@
   align-items: center;
   gap: var(--spacing-lg);
   padding: var(--spacing-xl);
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
@@ -363,12 +372,15 @@
   height: 80px;
   border-radius: var(--radius-full);
   object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .modalTitle {
   font-size: 1.5rem;
-  color: var(--text-white);
+  color: #fff;
+  font-weight: 800;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .modalContent {
@@ -468,9 +480,9 @@
     gap: var(--spacing-md);
   }
 
-  /* 移动端隐藏翻页 */
   .teamsContainer > .pagination {
-    display: none;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
   .modalInfoGrid {
@@ -753,5 +765,25 @@
 @media (max-width: 480px) {
   .modalPlayersList {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 触控设备：移除 hover 依赖，改用 active 反馈 */
+@media (hover: none) {
+  .teamCard:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .teamCard:hover .teamImage {
+    transform: none;
+    filter: none;
+  }
+  .teamCard:active {
+    transform: scale(.96);
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .teamCard:active .teamImage {
+    transform: scale(1.06);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.08));
   }
 }

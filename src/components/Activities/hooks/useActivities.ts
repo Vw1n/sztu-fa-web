@@ -21,7 +21,9 @@ export const useActivities = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMock, setIsMock] = useState(false);
-  const limit = 4;
+  const [isMobile, setIsMobile] = useState(false);
+  const limit = 6;
+  const displayLimit = currentPage === 1 ? 5 : (isMobile ? 4 : 6);
 
   const isMockEnabled = import.meta.env.DEV && import.meta.env.VITE_ENABLE_NEWS_MOCK === 'true';
 
@@ -59,10 +61,19 @@ export const useActivities = () => {
     void loadNewsData();
   }, [loadNewsData]);
 
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handler = () => setIsMobile(mq.matches);
+    handler();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const displayList: ActivityDisplay[] = isMock
     ? [...mockActivities]
         .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
         .slice((currentPage - 1) * limit, currentPage * limit)
+        .slice(0, displayLimit)
     : newsList
         .map((n) => ({
           id: n.id,
@@ -74,7 +85,8 @@ export const useActivities = () => {
           category: n.category,
           wechatUrl: n.wechatUrl,
         }))
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+        .slice(0, displayLimit);
 
   const totalPages = Math.ceil(total / limit) || 1;
 
