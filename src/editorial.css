@@ -322,7 +322,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .teamDetailsButton:hover { background: var(--text-primary); color: #fff; }
 
 /* Competition area */
-.matches { background: var(--primary-dark); color: #fff; }
+.matches { background: #082048; color: #fff; }
 .matches .sectionHeader { color: rgba(255,255,255,.55); }
 .matches .sectionTag { color: var(--accent-color); }
 .matches .sectionTitle { color: #fff; }

@@ -53,19 +53,19 @@
 
 /* 统计卡片与表格容器 */
 .standingsSection, .scorersSection {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md) 0;
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(10px);
+  background: var(--comp-bg-card);
+  border: 1px solid var(--comp-border-card);
+  border-radius: var(--comp-radius-card);
+  padding: var(--spacing-md);
+  box-shadow: none;
+  backdrop-filter: none;
   overflow: hidden;
-  margin-top: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
 }
 
 @media (min-width: 769px) {
   .standingsSection, .scorersSection {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-lg);
   }
 }
 
@@ -86,9 +86,10 @@
 
 .standingsTable th, .scorersTable th {
   padding: 12px 0;
-  font-weight: 600;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-color);
+  font-weight: 500;
+  color: var(--comp-header-text);
+  background: var(--comp-header-bg);
+  border-bottom: 1px solid var(--comp-header-divider);
   font-size: 0.7rem;
   white-space: nowrap;
   overflow: hidden;
@@ -96,8 +97,8 @@
 
 .standingsTable td, .scorersTable td {
   padding: 12px 0;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-color);
+  color: var(--comp-row-text);
+  border-bottom: 1px solid var(--comp-row-divider);
   vertical-align: middle;
   white-space: nowrap;
   overflow: hidden;
@@ -133,14 +134,14 @@
 }
 
 .standingsTable tbody tr:hover, .scorersTable tbody tr:hover {
-  background-color: rgba(26, 86, 219, 0.03);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* 排名数字 */
 .rankBadge {
   font-weight: 700;
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--comp-text-secondary);
 }
 
 .rank-gold {
@@ -169,7 +170,7 @@
   height: 26px;
   object-fit: contain;
   border-radius: 4px;
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.08);
   border: none;
   flex-shrink: 0;
 }
@@ -180,17 +181,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--comp-text-primary);
 }
 
 .pointsCell {
   font-weight: 700;
-  color: var(--primary-color);
+  color: var(--comp-text-primary);
   font-size: 1.05rem;
 }
 
 .goalsCell {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--comp-text-primary);
   text-align: center;
   font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
@@ -200,11 +202,12 @@
   display: inline-block;
   min-width: 1.5em;
   text-align: right;
+  color: var(--comp-text-primary);
 }
 
 .penaltyGoals {
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--comp-text-secondary);
   font-size: 0.85rem;
   margin-left: 2px;
 }
@@ -223,6 +226,10 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+}
+
+.scorerNameCell strong {
+  color: var(--comp-text-primary);
 }
 
 .scorerIcon {
@@ -252,9 +259,9 @@
 .cupGroupHeader {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: var(--comp-header-text);
   margin-bottom: var(--spacing-md);
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid var(--comp-header-divider);
   padding: 0 0 var(--spacing-sm) 0;
   letter-spacing: 0.5px;
   text-align: center;
@@ -265,32 +272,40 @@
 }
 
 .advancingRow {
-  background-color: rgba(16, 185, 129, 0.04);
+  background-color: var(--comp-highlight-bg);
 }
 
 .advancingRow:hover {
-  background-color: rgba(16, 185, 129, 0.08) !important;
+  background-color: rgba(64, 110, 190, 0.35) !important;
 }
 
 /* 晋级区高亮（前两名） */
 .promotionRow {
-  background-color: rgba(16, 185, 129, 0.06);
-  border-left: 3px solid #10b981;
+  background-color: var(--comp-highlight-bg);
+  border-left: 3px solid rgba(64, 110, 190, 0.6);
+}
+
+.promotionRow td {
+  color: var(--comp-text-primary);
 }
 
 .promotionRow:hover {
-  background-color: rgba(16, 185, 129, 0.1) !important;
+  background-color: rgba(64, 110, 190, 0.35) !important;
 }
 
 /* Bracket Section */
 .bracketSection {
+  background: var(--comp-bg-card);
+  border: 1px solid var(--comp-border-card);
+  border-radius: var(--comp-radius-card);
+  padding: var(--spacing-md);
   margin-top: var(--spacing-lg);
-  padding-bottom: 40px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .bracketWrapper {
   overflow-x: visible;
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-md) 0;
 }
 
 .bracketContainer {
@@ -322,20 +337,20 @@
 .columnHeader {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--comp-bracket-col-header-text);
   text-transform: uppercase;
   margin-bottom: var(--spacing-md);
   padding: var(--spacing-xs) var(--spacing-md);
-  background: var(--bg-secondary);
+  background: var(--comp-bracket-col-header-bg);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--comp-bracket-col-header-border);
   text-align: center;
   width: 100%;
 }
 
 .championHeader {
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%);
-  border-color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.45);
   color: #fbbf24;
 }
 
@@ -365,12 +380,12 @@
 
 /* Match Card */
 .bracketMatchCard {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--comp-bracket-card-bg);
+  border: 1px solid var(--comp-bracket-card-border);
   border-radius: var(--radius-lg);
   padding: 10px;
   width: 100%;
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
   transition: all 0.3s ease;
   position: relative;
 }
@@ -381,8 +396,8 @@
 
 .bracketMatchCard:hover {
   transform: translateY(-2px);
-  border-color: var(--primary-color);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
 /* Connection Lines Rules */
@@ -390,10 +405,10 @@
 .bracketMatchCard.bracket-card-left::after {
   content: '';
   position: absolute;
-  right: -8px;
-  width: 8px;
+  right: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -403,10 +418,10 @@
 .bracketMatchCard.bracket-card-right::after {
   content: '';
   position: absolute;
-  left: -8px;
-  width: 8px;
+  left: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -416,10 +431,10 @@
 .bracketMatchCard.bracket-card-qf.bracket-card-left::before {
   content: '';
   position: absolute;
-  left: -8px;
-  width: 8px;
+  left: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -429,10 +444,10 @@
 .bracketMatchCard.bracket-card-qf.bracket-card-right::before {
   content: '';
   position: absolute;
-  right: -8px;
-  width: 8px;
+  right: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -442,10 +457,10 @@
 .bracketMatchCard.bracket-card-sf.bracket-card-left::before {
   content: '';
   position: absolute;
-  left: -8px;
-  width: 8px;
+  left: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -455,10 +470,10 @@
 .bracketMatchCard.bracket-card-sf.bracket-card-right::before {
   content: '';
   position: absolute;
-  right: -8px;
-  width: 8px;
+  right: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -468,10 +483,10 @@
 .bracketMatchCard.bracket-card-f::before {
   content: '';
   position: absolute;
-  left: -8px;
-  width: 8px;
+  left: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -479,10 +494,10 @@
 .bracketMatchCard.bracket-card-f::after {
   content: '';
   position: absolute;
-  right: -8px;
-  width: 8px;
+  right: -16px;
+  width: 16px;
   height: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -493,11 +508,11 @@
 .qf-left-column .matchGroups::after {
   content: '';
   position: absolute;
-  right: -8px;
+  right: -16px;
   top: 25%;
   height: 50%;
   width: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   z-index: 0;
 }
 
@@ -505,11 +520,11 @@
 .qf-right-column .matchGroups::after {
   content: '';
   position: absolute;
-  left: -8px;
+  left: -16px;
   top: 25%;
   height: 50%;
   width: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   z-index: 0;
 }
 
@@ -517,21 +532,21 @@
 .r16-left-column .matchGroups::before {
   content: '';
   position: absolute;
-  right: -8px;
+  right: -16px;
   top: 12.5%;
   height: 25%;
   width: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   z-index: 0;
 }
 .r16-left-column .matchGroups::after {
   content: '';
   position: absolute;
-  right: -8px;
+  right: -16px;
   top: 62.5%;
   height: 25%;
   width: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   z-index: 0;
 }
 
@@ -539,44 +554,44 @@
 .r16-right-column .matchGroups::before {
   content: '';
   position: absolute;
-  left: -8px;
+  left: -16px;
   top: 12.5%;
   height: 25%;
   width: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   z-index: 0;
 }
 .r16-right-column .matchGroups::after {
   content: '';
   position: absolute;
-  left: -8px;
+  left: -16px;
   top: 62.5%;
   height: 25%;
   width: 2px;
-  background: var(--border-color);
+  background: var(--comp-bracket-connector);
   z-index: 0;
 }
 
 /* Highlight connection colors on hover/winner */
 .bracketMatchCard:hover::after,
 .bracketMatchCard:hover::before {
-  background: var(--primary-color) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
 }
 
 .emptyCard {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
   border-style: dashed;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .bracketMatchHeader {
   font-size: 0.75rem;
-  color: var(--text-light);
+  color: var(--comp-text-muted);
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-sm);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: var(--spacing-xs);
 }
 
@@ -610,7 +625,7 @@
 .bracketTeamName {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--comp-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -620,7 +635,7 @@
 .bracketTeamScore {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-light);
+  color: var(--comp-header-text);
   flex: 0 0 auto;
   white-space: nowrap;
   margin-left: var(--spacing-xs);
@@ -628,16 +643,16 @@
 
 .winnerRow .bracketTeamName {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--comp-text-primary);
 }
 
 .winnerRow .bracketTeamScore {
-  color: var(--primary-color);
+  color: var(--comp-text-primary);
 }
 
 .bracketTime {
   font-size: 0.7rem;
-  color: var(--text-light);
+  color: var(--comp-text-muted);
   text-align: right;
   margin-top: var(--spacing-xs);
 }
@@ -654,8 +669,8 @@
 }
 
 .completedBadge {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-light);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--comp-text-muted);
   font-size: 0.65rem;
   padding: 1px 4px;
   border-radius: 2px;
@@ -680,8 +695,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(245, 158, 11, 0.08) 100%);
-  border: 2px dashed #fbbf24;
+  background: var(--comp-bracket-card-bg);
+  border: 3px solid rgba(251, 191, 36, 0.55);
   border-radius: var(--radius-xl);
   padding: 12px;
   width: 100%;
@@ -713,13 +728,13 @@
 .championName {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #fbbf24;
   text-align: center;
 }
 
 @keyframes shineGold {
-  0% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.2); }
-  100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
+  0% { box-shadow: 0 0 16px rgba(251, 191, 36, 0.45), 0 0 40px rgba(251, 191, 36, 0.2), 0 0 80px rgba(251, 191, 36, 0.06); }
+  100% { box-shadow: 0 0 32px rgba(251, 191, 36, 0.65), 0 0 70px rgba(251, 191, 36, 0.3), 0 0 120px rgba(251, 191, 36, 0.12); }
 }
 
 /* Third-place match section */
@@ -727,7 +742,7 @@
   width: 100%;
   margin-top: 8px;
   padding-top: 16px;
-  border-top: 1px dashed rgba(205, 127, 50, 0.4);
+  border-top: 1px dashed rgba(205, 127, 50, 0.45);
 }
 
 .thirdPlaceLabel {
@@ -1014,12 +1029,18 @@
   }
 
   .standingsSection, .scorersSection {
-    padding: 2px 0;
-    border-radius: 0;
-    border: none;
+    padding: var(--spacing-xs);
+    border-radius: var(--comp-radius-card);
+    border: 1px solid var(--comp-border-card);
     box-shadow: none;
+    backdrop-filter: none;
     overflow: hidden;
-    margin-top: 0;
+    margin-top: var(--spacing-xs);
+  }
+
+  .bracketSection {
+    padding: var(--spacing-xs);
+    border-radius: var(--comp-radius-card);
   }
 
   .standingsTableContainer {
@@ -1161,11 +1182,11 @@
 
 @media (max-width: 375px) {
   /* 强制消除全链路滚动 */
-  /* 强制消除全链路滚动 */
   .matches,
   .matchesContainer,
   .standingsSection,
   .scorersSection,
+  .bracketSection,
   .standingsTableContainer,
   .scorersTableContainer {
     overflow: hidden !important;

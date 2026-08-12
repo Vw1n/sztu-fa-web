@@ -64,6 +64,29 @@
   
   /* 字体 */
   --font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* ==========================================================================
+     赛事暗色主题变量 — 积分榜 / 射手榜 / 助攻榜 / 对阵图
+     集中管理所有透明度和颜色，方便后续微调
+     ========================================================================== */
+  --comp-bg-card: rgba(255, 255, 255, 0.03);
+  --comp-border-card: rgba(255, 255, 255, 0.12);
+  --comp-radius-card: 8px;
+  --comp-header-bg: rgba(255, 255, 255, 0.08);
+  --comp-header-text: #E6EDF9;
+  --comp-header-divider: rgba(255, 255, 255, 0.15);
+  --comp-row-text: #D0D9EC;
+  --comp-row-divider: rgba(255, 255, 255, 0.08);
+  --comp-highlight-bg: rgba(64, 110, 190, 0.25);
+  --comp-text-primary: #FFFFFF;
+  --comp-text-secondary: #D0D9EC;
+  --comp-text-muted: #94A3B8;
+  --comp-bracket-card-bg: rgba(255, 255, 255, 0.05);
+  --comp-bracket-card-border: rgba(255, 255, 255, 0.1);
+  --comp-bracket-connector: rgba(255, 255, 255, 0.25);
+  --comp-bracket-col-header-bg: rgba(255, 255, 255, 0.08);
+  --comp-bracket-col-header-text: #E6EDF9;
+  --comp-bracket-col-header-border: rgba(255, 255, 255, 0.1);
 }
 
 /* 全局重置 */
