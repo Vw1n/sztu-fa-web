@@ -322,7 +322,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .teamDetailsButton:hover { background: var(--text-primary); color: #fff; }
 
 /* Competition area */
-.matches { background: var(--primary-dark); color: #fff; }
+.matches { background: #082048; color: #fff; }
 .matches .sectionHeader { color: rgba(255,255,255,.55); }
 .matches .sectionTag { color: var(--accent-color); }
 .matches .sectionTitle { color: #fff; }
@@ -335,6 +335,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .matches .season-selector-container > span { color: rgba(255,255,255,.72) !important; }
 .matches .seasonSelect { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.26); color: #fff; }
 .matches .seasonSelect option { color: var(--text-primary); }
+.matches .standingsSection,
+.matches .scorersSection,
+.matches .bracketSection {
+  background: #ffffff;
+}
 
 /* Footer */
 .footer { background: #020a1d; border-top: 1px solid rgba(255,255,255,.14); }
