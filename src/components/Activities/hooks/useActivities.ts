@@ -62,7 +62,13 @@ export const useActivities = () => {
   }, [loadNewsData]);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return;
+    }
     const mq = window.matchMedia('(max-width: 768px)');
+    if (!mq) {
+      return;
+    }
     const handler = () => setIsMobile(mq.matches);
     handler();
     mq.addEventListener('change', handler);
