@@ -13,6 +13,10 @@ const BASE_URL = (
 
 export { BASE_URL };
 
+const inFlightPublicGets = new Map<string, Promise<Response>>();
+const publicGetCache = new Map<string, { response: Response; expiresAt: number }>();
+const MAX_PUBLIC_GET_CACHE_ENTRIES = 100;
+
 export function handleUnauthorized(response: Response): void {
   if (response.status === 401) {
     if (typeof localStorage !== 'undefined') {
@@ -32,7 +36,7 @@ export function handleUnauthorized(response: Response): void {
   }
 }
 
-export async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+async function executeApiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const response = await fetch(input, init);
   if (response.status === 401) {
     handleUnauthorized(response);
@@ -42,6 +46,58 @@ export async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Pr
     throw new Error('API 地址配置错误：服务器返回了 HTML 内容而不是预期 JSON。请检查 VITE_API_BASE_URL 配置。');
   }
   return response;
+}
+
+function getDedupeKey(input: RequestInfo | URL, init?: RequestInit): string | null {
+  const request = typeof Request !== 'undefined' && input instanceof Request ? input : null;
+  const method = (init?.method || request?.method || 'GET').toUpperCase();
+  if (method !== 'GET') return null;
+
+  const headers = new Headers(init?.headers || request?.headers);
+  if (headers.has('Authorization')) return null;
+
+  return typeof input === 'string' ? input : input.toString();
+}
+
+function getPublicCacheTtlMs(key: string): number {
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+  const path = new URL(key, origin).pathname;
+  if (/\/api\/v1\/matches(?:\/|$)/.test(path)) return 15_000;
+  if (/\/api\/v1\/(?:seasons|teams|players|news)(?:\/|$)/.test(path)) return 60_000;
+  if (/\/api\/v1\/public\/summary\/?$/.test(path)) return 60_000;
+  return 0;
+}
+
+function cachePublicResponse(key: string, response: Response, ttlMs: number): void {
+  if (publicGetCache.size >= MAX_PUBLIC_GET_CACHE_ENTRIES && !publicGetCache.has(key)) {
+    const oldestKey = publicGetCache.keys().next().value;
+    if (oldestKey) publicGetCache.delete(oldestKey);
+  }
+  publicGetCache.set(key, { response: response.clone(), expiresAt: Date.now() + ttlMs });
+}
+
+export async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const dedupeKey = getDedupeKey(input, init);
+  if (!dedupeKey) return executeApiFetch(input, init);
+
+  const ttlMs = getPublicCacheTtlMs(dedupeKey);
+  const cached = publicGetCache.get(dedupeKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.response.clone();
+  if (cached) publicGetCache.delete(dedupeKey);
+
+  let pending = inFlightPublicGets.get(dedupeKey);
+  if (!pending) {
+    pending = executeApiFetch(input, init).finally(() => {
+      inFlightPublicGets.delete(dedupeKey);
+    });
+    inFlightPublicGets.set(dedupeKey, pending);
+  }
+
+  const response = await pending;
+  if (ttlMs > 0 && response.ok) {
+    cachePublicResponse(dedupeKey, response, ttlMs);
+  }
+  return response.clone();
 }
 
 /**

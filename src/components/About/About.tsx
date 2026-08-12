@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './About.css';
 import { SectionHeader } from '../common';
-import { fetchMatches, fetchPlayers } from '../../api';
+import { fetchPublicSummary } from '../../api';
 
 interface Feature {
   icon: React.ReactNode;
@@ -66,22 +66,9 @@ const About: React.FC = () => {
     let isMounted = true;
     const loadRealStats = async () => {
       try {
-        const [matchRes, playerRes] = await Promise.allSettled([
-          // “举办赛事”是协会累计数据，不能沿用接口默认的当前赛季筛选。
-          fetchMatches(1, 1, undefined, 'all'),
-          fetchPlayers(1, 1),
-        ]);
-
-        let matchValue = '暂时无法获取';
-        let playerValue = '暂时无法获取';
-
-        if (matchRes.status === 'fulfilled' && matchRes.value && typeof matchRes.value.total === 'number') {
-          matchValue = String(matchRes.value.total);
-        }
-
-        if (playerRes.status === 'fulfilled' && playerRes.value && typeof playerRes.value.total === 'number') {
-          playerValue = String(playerRes.value.total);
-        }
+        const summary = await fetchPublicSummary();
+        const matchValue = String(summary.matchCount);
+        const playerValue = String(summary.playerCount);
 
         if (isMounted) {
           setStats([

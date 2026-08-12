@@ -4,8 +4,7 @@ import About from '../About';
 import * as api from '../../../api';
 
 vi.mock('../../../api', () => ({
-  fetchMatches: vi.fn(),
-  fetchPlayers: vi.fn(),
+  fetchPublicSummary: vi.fn(),
 }));
 
 describe('About Component', () => {
@@ -14,18 +13,10 @@ describe('About Component', () => {
   });
 
   it('renders loading placeholder initially and updates on success', async () => {
-    vi.mocked(api.fetchMatches).mockResolvedValue({
-      data: [],
-      total: 42,
-      page: 1,
-      limit: 1,
-      stats: { total: 42, completed: 30, scheduled: 10, ongoing: 2 },
-    });
-    vi.mocked(api.fetchPlayers).mockResolvedValue({
-      data: [],
-      total: 150,
-      page: 1,
-      limit: 1,
+    vi.mocked(api.fetchPublicSummary).mockResolvedValue({
+      matchCount: 42,
+      playerCount: 150,
+      teamCount: 16,
     });
 
     render(<About />);
@@ -40,8 +31,7 @@ describe('About Component', () => {
   });
 
   it('displays "暂时无法获取" when API fails, never zero values', async () => {
-    vi.mocked(api.fetchMatches).mockRejectedValue(new Error('Network error'));
-    vi.mocked(api.fetchPlayers).mockRejectedValue(new Error('Network error'));
+    vi.mocked(api.fetchPublicSummary).mockRejectedValue(new Error('Network error'));
 
     render(<About />);
 
