@@ -55,12 +55,14 @@ const Activities: React.FC = () => {
               </div>
             ) : (
               <div className="activitiesGrid">
-                {displayList.map((activity, index) => (
-                  <div key={activity.id} className="activityCard">
+                {displayList.map((activity, index) => {
+                  const isFeatured = index === 0 && currentPage === 1;
+                  return (
+                  <div key={activity.id} className={`activityCard${isFeatured ? ' activityCardFeatured' : ''}`}>
                     <div className="activityImageWrapper">
                       <img src={activity.image} alt={activity.title} className="activityImage" loading="lazy" />
                       <span className="activityCategory">{activity.category}</span>
-                      {index === 0 && currentPage === 1 && <span className="activityLatestBadge">最新发布</span>}
+                      {isFeatured && <span className="activityLatestBadge">最新发布</span>}
                     </div>
                     <div className="activityContent">
                       <div className="activityDate">
@@ -96,7 +98,8 @@ const Activities: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

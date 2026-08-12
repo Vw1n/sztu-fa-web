@@ -1,6 +1,6 @@
 /* Editorial sports direction inspired by premium football brand sites. */
 :root {
-  --primary-color: #123cba;
+  --primary-color: var(--primary-color);
   --primary-light: #2459e8;
   --primary-dark: #061a45;
   --accent-color: #d8ff3e;
@@ -203,7 +203,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .registerBtn:hover { background: var(--primary-color); color: #fff; }
 
 /* Shared section language */
-.about, .activities, .teams, .matches { padding: clamp(88px, 9vw, 144px) 0; }
+.about, .activities, .teams, .matches { padding: clamp(64px, 7vw, 112px) 0; }
 .aboutContainer, .activitiesContainer, .teamsContainer, .matchesContainer {
   max-width: var(--container-xl);
   padding: 0 clamp(24px, 4vw, 64px);
@@ -212,46 +212,103 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sectionHeader {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(150px, .35fr) 1fr minmax(260px, .5fr);
-  align-items: end;
-  gap: 28px;
-  margin-bottom: clamp(48px, 7vw, 88px);
-  padding-top: 20px;
-  border-top: 1px solid currentColor;
+  grid-template-columns: auto minmax(0, 1fr) minmax(200px, .35fr);
+  align-items: start;
+  gap: 24px;
+  margin-bottom: clamp(32px, 5vw, 56px);
+  padding-top: 28px;
+  padding-bottom: 16px;
+  border-top: 1px solid var(--border-color);
   text-align: left;
+  overflow: visible;
 }
 
 .sectionTag {
   align-self: start;
-  padding: 0;
+  padding: 4px 10px 4px 0;
   background: transparent;
-  color: var(--primary-color);
-  font-size: .72rem;
-  font-weight: 850;
-  letter-spacing: .14em;
+  color: var(--text-primary);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .18em;
   text-transform: uppercase;
+  writing-mode: horizontal-tb;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.sectionTag::before { content: '●'; margin-right: 9px; font-size: .58rem; }
+.sectionTag::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 3px;
+  background: var(--accent-color);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(7,20,46,.18);
+}
+
+.sectionTag::after {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
 
 .sectionTitle {
   margin: 0;
   color: var(--text-primary);
   font-size: clamp(2.8rem, 5vw, 5.4rem);
   font-weight: 900;
-  line-height: .94;
-  letter-spacing: -.065em;
+  line-height: 1.08;
+  letter-spacing: -.055em;
+  padding-top: .08em;
+  overflow: visible;
+  position: relative;
 }
 
-.sectionTitle span { display: block; color: transparent; -webkit-text-stroke: 1.4px var(--primary-color); }
-.sectionDescription { max-width: 380px; margin: 0; color: var(--text-secondary); font-size: .95rem; line-height: 1.75; }
+.sectionTitle span {
+  display: block;
+  color: var(--primary-dark);
+  padding-bottom: .18em;
+  overflow: visible;
+  position: relative;
+  font-style: italic;
+  font-weight: 900;
+}
+
+.sectionTitle span::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent-color) 0%, var(--primary-color) 100%);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(7,20,46,.15);
+}
+
+.matches .sectionTitle span {
+  color: #fff;
+}
+.matches .sectionTitle span::after {
+  background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-light) 100%);
+}
+
+.sectionDescription { max-width: 380px; margin: 0; color: var(--text-secondary); font-size: .95rem; line-height: 1.75; padding-top: 6px; }
 
 /* About */
 .about { background: var(--bg-primary); }
-.aboutContent { grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); gap: clamp(36px, 6vw, 92px); align-items: start; }
-.aboutImageWrapper { overflow: hidden; }
-.aboutImage { min-height: 500px; aspect-ratio: 1.38; object-fit: cover; border-radius: 0; box-shadow: none; transition: transform 800ms cubic-bezier(.22,1,.36,1); }
-.aboutImageWrapper:hover .aboutImage { transform: scale(1.025); }
+.aboutContent { grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: clamp(24px, 3.5vw, 56px); align-items: start; }
+.aboutImageWrapper { position: relative; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: clamp(4px, 0.8vw, 10px); }
+.aboutImageWrapper picture { display: block; width: 100%; max-width: 100%; height: auto; }
+.aboutImage { display: block; width: 100%; max-width: 100%; height: auto; max-height: none; min-height: 0; aspect-ratio: auto; object-fit: contain; border-radius: 0; box-shadow: none; transition: transform 800ms cubic-bezier(.22,1,.36,1); }
+.aboutImageWrapper:hover .aboutImage { transform: scale(1.015); transform-origin: center; }
 .aboutText { gap: 22px; padding-top: 8px; }
 .aboutTitle { max-width: 490px; margin: 0 0 12px; font-size: clamp(2rem, 3.2vw, 3.5rem); line-height: 1.08; letter-spacing: -.045em; }
 .aboutParagraph { font-size: .98rem; line-height: 1.9; }
@@ -264,37 +321,76 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   gap: 0;
   margin-top: 0;
   padding: 0;
-  background: var(--primary-dark);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 0;
-  box-shadow: none;
-  color: #fff;
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
 }
-.about .statItem { min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; padding: 30px; text-align: left; border-right: 1px solid rgba(255,255,255,.18); }
+.about .statItem {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  text-align: left;
+  border-right: 1px solid var(--border-color);
+  transition: background var(--transition-fast);
+}
 .about .statItem:last-child { border-right: 0; }
-.about .statNumber { color: #fff; font-size: clamp(2.7rem, 5vw, 5.4rem); letter-spacing: -.065em; }
-.about .statNumber span { color: var(--accent-color); font-size: .4em; }
-.about .statLabel { color: rgba(255,255,255,.65); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
+.about .statItem:hover { background: var(--bg-secondary); }
+.about .statNumber {
+  color: var(--primary-color);
+  font-size: clamp(2.7rem, 5vw, 5.4rem);
+  font-weight: 900;
+  letter-spacing: -.065em;
+  line-height: 1;
+}
+.about .statNumber span {
+  color: var(--text-light);
+  font-size: .42em;
+  margin-left: 4px;
+  font-weight: 700;
+}
+.about .statLabel {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 2px solid var(--accent-color);
+}
 
 /* Activities */
 .activities { background: var(--bg-secondary); border-block: 1px solid var(--border-color); }
-.activitiesGrid { grid-template-columns: repeat(12, 1fr); gap: 24px; }
-.activityCard { grid-column: span 4; background: transparent; border-top: 1px solid var(--text-primary); border-radius: 0; box-shadow: none; }
-.activityCard:first-child { grid-column: span 8; }
+.activityCard { background: transparent; border-top: 1px solid var(--text-primary); border-radius: 0; box-shadow: none; display: flex; flex-direction: column; }
+.activityCardFeatured { flex-direction: row; }
+.activityCard:first-child { grid-column: auto; }
 .activityCard:hover { transform: none; box-shadow: none; }
-.activityImageWrapper { height: clamp(240px, 23vw, 370px); margin-top: 12px; }
-.activityCard:first-child .activityImageWrapper { height: clamp(330px, 38vw, 560px); }
-.activityImage { filter: saturate(.82); transition: transform 600ms cubic-bezier(.22,1,.36,1), filter 300ms ease; }
+.activityImageWrapper { height: auto; margin-top: 12px; }
+.activityCard:first-child .activityImageWrapper { height: auto; }
+.activityImage { width: 100%; height: auto; object-fit: contain; filter: saturate(.82); transition: transform 600ms cubic-bezier(.22,1,.36,1), filter 300ms ease; }
 .activityCard:hover .activityImage { transform: scale(1.025); filter: saturate(1); }
 .activityCategory, .activityLatestBadge { top: 12px; padding: 7px 10px; border-radius: 0; font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
 .activityCategory { left: 12px; background: var(--accent-color); color: var(--text-primary); }
 .activityLatestBadge { right: 12px; background: var(--primary-dark); color: #fff; }
-.activityContent { padding: 20px 0 4px; }
+.activityContent { padding: 20px 0 4px; display: flex; flex-direction: column; flex: 1; }
 .activityDate { color: var(--text-light); font-size: .72rem; letter-spacing: .08em; }
-.activityTitle { height: auto; margin: 12px 0; font-size: clamp(1.25rem, 2vw, 2rem); line-height: 1.18; letter-spacing: -.025em; }
-.activityCard:first-child .activityTitle { font-size: clamp(1.8rem, 3vw, 3.2rem); }
-.activityDescription { height: auto; max-width: 640px; color: var(--text-secondary); font-size: .9rem; line-height: 1.75; }
-.activityMeta { border-color: var(--border-color); }
+.activityTitle { height: auto; margin: 12px 0; font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.25; letter-spacing: -.02em; }
+.activityCard:first-child .activityTitle { font-size: clamp(1rem, 1.4vw, 1.3rem); }
+.activityDescription { height: auto; max-width: 100%; color: var(--text-secondary); font-size: .88rem; line-height: 1.65; flex: 1; }
+.activityMeta { border-color: var(--border-color); margin-top: auto; }
 .activityLink { color: var(--text-primary); font-weight: 800; }
+
+/* Featured (latest) activity card — spans 2 cols, horizontal layout */
+.activityCardFeatured { grid-column: span 2 !important; flex-direction: row !important; align-items: stretch; }
+.activityCardFeatured .activityImageWrapper { width: 50% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; }
+.activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+.activityCardFeatured .activityContent { flex: 1; padding: 20px 24px !important; }
+.activityCardFeatured .activityTitle { font-size: clamp(1.25rem, 1.8vw, 1.6rem) !important; }
+.activityCardFeatured .activityDescription { font-size: .95rem; line-height: 1.7; }
 
 /* Teams */
 .teams { background: var(--bg-primary); }
@@ -308,25 +404,199 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .searchInputWrapper { max-width: 520px; }
 .searchButton { background: var(--text-primary); padding-inline: 28px; }
 .refreshButton { margin: 0 0 26px auto; background: transparent; color: var(--text-primary); }
-.teamsGrid { grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); }
-.teamCard { background: var(--bg-primary); border-radius: 0; box-shadow: none; }
-.teamCard:hover { transform: none; box-shadow: none; background: #fff; }
-.teamCard.selected { border: 0; box-shadow: inset 0 -5px 0 var(--primary-color); }
-.teamImageWrapper { height: 230px; background: transparent; }
-.teamImage { padding: 34px; background: transparent; }
-.teamContent { padding: 18px 20px 22px; border-top: 1px solid var(--border-color); }
-.teamName { margin-bottom: 16px; text-align: left; font-size: 1.25rem; letter-spacing: -.025em; }
+.teamsGrid { grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--bg-primary); border: 1px solid var(--border-color); }
+.teamCard {
+  background: #fff;
+  border-radius: 0;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(7, 20, 46, 0.06),
+    0 4px 16px rgba(26, 86, 219, 0.06);
+  transition:
+    transform .45s cubic-bezier(.22,1,.36,1),
+    box-shadow .45s cubic-bezier(.22,1,.36,1),
+    background .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.teamCard::after { content: ''; position: absolute; inset: 0; border: 2px solid transparent; pointer-events: none; transition: border-color .3s ease; z-index: 2; }
+.teamCard:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 1),
+    0 12px 30px rgba(26, 86, 219, .12),
+    0 28px 56px rgba(26, 86, 219, .10),
+    0 48px 90px rgba(26, 86, 219, .08),
+    0 2px 6px rgba(7, 20, 46, .04);
+  background: #fff;
+}
+.teamCard:hover::after { border-color: var(--primary-color); }
+.teamCard.selected {
+  box-shadow:
+    0 0 0 1px rgba(26, 86, 219, .14),
+    0 2px 8px rgba(7, 20, 46, .06),
+    0 6px 20px rgba(26, 86, 219, .08),
+    inset 0 -5px 0 var(--primary-color),
+    inset 0 1px 0 rgba(255, 255, 255, .85);
+}
+.teamCard.selected::after { border-color: var(--primary-color); }
+
+/* ===== 球队卡片顶部横幅（参考切尔西样式） ===== */
+.teamBanner {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  padding: clamp(14px, 1.6vw, 20px) clamp(16px, 1.8vw, 22px);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .10),
+    inset 0 -1px 0 rgba(0, 0, 0, .12);
+}
+
+.teamBannerWatermark {
+  position: absolute;
+  right: -12%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 180%;
+  width: auto;
+  opacity: 0.08;
+  filter: saturate(1.2);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.teamBannerContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.teamBannerLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.teamBannerName {
+  color: #fff;
+  font-size: clamp(1.05rem, 1.5vw, 1.45rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0;
+  text-align: left;
+  text-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.45),
+    0 0 1px rgba(0, 0, 0, 0.7);
+  /* 允许换行显示完整队名，最多 3 行 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.teamBannerRight {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teamBannerLogo {
+  width: clamp(72px, 9vw, 110px);
+  height: clamp(72px, 9vw, 110px);
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+  border-radius: 14px;
+  padding: clamp(8px, 0.9vw, 14px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.95),
+    0 6px 16px rgba(26, 86, 219, 0.18),
+    0 12px 28px rgba(26, 86, 219, 0.14),
+    0 2px 5px rgba(7, 20, 46, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  transition: transform .45s cubic-bezier(.22,1,.36,1), box-shadow .45s cubic-bezier(.22,1,.36,1);
+}
+
+.teamCard:hover .teamBannerLogo {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 1),
+    0 14px 32px rgba(26, 86, 219, 0.22),
+    0 28px 54px rgba(26, 86, 219, 0.18),
+    0 5px 12px rgba(7, 20, 46, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.teamBannerLogoPlaceholder {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+}
+.teamBannerLogoPlaceholder .teamLogoInitial {
+  font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+  color: #fff;
+}
+
+/* ===== 下方信息区 ===== */
+.teamContent {
+  padding: 16px 18px 20px;
+  border-top: 1px solid var(--border-color);
+  transition: border-color .3s ease;
+  background: transparent;
+  color: var(--text-primary);
+}
+.teamCard:hover .teamContent { border-top-color: var(--accent-color); }
 .teamInfo { gap: 8px 14px; }
-.teamInfoLabel { text-transform: uppercase; letter-spacing: .08em; }
-.teamDetailsButton { width: 100%; min-height: 42px; margin-top: 18px; border: 1px solid var(--text-primary); border-radius: 0; font-weight: 750; }
-.teamDetailsButton:hover { background: var(--text-primary); color: #fff; }
+.teamInfoLabel { text-transform: uppercase; letter-spacing: .08em; color: var(--text-light); }
+.teamInfoValue { color: var(--text-primary); transition: color .3s ease; }
+.teamCard:hover .teamInfoValue { color: var(--primary-color); }
+.teamDetailsButton {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 18px;
+  border: 1px solid var(--text-primary);
+  border-radius: 0;
+  font-weight: 750;
+  color: var(--text-primary);
+  background: transparent;
+  transition: all .35s cubic-bezier(.22,1,.36,1);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .90),
+    0 2px 6px rgba(26, 86, 219, .08);
+}
+.teamDetailsButton:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .90),
+    0 8px 18px rgba(255, 230, 100, .30),
+    0 20px 40px rgba(255, 210, 50, .20);
+}
 
 /* Competition area */
 .matches { background: #082048; color: #fff; }
 .matches .sectionHeader { color: rgba(255,255,255,.55); }
 .matches .sectionTag { color: var(--accent-color); }
 .matches .sectionTitle { color: #fff; }
-.matches .sectionTitle span { -webkit-text-stroke-color: rgba(255,255,255,.72); }
+.matches .sectionTitle span {
+  color: #fff;
+}
+.matches .sectionTitle span::after {
+  background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-light) 100%);
+}
 .matches .sectionDescription { color: rgba(255,255,255,.66); }
 .matchesTabs { display: flex; gap: 0 !important; border: 1px solid rgba(255,255,255,.25); }
 .tabButton { min-height: 48px; padding-inline: 20px; border-right: 1px solid rgba(255,255,255,.2) !important; border-radius: 0 !important; color: rgba(255,255,255,.72) !important; background: transparent !important; }
@@ -383,9 +653,29 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutContent { grid-template-columns: 1fr; }
   .aboutImage { min-height: 0; }
   .aboutText { max-width: 680px; }
-  .activityCard, .activityCard:first-child { grid-column: span 6; }
-  .activityCard:first-child .activityImageWrapper { height: clamp(300px, 52vw, 500px); }
+  .activityCard, .activityCard:first-child { grid-column: auto; }
+  .activityCard:first-child .activityImageWrapper { height: auto; }
+  .activityCardFeatured { grid-column: 1 / -1 !important; display: flex !important; flex-direction: row !important; align-items: stretch; }
+  .activityCardFeatured .activityImageWrapper { width: 45% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; }
+  .activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+  .activityCardFeatured .activityContent { flex: 1; padding: 16px 20px !important; }
+  .activityCardFeatured .activityTitle { font-size: 1.2rem !important; }
   .teamsGrid { grid-template-columns: repeat(2, 1fr); }
+  .teamBanner { aspect-ratio: auto; padding: 14px 16px; min-height: 110px; }
+  .teamBannerName {
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    font-weight: 850;
+    -webkit-line-clamp: 2;
+    line-height: 1.25;
+  }
+  .teamBannerLogo {
+    width: clamp(76px, 10vw, 96px);
+    height: clamp(76px, 10vw, 96px);
+    border-radius: 12px;
+    padding: clamp(10px, 1.3vw, 14px);
+  }
+  .teamBannerWatermark { height: 160%; opacity: 0.10; filter: saturate(1.2); right: -8%; }
+  .teamContent { display: none; }
 }
 
 @media (max-width: 768px) {
@@ -402,18 +692,53 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutStats { margin-top: 36px; }
   .about .statItem { min-height: 132px; padding: 18px 14px; }
   .about .statNumber { font-size: clamp(2rem, 10vw, 3.2rem); }
-  .activitiesGrid { grid-template-columns: 1fr; gap: 38px; }
-  .activityCard, .activityCard:first-child { grid-column: auto; display: block; }
-  .activityImageWrapper, .activityCard:first-child .activityImageWrapper { height: auto; aspect-ratio: 4 / 3; }
+  .about .statLabel { font-size: .88rem; padding-top: 10px; border-top-width: 2px; }
+  .activitiesGrid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .activityCard, .activityCard:first-child { grid-column: auto; display: flex; }
+  .activityImageWrapper, .activityCard:first-child .activityImageWrapper { height: auto; }
+  .activityCardFeatured { grid-column: 1 / -1 !important; display: flex !important; flex-direction: row !important; align-items: stretch; }
+  .activityCardFeatured .activityImageWrapper { width: 45% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; }
+  .activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+  .activityCardFeatured .activityContent { flex: 1; padding: 8px 10px !important; }
+  .activityCardFeatured .activityTitle { font-size: 0.95rem !important; }
   .activityContent { padding: 16px 0 0; }
-  .activityTitle, .activityCard:first-child .activityTitle { font-size: 1.5rem; }
-  .activityDescription { display: -webkit-box; font-size: .88rem; }
+  .activityTitle, .activityCard:first-child .activityTitle { font-size: 1.05rem; }
+  .activityDescription { display: -webkit-box; font-size: .85rem; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .teamsGrid { gap: 1px; }
-  .teamImageWrapper { height: 170px; }
-  .teamImage { padding: 24px; }
-  .teamContent { padding: 14px; }
-  .teamInfo { grid-template-columns: 1fr; }
-  .teamInfoItem:nth-child(n+3) { display: none; }
+  .teamBanner { aspect-ratio: auto; padding: 14px 14px; min-height: 108px; }
+  .teamBannerName {
+    font-size: clamp(.95rem, 3.2vw, 1.15rem);
+    font-weight: 850;
+    -webkit-line-clamp: 2;
+    line-height: 1.25;
+  }
+  .teamBannerLogo {
+    width: clamp(68px, 14vw, 88px);
+    height: clamp(68px, 14vw, 88px);
+    border-radius: 12px;
+    padding: clamp(8px, 1.6vw, 12px);
+  }
+  .teamBannerWatermark { height: 160%; opacity: 0.10; filter: saturate(1.2); right: -8%; }
+  .teamContent { display: none; }
+  /* 移动端触控反馈：点击时缩放+发光 */
+  .teamCard:active {
+    transform: scale(.97);
+    background: #f0f4f8;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .95),
+      0 6px 16px rgba(220, 228, 240, .60),
+      0 14px 32px rgba(230, 238, 250, .55),
+      inset 0 2px 6px rgba(26, 86, 219, .05);
+  }
+  .teamCard:active .teamBannerLogo {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .98),
+      0 6px 14px rgba(210, 220, 236, .60),
+      0 12px 26px rgba(222, 232, 246, .55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  }
+  .teamCard:active::after { border-color: var(--primary-color); }
   .matchesTabs { width: 100%; overflow-x: auto; scrollbar-width: none; }
   .tabButton { min-width: max-content; min-height: 46px; }
   .season-selector-container { width: 100%; justify-content: space-between; }
@@ -456,13 +781,39 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutFeature { padding: 14px 4px; }
   .aboutFeatureText { font-size: .78rem; }
   .aboutStats { grid-template-columns: 1fr; }
-  .about .statItem { min-height: 108px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.18); }
+  .about .statItem { min-height: 108px; border-right: 0; border-bottom: 1px solid var(--border-color); }
   .about .statItem:last-child { border-bottom: 0; }
   .teamsGrid { grid-template-columns: 1fr 1fr; }
-  .teamImageWrapper { height: 132px; }
-  .teamImage { padding: 18px; }
-  .teamName { font-size: .98rem; }
-  .teamDetailsButton { font-size: .76rem; }
+  .teamBanner { min-height: 96px; padding: 12px; }
+  .teamBannerName {
+    font-size: clamp(.88rem, 3.6vw, 1.05rem);
+    font-weight: 850;
+    -webkit-line-clamp: 2;
+  }
+  .teamBannerLogo {
+    width: clamp(60px, 15vw, 76px);
+    height: clamp(60px, 15vw, 76px);
+    border-radius: 10px;
+    padding: clamp(7px, 1.8vw, 10px);
+  }
+  .teamContent { display: none; }
+  /* 小屏触控：更明显的按压反馈 */
+  .teamCard:active {
+    transform: scale(.95);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .95),
+      0 4px 12px rgba(218, 226, 240, .60),
+      0 10px 24px rgba(228, 236, 248, .55),
+      inset 0 2px 6px rgba(26, 86, 219, .05);
+  }
+  .teamCard:active .teamBannerLogo {
+    transform: scale(1.08);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .98),
+      0 5px 12px rgba(208, 218, 234, .60),
+      0 10px 22px rgba(220, 230, 244, .55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
