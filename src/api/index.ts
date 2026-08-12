@@ -5,3 +5,4 @@ export * from './players';
 export * from './matches';
 export * from './seasons';
 export * from './news';
+export * from './summary';
