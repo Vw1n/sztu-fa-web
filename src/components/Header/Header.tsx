@@ -44,6 +44,16 @@ const Header: React.FC = () => {
 
   const handleNavClick = (path: string) => {
     setIsMobileMenuOpen(false);
+
+    // 首页：已在首页（含“协会简介/活动动态/球队信息/赛事公告”等锚点小节）时，点击回到页面最顶端
+    if (path === '/' && location.pathname === '/') {
+      if (location.hash) {
+        navigate('/', { replace: true });
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     if (path === `${location.pathname}${location.hash}` && location.hash) {
       document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' });
       return;

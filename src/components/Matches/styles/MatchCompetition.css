@@ -133,6 +133,22 @@
   text-align: left;
 }
 
+/* 射手榜 / 助攻榜 5 列宽度与对齐（表头与内容一致） */
+.scorersTable th:nth-child(1),
+.scorersTable td:nth-child(1) { width: 12%; }
+
+.scorersTable th:nth-child(2),
+.scorersTable td:nth-child(2) { width: 30%; text-align: left; }
+
+.scorersTable th:nth-child(3),
+.scorersTable td:nth-child(3) { width: 12%; }
+
+.scorersTable th:nth-child(4),
+.scorersTable td:nth-child(4) { width: 28%; text-align: left; }
+
+.scorersTable th:nth-child(5),
+.scorersTable td:nth-child(5) { width: 18%; }
+
 .standingsTable tbody tr:hover, .scorersTable tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
@@ -755,6 +771,103 @@
 }
 
 /* ==========================================================================
+   Desktop Bracket — 无 1/4 决赛时的竖向对阵图 (only SF + Final)
+   ========================================================================== */
+.bracketTreeNoQF {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 40px 16px;
+}
+
+.noQfCell {
+  width: 220px;
+}
+
+/* 阶段容器（标签 + 卡片，用于半决赛） */
+.noQfStage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 220px;
+}
+
+.noQfChampion {
+  margin-bottom: 16px;
+}
+
+/* 决赛卡片保持原横向布局中的内边距 */
+.noQfFinal .bracketMatchCard {
+  padding: 14px;
+}
+
+.noQfFinal {
+  position: relative;
+}
+
+/* 决赛卡片底部：向下连接线 */
+.noQfFinal::after {
+  content: '';
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 24px;
+  background: var(--comp-bracket-connector);
+  z-index: 1;
+}
+
+/* 决赛与半决赛之间的横向连接线 */
+.noQfConnector {
+  width: 495px; /* 220 (卡片宽) + 275 (间距 = 1.25 * 220) */
+  height: 2px;
+  background: var(--comp-bracket-connector);
+  margin-top: 24px;
+}
+
+.noQfSemis {
+  display: flex;
+  justify-content: center;
+  gap: 275px; /* 1.25 倍卡片宽 */
+  margin-top: 24px;
+}
+
+.noQfSemiStage {
+  position: relative;
+}
+
+/* 半决赛卡片顶部：向上连接线（连到标签上方） */
+.noQfSemiStage::before {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 24px;
+  background: var(--comp-bracket-connector);
+  z-index: 1;
+}
+
+/* 三四名决赛：上方虚线（复用 .thirdPlaceSection 的 dashed 边框） */
+.noQfThirdSection {
+  width: 220px;
+  margin-top: 32px;
+}
+
+/* 隐藏原有横向连接线（决赛 / 半决赛），仅竖向对阵图生效 */
+.bracketTreeNoQF .bracket-card-left::after,
+.bracketTreeNoQF .bracket-card-right::after,
+.bracketTreeNoQF .bracket-card-sf.bracket-card-left::before,
+.bracketTreeNoQF .bracket-card-sf.bracket-card-right::before,
+.bracketTreeNoQF .bracket-card-f::before,
+.bracketTreeNoQF .bracket-card-f::after {
+  display: none;
+}
+
+/* ==========================================================================
    Mobile Bracket — 上下半区纵向对阵图 (≤768px)
 
      QF1 ──┐  ┌── QF2
@@ -911,6 +1024,156 @@
   .bracketWrapper {
     overflow-x: visible;
     padding: 4px 0;
+  }
+}
+
+/* ==========================================================================
+   Mobile Bracket — 无 1/4 决赛（仅半决赛 + 决赛）居中对称树
+   ========================================================================== */
+.bracketTreeNoQFMobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .bracketTreeNoQFMobile {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    padding: 14px 12px 24px;
+  }
+
+  /* 阶段标签 */
+  .noQfMobLabel {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #64748b;
+    padding: 10px 0 8px;
+  }
+  .noQfMobLabelFinal { color: #fbbf24; }
+
+  /* 半决赛：两场并排 */
+  .noQfMobSemis { display: flex; width: 100%; }
+  .noQfMobHalf {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 6px;
+    min-width: 0;
+  }
+  .noQfMobHalfCard { width: 100%; max-width: 165px; }
+
+  /* 连接线：SF1/SF2 汇入决赛 */
+  .noQfMobConnector { position: relative; width: 100%; height: 18px; }
+  .noQfMobConnector::before {
+    content: '';
+    position: absolute;
+    left: 25%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--comp-bracket-connector);
+  }
+  .noQfMobConnector::after {
+    content: '';
+    position: absolute;
+    right: 25%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-right: -1px;
+    background: var(--comp-bracket-connector);
+  }
+  .noQfMobConnBar {
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    bottom: 0;
+    height: 2px;
+    background: var(--comp-bracket-connector);
+  }
+  .noQfMobConnDown {
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 2px;
+    height: 10px;
+    margin-left: -1px;
+    background: var(--comp-bracket-connector);
+  }
+
+  /* 决赛：卡片 + 冠军 */
+  .noQfMobFinal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  .noQfMobFinalCard { width: 100%; max-width: 180px; }
+  .noQfMobFinal .championCard {
+    width: 92px;
+    flex-shrink: 0;
+    padding: 6px;
+    border-width: 2px;
+    animation: none;
+    box-shadow: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    column-gap: 5px;
+    row-gap: 3px;
+  }
+  .noQfMobFinal .championCard .championCrown {
+    flex-basis: 100%;
+    text-align: center;
+    font-size: 0.8rem;
+    line-height: 1;
+    margin: 0;
+  }
+  .noQfMobFinal .championCard .championTitle {
+    flex-basis: 100%;
+    text-align: center;
+    font-size: 0.4rem;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+  .noQfMobFinal .championCard .championLogo {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+  }
+  .noQfMobFinal .championCard .championName {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 62px;
+    font-size: 0.55rem;
+    line-height: 1.2;
+    margin: 0;
+    text-align: left;
+    word-break: break-word;
+  }
+
+  /* 三四名决赛：上方虚线分隔 */
+  .noQfMobThird {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(205, 127, 50, 0.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .noQfMobThirdCard { width: 100%; max-width: 200px; }
+
+  /* 隐藏卡片自带连接线伪元素，避免和树形连接线重复 */
+  .bracketTreeNoQFMobile .bracketMatchCard::before,
+  .bracketTreeNoQFMobile .bracketMatchCard::after {
+    display: none !important;
   }
 }
 
