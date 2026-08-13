@@ -42,23 +42,23 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
           <div className="matchScoreBoxLarge">
             <div className="modalTeam">
               <div className="modalTeamLogo"><img src={match.homeTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'} alt={match.homeTeam.teamName} /></div>
-              <span className="modalTeamName">{match.homeTeam.teamName}</span>
+              <span className="modalTeamName" style={{ color: '#000' }}>{match.homeTeam.teamName}</span>
             </div>
-            <div className="modalScore">
+            <div className="modalScore" style={{ color: '#000' }}>
               <div>
-                <span className="modalScoreNumber">{match.status === 'scheduled' ? '-' : match.homeScore}</span>
-                <span className="modalScoreSeparator">:</span>
-                <span className="modalScoreNumber">{match.status === 'scheduled' ? '-' : match.awayScore}</span>
+                <span className="modalScoreNumber" style={{ color: '#000' }}>{match.status === 'scheduled' ? '-' : match.homeScore}</span>
+                <span className="modalScoreSeparator" style={{ color: '#000' }}>:</span>
+                <span className="modalScoreNumber" style={{ color: '#000' }}>{match.status === 'scheduled' ? '-' : match.awayScore}</span>
               </div>
               {penaltyScore && (
-                <span className="modalPenaltyScore">
+                <span className="modalPenaltyScore" style={{ color: '#000' }}>
                   点球 {penaltyScore.home}-{penaltyScore.away}
                 </span>
               )}
             </div>
             <div className="modalTeam">
               <div className="modalTeamLogo"><img src={match.awayTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'} alt={match.awayTeam.teamName} /></div>
-              <span className="modalTeamName">{match.awayTeam.teamName}</span>
+              <span className="modalTeamName" style={{ color: '#000' }}>{match.awayTeam.teamName}</span>
             </div>
           </div>
 

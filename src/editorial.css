@@ -598,6 +598,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-light) 100%);
 }
 .matches .sectionDescription { color: rgba(255,255,255,.66); }
+
+/* 弹窗内容强制使用深色文字，覆盖 .matches 的白色继承 */
+.matchModalOverlay,
+.matchModal,
+.matchModal *,
+.modalScoreNumber,
+.modalScoreSeparator,
+.modalTeamName,
+.modalPenaltyScore,
+.modalTeam,
+.modalScore { color: #000 !important; }
+
 .matchesTabs { display: flex; gap: 0 !important; border: 1px solid rgba(255,255,255,.25); }
 .tabButton { min-height: 48px; padding-inline: 20px; border-right: 1px solid rgba(255,255,255,.2) !important; border-radius: 0 !important; color: rgba(255,255,255,.72) !important; background: transparent !important; }
 .tabButton.active { background: var(--accent-color) !important; color: var(--text-primary) !important; }
