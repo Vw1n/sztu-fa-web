@@ -19,31 +19,16 @@
 
 /* ===== 手机端（≤768px）：紧凑布局，隐藏详细信息 ===== */
 @media (max-width: 768px) {
-  .teamImageWrapper {
-    height: auto;
-    aspect-ratio: 1 / 1;
-    padding: 0;
-    background: var(--bg-primary);
-  }
-
-  .teamImage {
-    /* 轻量圆角 + 微投影：不裁切队徽，仅提升质感 */
-    border-radius: 8px;
-    border: none;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    object-fit: contain;
-    background: var(--bg-primary);
-  }
-
-  /* 禁用桌面端 hover 放大（移动端无 hover） */
-  .teamCard:hover .teamImage {
+  /* 禁用桌面端 hover（移动端无 hover） */
+  .teamCard:hover .teamBannerLogo {
     transform: none;
   }
-
-  /* 触摸按下时轻微缩小反馈 */
-  .teamCard:active .teamImage {
-    transform: scale(0.95);
+  .teamCard:hover {
+    transform: none;
+    box-shadow: none;
+    background: #fff;
   }
+  .teamCard:hover::after { border-color: transparent; }
 
   .teamContent {
     padding: var(--spacing-sm) var(--spacing-xs);
@@ -51,19 +36,10 @@
     background: var(--bg-tertiary);
   }
 
-  .teamName {
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--text-primary);
-    letter-spacing: 0.02em;
-  }
-
-  .teamInfo {
-    display: none;
+  /* 移动端横幅上的队名更小一点，保证不溢出 */
+  .teamBannerName {
+    font-size: 0.85rem !important;
+    font-weight: 700;
   }
 
   .teamDetailsButton {
@@ -72,17 +48,17 @@
 
   /* 移动端占位首字缩小 */
   .teamLogoInitial {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 }
 
-/* ===== 小屏手机（≤375px）：进一步紧凑 ===== */
-@media (max-width: 375px) {
+/* ===== 小屏手机（≤480px）：进一步紧凑 ===== */
+@media (max-width: 480px) {
   .teamContent {
     padding: var(--spacing-xs);
   }
 
-  .teamName {
-    font-size: 0.68rem;
+  .teamBannerName {
+    font-size: 0.75rem !important;
   }
 }

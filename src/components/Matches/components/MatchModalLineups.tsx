@@ -14,14 +14,14 @@ const LineupGroup: React.FC<{
   onPlayerClick: (playerId: string, playerName: string) => void;
 }> = ({ title, emptyText, color, entries, onPlayerClick }) => (
   <div className="lineupSubSection" style={title === '替补席' ? { marginTop: '20px' } : undefined}>
-    <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-color)', marginBottom: '10px', borderLeft: `3px solid ${color}`, paddingLeft: '8px' }}>{title}</h4>
+    <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '10px', borderLeft: `3px solid ${color}`, paddingLeft: '8px' }}>{title}</h4>
     <div className="lineupPlayersList" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {entries.length === 0 ? (
         <span style={{ color: 'var(--text-light)', fontSize: '0.9rem', fontStyle: 'italic', paddingLeft: '8px' }}>{emptyText}</span>
       ) : entries.map((entry) => (
         <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px', backgroundColor: 'var(--bg-light, #f8f9fa)', borderRadius: '8px', fontSize: '0.95rem' }}>
           <span style={{ fontWeight: 800, color, minWidth: '24px' }}>#{entry.player?.jerseyNumber ?? ''}</span>
-          <strong style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-color)' }} onClick={() => onPlayerClick(entry.playerId, entry.player?.name || '')}>
+          <strong style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--text-primary)' }} onClick={() => onPlayerClick(entry.playerId, entry.player?.name || '')}>
             {entry.player?.name || '未知球员'}
           </strong>
         </div>
