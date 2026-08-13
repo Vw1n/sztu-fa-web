@@ -54,11 +54,11 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
               <table className="scorersTable">
                 <thead>
                   <tr>
-                    <th style={{ width: '60px' }}>排名</th>
+                    <th>排名</th>
                     <th>球员</th>
                     <th>号码</th>
                     <th>所属球队</th>
-                    <th style={{ width: '120px', textAlign: 'center' }}>进球数</th>
+                    <th>进球数</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -129,11 +129,11 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
               <table className="scorersTable">
                 <thead>
                   <tr>
-                    <th style={{ width: '60px' }}>排名</th>
+                    <th>排名</th>
                     <th>球员</th>
                     <th>号码</th>
                     <th>所属球队</th>
-                    <th style={{ width: '120px', textAlign: 'center' }}>助攻数</th>
+                    <th>助攻数</th>
                   </tr>
                 </thead>
                 <tbody>

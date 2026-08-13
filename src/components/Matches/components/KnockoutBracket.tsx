@@ -242,11 +242,121 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
     );
   };
 
+  // ============ 桌面端：无 1/4 决赛时的竖向对阵图 ============
+  //
+  //         冠军
+  //         决赛
+  //        ┌─┴─┐
+  //       SF1  SF2
+  //        三四名决赛
+  //
+  const renderNoQFTree = () => {
+    const sf1 = findMatch('SF', 1);
+    const sf2 = findMatch('SF', 2);
+    const finalMatch = findMatch('F', 1);
+    const championCard = renderChampionCard();
+
+    return (
+      <div className="bracketTreeNoQF bracketDesktop">
+        {/* 🏆 决赛标签：最上方（参考横向布局的列头） */}
+        <div className="noQfCell">
+          <div className="columnHeader championHeader">🏆 决赛</div>
+        </div>
+
+        {/* 冠军卡片 */}
+        {championCard && (
+          <div className="noQfCell noQfChampion">{championCard}</div>
+        )}
+
+        {/* 决赛卡片 */}
+        <div className="noQfCell noQfFinal">
+          {renderMatchCard(finalMatch, 'F', 1)}
+        </div>
+
+        <div className="noQfConnector" />
+
+        {/* 半决赛：同一水平两侧 */}
+        <div className="noQfSemis">
+          <div className="noQfStage noQfSemiStage">
+            <div className="columnHeader">半决赛</div>
+            <div className="noQfCell noQfSemi">{renderMatchCard(sf1, 'SF', 1)}</div>
+          </div>
+          <div className="noQfStage noQfSemiStage">
+            <div className="columnHeader">半决赛</div>
+            <div className="noQfCell noQfSemi">{renderMatchCard(sf2, 'SF', 2)}</div>
+          </div>
+        </div>
+
+        {/* 三四名决赛：上方虚线 */}
+        <div className="thirdPlaceSection noQfThirdSection">
+          <div className="thirdPlaceLabel">🥉 三四名决赛</div>
+          <div className="noQfCell noQfThird">
+            {renderMatchCard(findMatch('3RD', 1), '3RD', 1)}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ============ 移动端：无 1/4 决赛（仅半决赛 + 决赛）居中对称树 ============
+  //
+  //      半决赛
+  //    [SF1]  [SF2]
+  //      └──┬──┘
+  //         │
+  //      🏆 决赛
+  //    [Final] [冠军]
+  //    ─ ─ ─ ─ ─ ─
+  //      🥉 三四名
+  //        [3rd]
+  //
+  const renderNoQFMobileTree = () => {
+    const sf1 = findMatch('SF', 1);
+    const sf2 = findMatch('SF', 2);
+    const finalMatch = findMatch('F', 1);
+    const championCard = renderChampionCard();
+
+    return (
+      <div className="bracketTreeNoQFMobile">
+        {/* 半决赛：两场并排 */}
+        <div className="noQfMobLabel">半决赛</div>
+        <div className="noQfMobSemis">
+          <div className="noQfMobHalf">
+            <div className="noQfMobHalfCard">{renderMatchCard(sf1, 'SF', 1, true)}</div>
+          </div>
+          <div className="noQfMobHalf">
+            <div className="noQfMobHalfCard">{renderMatchCard(sf2, 'SF', 2, true)}</div>
+          </div>
+        </div>
+
+        {/* 连接线：SF1/SF2 汇入决赛 */}
+        <div className="noQfMobConnector">
+          <span className="noQfMobConnBar" />
+          <span className="noQfMobConnDown" />
+        </div>
+
+        {/* 决赛：卡片 + 冠军 */}
+        <div className="noQfMobLabel noQfMobLabelFinal">🏆 决赛</div>
+        <div className="noQfMobFinal">
+          <div className="noQfMobFinalCard">{renderMatchCard(finalMatch, 'F', 1, true)}</div>
+          {championCard}
+        </div>
+
+        {/* 三四名决赛 */}
+        <div className="noQfMobThird">
+          <div className="thirdPlaceLabel">🥉 三四名决赛</div>
+          <div className="noQfMobThirdCard">{renderMatchCard(findMatch('3RD', 1), '3RD', 1, true)}</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bracketSection">
       <div className="bracketWrapper">
 
-        {/* ====== 桌面端：横向 bracket ====== */}
+        {/* ====== 桌面端：横向 bracket（有 1/4 决赛） ====== */}
+        {hasQF && (
         <div className="bracketContainer bracketDesktop">
           {hasR16 && (
             <div className="bracketColumn r16-left-column">
@@ -318,9 +428,16 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
             </div>
           )}
         </div>
+        )}
 
-        {/* ====== 移动端：上下半区纵向 bracket ====== */}
-        {renderMobileTree()}
+        {/* ====== 桌面端：竖向 bracket（无 1/4 决赛，仅决赛 + 半决赛） ====== */}
+        {!hasQF && renderNoQFTree()}
+
+        {/* ====== 移动端：上下半区纵向 bracket（有 1/4 决赛） ====== */}
+        {hasQF && renderMobileTree()}
+
+        {/* ====== 移动端：居中对称树（无 1/4 决赛，仅半决赛 + 决赛） ====== */}
+        {!hasQF && renderNoQFMobileTree()}
 
       </div>
     </div>
