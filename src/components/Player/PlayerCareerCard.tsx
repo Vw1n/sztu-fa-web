@@ -46,7 +46,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({
         {careerLoading ? (
           <div style={{ padding: '60px 0', textAlign: 'center' }}>
             <div className="loadingSpinner" style={{ margin: '0 auto 15px auto' }}></div>
-            <p style={{ color: 'var(--text-color)', fontWeight: 600 }}>正在生成生涯球星卡...</p>
+            <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>正在生成生涯球星卡...</p>
           </div>
         ) : careerData ? (
           <div style={{ padding: '20px 14px' }}>
@@ -97,7 +97,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({
                 </div>
               )}
               <div style={{ minWidth: 0, flex: 1 }}>
-                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-color)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {careerPlayerName}
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
@@ -112,7 +112,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({
             {/* 生涯总计面板 */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '18px' }}>
               <div style={{ background: 'rgba(255,255,255,0.6)', padding: '8px 2px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.6)' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-color)', whiteSpace: 'nowrap' }}>{careerData.summary.totalMatches}</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{careerData.summary.totalMatches}</div>
                 <div style={{ fontSize: '0.72rem', color: '#666', marginTop: '2px', whiteSpace: 'nowrap' }}>出场数</div>
               </div>
               <div style={{ background: 'rgba(255,255,255,0.6)', padding: '8px 2px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.6)' }}>
@@ -133,7 +133,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({
             </div>
 
             {/* 跨赛季历史表单 */}
-            <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', fontWeight: 700, color: 'var(--text-color)' }}>📊 赛季生涯历程</h4>
+            <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>📊 赛季生涯历程</h4>
             <div style={{ width: '100%', overflow: 'hidden', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.08)' }}>
               <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'center' }}>
                 <thead>
