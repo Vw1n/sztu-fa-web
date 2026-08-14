@@ -774,9 +774,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .aboutFeatures { grid-template-columns: 1fr 1fr; }
   .aboutFeature { padding: 14px 4px; }
   .aboutFeatureText { font-size: .78rem; }
-  .aboutStats { grid-template-columns: 1fr; }
-  .about .statItem { min-height: 108px; border-right: 0; border-bottom: 1px solid var(--border-color); }
-  .about .statItem:last-child { border-bottom: 0; }
+  .aboutStats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .about .statItem {
+    min-width: 0;
+    min-height: 108px;
+    padding: 14px 10px;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 0;
+  }
+  .about .statItem:last-child { border-right: 0; }
+  .about .statNumber { font-size: clamp(1.65rem, 9vw, 2.45rem); white-space: nowrap; }
+  .about .statLabel { font-size: .72rem; letter-spacing: .04em; }
   .teamsGrid { grid-template-columns: 1fr 1fr; }
   .teamBanner { min-height: 96px; padding: 12px; }
   .teamBannerName {

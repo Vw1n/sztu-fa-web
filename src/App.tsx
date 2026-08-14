@@ -8,6 +8,7 @@ import Teams from './components/Teams';
 import Matches from './components/Matches';
 import Footer from './components/Footer';
 import MotionEffects from './components/common/MotionEffects';
+import { useActiveHomeSection } from './hooks/useActiveHomeSection';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -34,6 +35,7 @@ function HomePage() {
 
 function MobileDock() {
   const location = useLocation();
+  const activeHomeSection = useActiveHomeSection();
   const items = [
     { label: '首页', to: '/', icon: '⌂' },
     { label: '赛事', to: '/#matches', icon: '◷' },
@@ -47,7 +49,7 @@ function MobileDock() {
       {items.map((item) => {
         const [pathname, hash = ''] = item.to.split('#');
         const active = location.pathname === pathname
-          && (hash ? location.hash === `#${hash}` : !location.hash);
+          && (hash ? activeHomeSection === hash : activeHomeSection === 'home');
         return (
           <Link key={item.label} to={item.to} className={active ? 'active' : ''}>
             <span className="mobileDockIcon" aria-hidden="true">{item.icon}</span>
