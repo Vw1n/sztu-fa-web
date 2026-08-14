@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts';
+import { useActiveHomeSection } from '../../hooks/useActiveHomeSection';
 import './Header.css';
 
 const navItems = [
@@ -18,6 +19,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const activeHomeSection = useActiveHomeSection();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -67,10 +69,10 @@ const Header: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/' && !location.hash;
+    if (path === '/') return activeHomeSection === 'home';
     if (path.includes('#')) {
       const [pathname, hash] = path.split('#');
-      return location.pathname === pathname && location.hash === `#${hash}`;
+      return location.pathname === pathname && activeHomeSection === hash;
     }
     return location.pathname.startsWith(path);
   };
