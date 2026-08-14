@@ -164,7 +164,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline-offset: 3px;
 }
 
-.main { padding-top: 76px; }
+.main { padding-top: 72px; }
 
 /* Header */
 .header {
@@ -176,31 +176,53 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .header.scrolled { background: rgba(248,247,242,.98); box-shadow: none; }
 
 .headerContainer {
-  height: 76px;
+  height: 72px;
   max-width: 1600px;
-  padding: 0 32px;
-  gap: 26px;
+  padding: 0 clamp(24px, 3vw, 40px);
+  gap: clamp(24px, 3vw, 40px);
 }
 
 .logo { gap: 12px; }
 .logo:hover { transform: none; }
 .logoIcon { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; }
-.logoTitle { color: var(--text-primary); font-size: 1rem; font-weight: 900; letter-spacing: -.02em; }
-.logoSubtitle { color: var(--text-light); font-size: .6rem; letter-spacing: .09em; text-transform: uppercase; }
-.navList { gap: clamp(0, .35vw, 8px); }
+.logoTitle { color: var(--text-primary); font-size: 1.05rem; font-weight: 900; letter-spacing: -.02em; }
+.logoSubtitle { color: var(--text-light); font-size: .65rem; letter-spacing: .09em; text-transform: uppercase; }
+.navList { gap: clamp(4px, .9vw, 14px); }
 .navLinkBtn {
-  padding: 10px clamp(7px, .55vw, 12px);
+  position: relative;
+  padding: 10px clamp(10px, .9vw, 16px);
   color: var(--text-primary);
-  font-size: .78rem;
-  font-weight: 750;
-  letter-spacing: .035em;
+  font-size: .92rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  transition: color .2s ease, transform .2s ease;
 }
-.navLinkBtn::after { height: 3px; bottom: -17px; background: var(--primary-color); }
-.navLinkBtn:hover::after, .navLinkBtn.active::after { width: 100%; }
-.authBtn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 2px; font-weight: 750; }
-.loginBtn { border-color: var(--text-primary); color: var(--text-primary); }
-.registerBtn { background: var(--text-primary); }
-.registerBtn:hover { background: var(--primary-color); color: #fff; }
+.navLinkBtn:hover { color: var(--primary-color); }
+.navLinkBtn.active {
+  color: var(--primary-color);
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+.navLinkBtn::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 2px;
+  transition: width .26s ease;
+}
+.navLinkBtn:hover::after { width: calc(100% - 24px); }
+.navLinkBtn.active::after { width: calc(100% - 16px); height: 3.5px; background: var(--primary-dark); }
+.authBtn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 700; padding-inline: clamp(14px, 1.2vw, 20px); font-size: .88rem; }
+.loginBtn { border-color: var(--text-primary); color: var(--text-primary); border-width: 1.5px; }
+.loginBtn:hover { background: rgba(26, 86, 219, 0.06); border-color: var(--primary-color); color: var(--primary-color); }
+.registerBtn { background: var(--primary-color); }
+.registerBtn:hover { background: var(--primary-dark); color: #fff; box-shadow: 0 6px 14px rgba(26, 86, 219, 0.22); }
+.authButtons { gap: var(--spacing-md); }
 
 /* Shared section language */
 .about, .activities, .teams, .matches { padding: clamp(64px, 7vw, 112px) 0; }
@@ -212,7 +234,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sectionHeader {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(200px, .35fr);
+  grid-template-columns: auto 1fr;
   align-items: start;
   gap: 24px;
   margin-bottom: clamp(32px, 5vw, 56px);
@@ -259,6 +281,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   box-shadow: 0 0 0 2px var(--accent-color);
 }
 
+.sectionTitleWrapper {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+}
+
 .sectionTitle {
   margin: 0;
   color: var(--text-primary);
@@ -267,6 +295,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   line-height: 1.08;
   letter-spacing: -.055em;
   padding-top: .08em;
+  padding-bottom: 2.8rem;
   overflow: visible;
   position: relative;
 }
@@ -300,17 +329,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-light) 100%);
 }
 
-.sectionDescription { max-width: 380px; margin: 0; color: var(--text-secondary); font-size: .95rem; line-height: 1.75; padding-top: 6px; }
+.sectionDescription {
+  position: absolute;
+  right: 0;
+  bottom: -18px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: .95rem;
+  line-height: 1.75;
+  padding-top: 6px;
+  padding-right: 4px;
+  white-space: nowrap;
+}
 
 /* About */
 .about { background: var(--bg-primary); }
-.aboutContent { grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: clamp(24px, 3.5vw, 56px); align-items: start; }
-.aboutImageWrapper { position: relative; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: clamp(4px, 0.8vw, 10px); }
+.aboutContent { grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: clamp(24px, 3.5vw, 56px); align-items: start; margin-top: 48px; }
+.aboutImageWrapper { position: relative; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: clamp(4px, 0.8vw, 10px); margin-top: clamp(12px, 1.8vw, 24px); }
 .aboutImageWrapper picture { display: block; width: 100%; max-width: 100%; height: auto; }
 .aboutImage { display: block; width: 100%; max-width: 100%; height: auto; max-height: none; min-height: 0; aspect-ratio: auto; object-fit: contain; border-radius: 0; box-shadow: none; transition: transform 800ms cubic-bezier(.22,1,.36,1); }
 .aboutImageWrapper:hover .aboutImage { transform: scale(1.015); transform-origin: center; }
-.aboutText { gap: 22px; padding-top: 8px; }
+.aboutText { gap: 22px; padding-top: 0; }
 .aboutTitle { max-width: 490px; margin: 0 0 12px; font-size: clamp(2rem, 3.2vw, 3.5rem); line-height: 1.08; letter-spacing: -.045em; }
+.aboutTitle span { display: block; }
+.aboutTitle span:last-child { margin-left: .5em; }
 .aboutParagraph { font-size: .98rem; line-height: 1.9; }
 .aboutFeatures { grid-template-columns: repeat(2, 1fr); gap: 0; margin-top: 22px; border-top: 1px solid var(--border-color); }
 .aboutFeature { gap: 14px; padding: 18px 8px; background: transparent; border-bottom: 1px solid var(--border-color); border-radius: 0; }
@@ -369,9 +411,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .activityCardFeatured { flex-direction: row; }
 .activityCard:first-child { grid-column: auto; }
 .activityCard:hover { transform: none; box-shadow: none; }
-.activityImageWrapper { height: auto; margin-top: 12px; }
+.activityImageWrapper { height: auto; margin-top: 12px; aspect-ratio: 3 / 2; overflow: hidden; }
 .activityCard:first-child .activityImageWrapper { height: auto; }
-.activityImage { width: 100%; height: auto; object-fit: contain; filter: saturate(.82); transition: transform 600ms cubic-bezier(.22,1,.36,1), filter 300ms ease; }
+.activityImage { width: 100%; height: 100%; object-fit: cover; filter: saturate(.82); transition: transform 600ms cubic-bezier(.22,1,.36,1), filter 300ms ease; }
 .activityCard:hover .activityImage { transform: scale(1.025); filter: saturate(1); }
 .activityCategory, .activityLatestBadge { top: 12px; padding: 7px 10px; border-radius: 0; font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
 .activityCategory { left: 12px; background: var(--accent-color); color: var(--text-primary); }
@@ -386,8 +428,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Featured (latest) activity card — spans 2 cols, horizontal layout */
 .activityCardFeatured { grid-column: span 2 !important; flex-direction: row !important; align-items: stretch; }
-.activityCardFeatured .activityImageWrapper { width: 50% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; }
-.activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+.activityCardFeatured .activityImageWrapper { width: 55% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; aspect-ratio: 3 / 2; overflow: hidden; }
+.activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: cover !important; }
 .activityCardFeatured .activityContent { flex: 1; padding: 20px 24px !important; }
 .activityCardFeatured .activityTitle { font-size: clamp(1.25rem, 1.8vw, 1.6rem) !important; }
 .activityCardFeatured .activityDescription { font-size: .95rem; line-height: 1.7; }
@@ -652,24 +694,83 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* Mobile product dock */
 .mobileDock { display: none; }
 
+/* 中大屏（1181-1400px）：压缩导航栏，避免 8 个导航项挤压 */
+@media (max-width: 1400px) {
+  .headerContainer { height: 68px; padding-inline: 24px; gap: 18px; }
+  .main { padding-top: 68px; }
+  .logoIcon { width: 40px; height: 40px; }
+  .logoTitle { font-size: .98rem; }
+  .logoSubtitle { font-size: .6rem; }
+  .navList { gap: 2px; }
+  .navLinkBtn { padding: 8px 8px; font-size: .85rem; letter-spacing: .01em; }
+  .navLinkBtn::after { bottom: 0; }
+  .navLinkBtn:hover::after, .navLinkBtn.active::after { width: calc(100% - 12px); }
+  .authBtn { min-height: 36px; font-size: .82rem; padding-inline: 14px; }
+
+  /* 中大屏模块适配 */
+  .about, .activities, .teams, .matches { padding: 88px 0; }
+  .aboutContent { gap: 40px; margin-top: 36px; }
+  .aboutTitle { font-size: 2.8rem; }
+  .teamsGrid { grid-template-columns: repeat(3, 1fr); }
+  .teamBannerName { font-size: 1.1rem; }
+  .teamBannerLogo { width: 84px; height: 84px; padding: 10px; }
+}
+
+/* 大屏（1401-1680px）：微调导航项间距 */
+@media (min-width: 1401px) and (max-width: 1680px) {
+  .navList { gap: 4px; }
+  .navLinkBtn { padding: 10px 10px; font-size: .88rem; }
+}
+
 @media (max-width: 1180px) {
   .headerContainer { height: 64px; padding-inline: 24px; }
   .mobileNav { top: 64px; padding: 12px 24px 24px; background: var(--bg-primary); border-top: 1px solid var(--border-color); box-shadow: var(--shadow-lg); }
-  .mobileNavLinkBtn { min-height: 48px; font-size: .96rem; }
+  .mobileNavList { gap: 2px; }
+  .mobileNavLinkBtn {
+    position: relative;
+    justify-content: flex-start;
+    padding: 14px 14px;
+    min-height: 48px;
+    font-size: .96rem;
+    color: var(--text-primary);
+    font-weight: 650;
+    border-radius: 6px;
+    transition: background .2s ease, color .2s ease, padding-left .2s ease;
+  }
+  .mobileNavLinkBtn:hover { background: rgba(26, 86, 219, .05); color: var(--primary-color); }
+  .mobileNavLinkBtn.active {
+    background: rgba(26, 86, 219, .08);
+    color: var(--primary-color);
+    font-weight: 800;
+    padding-left: 18px;
+  }
+  .mobileNavLinkBtn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 16%;
+    bottom: 16%;
+    width: 3px;
+    background: var(--primary-color);
+    border-radius: 0 2px 2px 0;
+    transform: scaleY(0);
+    transition: transform .24s ease;
+  }
+  .mobileNavLinkBtn.active::after { transform: scaleY(1); }
   .main { padding-top: 64px; }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .sectionHeader { grid-template-columns: 120px 1fr; }
-  .sectionDescription { grid-column: 2; }
-  .aboutContent { grid-template-columns: 1fr; }
+  .sectionDescription { position: absolute; right: 0; bottom: -18px; }
   .aboutImage { min-height: 0; }
   .aboutText { max-width: 680px; }
+  .aboutImageWrapper { margin-top: 0; }
   .activityCard, .activityCard:first-child { grid-column: auto; }
   .activityCard:first-child .activityImageWrapper { height: auto; }
   .activityCardFeatured { grid-column: 1 / -1 !important; display: flex !important; flex-direction: row !important; align-items: stretch; }
-  .activityCardFeatured .activityImageWrapper { width: 45% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; }
-  .activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+  .activityCardFeatured .activityImageWrapper { width: 50% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; aspect-ratio: 3 / 2; overflow: hidden; }
+  .activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: cover !important; }
   .activityCardFeatured .activityContent { flex: 1; padding: 16px 20px !important; }
   .activityCardFeatured .activityTitle { font-size: 1.2rem !important; }
   .teamsGrid { grid-template-columns: repeat(2, 1fr); }
@@ -696,9 +797,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .about, .activities, .teams, .matches { padding: 72px 0; }
   .aboutContainer, .activitiesContainer, .teamsContainer, .matchesContainer { padding-inline: 16px; }
   .sectionHeader { grid-template-columns: 1fr; gap: 12px; margin-bottom: 38px; }
-  .sectionDescription { grid-column: auto; margin-top: 8px; font-size: .9rem; }
-  .sectionTitle { font-size: clamp(2.75rem, 13vw, 4.4rem); }
-  .aboutContent { gap: 28px; }
+  .sectionTitleWrapper { grid-column: auto; grid-row: auto; }
+  .sectionTitle { padding-bottom: 1.2rem; font-size: clamp(2.75rem, 13vw, 4.4rem); }
+  .sectionDescription { position: absolute; right: 0; bottom: -18px; margin-top: 0; font-size: .9rem; padding-right: 0; white-space: normal; max-width: 100%; }
+  .aboutContent { grid-template-columns: 1fr; gap: 28px; }
+  .aboutImageWrapper { margin-top: 0; }
   .aboutTitle { font-size: 2rem; }
   .aboutParagraph { font-size: .92rem; line-height: 1.75; }
   .aboutStats { margin-top: 36px; }
@@ -709,8 +812,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .activityCard, .activityCard:first-child { grid-column: auto; display: flex; }
   .activityImageWrapper, .activityCard:first-child .activityImageWrapper { height: auto; }
   .activityCardFeatured { grid-column: 1 / -1 !important; display: flex !important; flex-direction: row !important; align-items: stretch; }
-  .activityCardFeatured .activityImageWrapper { width: 45% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; }
-  .activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+  .activityCardFeatured .activityImageWrapper { width: 50% !important; height: auto !important; margin-top: 0 !important; flex-shrink: 0; aspect-ratio: 3 / 2; overflow: hidden; }
+  .activityCardFeatured .activityImage { width: 100% !important; height: 100% !important; object-fit: cover !important; }
   .activityCardFeatured .activityContent { flex: 1; padding: 8px 10px !important; }
   .activityCardFeatured .activityTitle { font-size: 0.95rem !important; }
   .activityContent { padding: 16px 0 0; }

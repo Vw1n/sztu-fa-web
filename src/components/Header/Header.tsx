@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { useActiveHomeSection } from '../../hooks/useActiveHomeSection';
 import './Header.css';
 
 const navItems = [
-  { id: 'home', label: '首页', path: '/' },
-  { id: 'about', label: '协会简介', path: '/#about' },
-  { id: 'news', label: '活动动态', path: '/#activities' },
-  { id: 'teams', label: '球队信息', path: '/#teams' },
-  { id: 'notice', label: '赛事公告', path: '/#matches' },
-  { id: 'predictions', label: '竞猜大厅', path: '/predictions' },
-  { id: 'leaderboard', label: '排行榜', path: '/leaderboard' },
-  { id: 'my-predictions', label: '我的竞猜', path: '/my-predictions' },
+  { id: 'home', label: '首页', path: '/', section: 'home' as const },
+  { id: 'about', label: '协会简介', path: '/#about', section: 'about' as const },
+  { id: 'news', label: '活动动态', path: '/#activities', section: 'activities' as const },
+  { id: 'teams', label: '球队信息', path: '/#teams', section: 'teams' as const },
+  { id: 'notice', label: '赛事公告', path: '/#matches', section: 'matches' as const },
+  { id: 'predictions', label: '竞猜大厅', path: '/predictions', section: null },
+  { id: 'leaderboard', label: '排行榜', path: '/leaderboard', section: null },
+  { id: 'my-predictions', label: '我的竞猜', path: '/my-predictions', section: null },
 ];
+
+type HomeSectionId = 'home' | 'about' | 'activities' | 'teams' | 'matches';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [forcedSection, setForcedSection] = useState<HomeSectionId | null>(null);
   const location = useLocation();
   const activeHomeSection = useActiveHomeSection();
   const navigate = useNavigate();
@@ -32,11 +35,40 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 点击导航后立即强制激活对应 section，滚动结束自动清除（通过 scroll 监听）
+  useEffect(() => {
+    if (!forcedSection) return;
+    let rafId = 0;
+    let stableFrames = 0;
+    let lastY = window.scrollY;
+    const check = () => {
+      const y = window.scrollY;
+      stableFrames = Math.abs(y - lastY) < 1 ? stableFrames + 1 : 0;
+      lastY = y;
+      if (stableFrames >= 8) {
+        // 滚动稳定后清除强制激活，回到真实滚动检测
+        setForcedSection(null);
+        return;
+      }
+      rafId = window.requestAnimationFrame(check);
+    };
+    rafId = window.requestAnimationFrame(check);
+    // 最长 1.5 秒后强制清除，防止卡住
+    const fallback = window.setTimeout(() => setForcedSection(null), 1500);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(fallback);
+    };
+  }, [forcedSection]);
+
   useEffect(() => {
     if (location.pathname !== '/' || !location.hash) return;
     const element = document.getElementById(location.hash.slice(1));
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const headerOffset =
+        document.querySelector('header.header')?.getBoundingClientRect().height ?? 72;
+      const target = element.getBoundingClientRect().top + window.scrollY - headerOffset - 4;
+      window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
     }
   }, [location.pathname, location.hash]);
 
@@ -44,22 +76,40 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleNavClick = (path: string) => {
+  const getHeaderOffset = useCallback(() => {
+    if (typeof document === 'undefined') return 76;
+    return document.querySelector('header.header')?.getBoundingClientRect().height ?? 72;
+  }, []);
+
+  const handleNavClick = (path: string, section: HomeSectionId | null) => {
     setIsMobileMenuOpen(false);
 
-    // 首页：已在首页（含“协会简介/活动动态/球队信息/赛事公告”等锚点小节）时，点击回到页面最顶端
+    // 首页锚点导航（或者已在首页时点击首页）：自行处理滚动 + 激活
     if (path === '/' && location.pathname === '/') {
-      if (location.hash) {
-        navigate('/', { replace: true });
-      }
+      if (section) setForcedSection(section);
+      if (location.hash) navigate('/', { replace: true });
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    if (path === `${location.pathname}${location.hash}` && location.hash) {
-      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+    if (path.startsWith('/#') && location.pathname === '/') {
+      const targetId = path.slice(2); // '/#about' -> '#about' then below slice
+      const realId = targetId.startsWith('#') ? targetId.slice(1) : targetId;
+      const element = document.getElementById(realId);
+      if (element) {
+        if (section) setForcedSection(section);
+        const offset = getHeaderOffset() + 4;
+        const target = element.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+        // 同步 hash，保持浏览器地址栏正确（但不触发重复 effect）
+        if (history.replaceState) {
+          history.replaceState(null, '', path);
+        }
+      }
       return;
     }
+
+    // 跨页面（如 /predictions 等）正常跳转
     navigate(path);
   };
 
@@ -68,13 +118,26 @@ const Header: React.FC = () => {
     navigate('/login');
   };
 
-  const isActive = (path: string) => {
-    if (path === '/') return activeHomeSection === 'home';
-    if (path.includes('#')) {
-      const [pathname, hash] = path.split('#');
-      return location.pathname === pathname && activeHomeSection === hash;
+  const isActive = (path: string, section: HomeSectionId | null) => {
+    // 1. 非首页路径：用 path 精确 / 前缀匹配
+    if (!path.startsWith('/#') && path !== '/') {
+      // 对 /my-predictions 这种要和 /predictions 区分开，用精确路径或段级前缀
+      if (path === location.pathname) return true;
+      if (location.pathname.startsWith(path + '/')) return true;
+      return false;
     }
-    return location.pathname.startsWith(path);
+
+    // 2. 首页('/') 或 首页锚点（/#about）
+    if (location.pathname !== '/') return false;
+
+    // 优先使用点击强制激活（在滚动动画过程中）
+    const effectiveSection: HomeSectionId | null = forcedSection ?? activeHomeSection;
+
+    if (path === '/') {
+      return effectiveSection === 'home';
+    }
+    // path 形如 '/#about' -> 取 sectionId 对比
+    return section ? effectiveSection === section : false;
   };
 
   return (
@@ -94,8 +157,8 @@ const Header: React.FC = () => {
               <li key={item.id} className="navItem">
                 <button
                   type="button"
-                  className={`navLinkBtn ${isActive(item.path) ? 'active' : ''}`}
-                  onClick={() => handleNavClick(item.path)}
+                  className={`navLinkBtn ${isActive(item.path, item.section) ? 'active' : ''}`}
+                  onClick={() => handleNavClick(item.path, item.section)}
                 >
                   {item.label}
                 </button>
@@ -144,8 +207,8 @@ const Header: React.FC = () => {
             <li key={item.id} className="mobileNavItem">
               <button
                 type="button"
-                className={`mobileNavLinkBtn ${isActive(item.path) ? 'active' : ''}`}
-                onClick={() => handleNavClick(item.path)}
+                className={`mobileNavLinkBtn ${isActive(item.path, item.section) ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.path, item.section)}
               >
                 {item.label}
               </button>

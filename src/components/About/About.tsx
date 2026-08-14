@@ -121,7 +121,7 @@ const About: React.FC = () => {
           </div>
 
           <div className="aboutText">
-            <h3 className="aboutTitle">传承足球精神，培育明日之星</h3>
+            <h3 className="aboutTitle"><span>传承足球精神，</span><span>培育明日之星</span></h3>
             <p className="aboutParagraph">
               深圳技术大学足球协会，是深圳技术⼤学官⽅的⾜球组织，成立于2017年。社团分别设宣传部、组织部、财务部、技术部和裁判部。深技大足协一直与深技大足球校队深度合作，为校队做好宣传、后勤等工作，共同致力于深技大足球事业。
             </p>

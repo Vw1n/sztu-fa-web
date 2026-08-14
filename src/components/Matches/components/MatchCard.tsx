@@ -1,7 +1,12 @@
 import React from 'react';
 import type { Match } from '../../../types';
-import { formatMatchDate, matchStatusColors, matchStatusLabels } from '../utils/matchPresentation';
+import { formatMatchDate, formatMatchInfo, matchStatusColors, matchStatusLabels } from '../utils/matchPresentation';
 import { getPenaltyScore } from '../utils/matchOutcome';
+
+const isHotMatch = (match: Match): boolean => {
+  const round = match.knockoutRound?.toUpperCase() ?? '';
+  return round === 'F' || round === '3RD' || round === '3RD_PLACE' || round === 'THIRD_PLACE';
+};
 
 interface MatchCardProps {
   match: Match;
@@ -28,6 +33,11 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
         <span className="matchTeamName">{match.homeTeam.teamName}</span>
       </div>
       <div className="matchScoreBox">
+        {(match.groupName || match.knockoutRound || match.stage) && (
+          <div className="matchInfoText">
+            {isHotMatch(match) && '🔥 '}{formatMatchInfo(match)}
+          </div>
+        )}
         <div className="matchScore">
           <span className="matchScoreNumber">{match.status === 'scheduled' ? '-' : match.homeScore}</span>
           <span className="matchScoreSeparator">:</span>
