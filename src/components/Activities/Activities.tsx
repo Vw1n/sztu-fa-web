@@ -10,7 +10,6 @@ const Activities: React.FC = () => {
     setCurrentPage,
     loading,
     error,
-    total,
     isMock,
     reloadNews,
   } = useActivities();
