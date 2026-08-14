@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchNews } from '../../../api';
 import type { News } from '../../../types';
-import { mockActivities } from '../../../data/mockNews';
+import { mockActivities, type MockActivity } from '../../../data/mockNews';
 
 export interface ActivityDisplay {
   id: string;
@@ -15,16 +15,15 @@ export interface ActivityDisplay {
 }
 
 export const useActivities = () => {
-  const [newsList, setNewsList] = useState<News[]>([]);
+  const [allNews, setAllNews] = useState<News[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMock, setIsMock] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const limit = 6;
-  const displayLimit = currentPage === 1 ? 5 : (isMobile ? 4 : 6);
 
+  // 一次性获取所有数据，前端分页：第一页4条，后续每页6条
   const isMockEnabled = import.meta.env.DEV && import.meta.env.VITE_ENABLE_NEWS_MOCK === 'true';
 
   const loadNewsData = useCallback(async () => {
@@ -32,30 +31,30 @@ export const useActivities = () => {
     setError(null);
     setIsMock(false);
     try {
-      const res = await fetchNews(currentPage, limit);
+      const res = await fetchNews(1, 100);
       if (res && res.data) {
-        setNewsList(res.data);
-        setTotal(res.total || 0);
+        setAllNews(res.data);
+        setTotal(res.total || res.data.length || 0);
       } else {
-        setNewsList([]);
+        setAllNews([]);
         setTotal(0);
       }
     } catch (err) {
       if (isMockEnabled) {
         console.warn('[useActivities] 接口请求失败，采用开发环境 Mock 数据');
-        setNewsList([]);
+        setAllNews([]);
         setTotal(mockActivities.length);
         setIsMock(true);
       } else {
         console.error('[useActivities] 获取前台资讯列表失败:', err);
         setError(err instanceof Error ? err.message : '获取活动资讯失败');
-        setNewsList([]);
+        setAllNews([]);
         setTotal(0);
       }
     } finally {
       setLoading(false);
     }
-  }, [currentPage, isMockEnabled]);
+  }, [isMockEnabled]);
 
   useEffect(() => {
     void loadNewsData();
@@ -65,7 +64,7 @@ export const useActivities = () => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return;
     }
-    const mq = window.matchMedia('(max-width: 768px)');
+    const mq = window.matchMedia('(max-width: 1024px)');
     if (!mq) {
       return;
     }
@@ -75,26 +74,33 @@ export const useActivities = () => {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const displayList: ActivityDisplay[] = isMock
+  // 前端分页切片：第一页0-4，第二页4-10，第三页10-16...
+  const firstPageSize = isMobile ? Math.min(5, total) : 4;
+  const laterPageSize = isMobile ? 4 : 6;
+  const pageStart = currentPage === 1 ? 0 : firstPageSize + (currentPage - 2) * laterPageSize;
+  const pageEnd = currentPage === 1 ? firstPageSize : pageStart + laterPageSize;
+
+  const sortedNews = [...allNews].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  const displayList: ActivityDisplay[] = (isMock
     ? [...mockActivities]
         .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
-        .slice((currentPage - 1) * limit, currentPage * limit)
-        .slice(0, displayLimit)
-    : newsList
-        .map((n) => ({
-          id: n.id,
-          title: n.title,
-          description: n.description,
-          image: n.coverImage || '/activity1.jpg',
-          date: n.date,
-          location: '微信公众号',
-          category: n.category,
-          wechatUrl: n.wechatUrl,
-        }))
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
-        .slice(0, displayLimit);
+    : sortedNews
+  )
+    .slice(pageStart, pageEnd)
+    .map((n: News | MockActivity) => ({
+      id: n.id,
+      title: n.title,
+      description: n.description,
+      image: ('coverImage' in n ? n.coverImage : n.image) || '/activity1.jpg',
+      date: n.date,
+      location: '微信公众号',
+      category: n.category,
+      wechatUrl: n.wechatUrl,
+    }));
 
-  const totalPages = Math.ceil(total / limit) || 1;
+  // 总页数：第一页4个，后续每页6个
+  const totalPages = total > firstPageSize ? 1 + Math.ceil((total - firstPageSize) / laterPageSize) : 1;
 
   return {
     displayList,
@@ -103,7 +109,6 @@ export const useActivities = () => {
     setCurrentPage,
     loading,
     error,
-    limit,
     total,
     isMock,
     reloadNews: loadNewsData,

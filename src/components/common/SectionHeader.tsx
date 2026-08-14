@@ -10,7 +10,9 @@ interface SectionHeaderProps {
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ tag, title, emphasis, description }) => (
   <div className="sectionHeader">
     <span className="sectionTag">{tag}</span>
-    <h2 className="sectionTitle">{title}<span>{emphasis}</span></h2>
-    <p className="sectionDescription">{description}</p>
+    <div className="sectionTitleWrapper">
+      <h2 className="sectionTitle">{title}<span>{emphasis}</span></h2>
+      <p className="sectionDescription">{description}</p>
+    </div>
   </div>
 );

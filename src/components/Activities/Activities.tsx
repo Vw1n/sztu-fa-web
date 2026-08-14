@@ -11,7 +11,6 @@ const Activities: React.FC = () => {
     loading,
     error,
     total,
-    limit,
     isMock,
     reloadNews,
   } = useActivities();
@@ -103,7 +102,7 @@ const Activities: React.FC = () => {
               </div>
             )}
 
-            {total > limit && (
+            {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
