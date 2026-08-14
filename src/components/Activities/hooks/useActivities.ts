@@ -88,16 +88,19 @@ export const useActivities = () => {
     : sortedNews
   )
     .slice(pageStart, pageEnd)
-    .map((n: News | MockActivity) => ({
-      id: n.id,
-      title: n.title,
-      description: n.description,
-      image: ('coverImage' in n ? n.coverImage : n.image) || '/activity1.jpg',
-      date: n.date,
-      location: '微信公众号',
-      category: n.category,
-      wechatUrl: n.wechatUrl,
-    }));
+    .map((n: News | MockActivity) => {
+      const isMock = 'image' in n;
+      return {
+        id: n.id,
+        title: n.title,
+        description: n.description,
+        image: (isMock ? n.image : n.coverImage) || '/activity1.jpg',
+        date: n.date,
+        location: '微信公众号',
+        category: n.category,
+        wechatUrl: n.wechatUrl,
+      };
+    });
 
   // 总页数：第一页4个，后续每页6个
   const totalPages = total > firstPageSize ? 1 + Math.ceil((total - firstPageSize) / laterPageSize) : 1;

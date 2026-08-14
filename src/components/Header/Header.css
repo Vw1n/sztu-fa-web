@@ -94,11 +94,12 @@
   border: none;
   cursor: pointer;
   display: inline-block;
-  padding: var(--spacing-sm) clamp(0.4rem, 0.7vw, var(--spacing-md));
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 1.05rem;
-  transition: color var(--transition-fast);
+  padding: 10px clamp(10px, .9vw, 16px);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: .92rem;
+  letter-spacing: .02em;
+  transition: color .2s ease;
   position: relative;
   font-family: inherit;
   white-space: nowrap;
@@ -107,27 +108,34 @@
 .navLinkBtn::after {
   content: '';
   position: absolute;
-  bottom: 0;
   left: 50%;
+  bottom: -2px;
   transform: translateX(-50%);
   width: 0;
-  height: 2px;
-  background-color: var(--primary-color);
-  transition: width var(--transition-fast);
+  height: 3px;
+  border-radius: 2px;
+  background: var(--primary-color);
+  transition: width .26s ease;
 }
 
 .navLinkBtn:hover {
   color: var(--primary-color);
 }
 
-.navLinkBtn:hover::after,
-.navLinkBtn.active::after {
-  width: 80%;
+.navLinkBtn:hover::after {
+  width: calc(100% - 24px);
 }
 
 .navLinkBtn.active {
   color: var(--primary-color);
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.navLinkBtn.active::after {
+  width: calc(100% - 16px);
+  height: 3.5px;
+  background: var(--primary-dark);
 }
 
 /* 认证按钮与用户信息 */
@@ -290,17 +298,38 @@
   text-align: left;
   background: none;
   border: none;
-  padding: var(--spacing-md) 0;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 1rem;
+  padding: 14px;
+  color: var(--text-primary);
+  font-weight: 650;
+  font-size: .96rem;
   cursor: pointer;
   font-family: inherit;
+  border-radius: 6px;
+  transition: background .2s ease, color .2s ease, padding-left .2s ease;
+  position: relative;
+}
+
+.mobileNavLinkBtn:hover {
+  background: rgba(26, 86, 219, .05);
+  color: var(--primary-color);
 }
 
 .mobileNavLinkBtn.active {
+  background: rgba(26, 86, 219, .08);
   color: var(--primary-color);
-  font-weight: 700;
+  font-weight: 800;
+  padding-left: 18px;
+}
+
+.mobileNavLinkBtn.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16%;
+  bottom: 16%;
+  width: 3px;
+  background: var(--primary-color);
+  border-radius: 0 2px 2px 0;
 }
 
 .mobileAuthItem {
