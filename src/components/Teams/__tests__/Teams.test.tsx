@@ -135,5 +135,25 @@ describe('Teams Component', () => {
     await waitFor(() => expect(screen.getByText('球队 9')).toBeInTheDocument());
     expect(api.fetchTeams).toHaveBeenCalledTimes(1);
   });
+
+  it('loads the latest season instead of an older active season', async () => {
+    vi.mocked(api.fetchSeasons).mockResolvedValue([
+      { id: 'season-latest', name: '2027 女子足球联赛', status: 'archived' },
+      { id: 'season-active', name: '2026 男子足球联赛', status: 'active' },
+    ]);
+    vi.mocked(api.fetchTeams).mockResolvedValue({
+      data: [],
+      total: 0,
+      page: 1,
+      limit: 50,
+    });
+
+    render(<Teams />);
+
+    await waitFor(() => {
+      expect(api.fetchTeams).toHaveBeenCalledWith(1, 50, 'season-latest', 'FEMALE');
+    });
+    expect(api.fetchTeams).toHaveBeenCalledTimes(1);
+  });
 });
 

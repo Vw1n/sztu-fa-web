@@ -28,8 +28,7 @@ export const useMatchDirectory = (enabled = true) => {
         const seasonsList = await fetchSeasons();
         if (!active) return;
         setSeasons(seasonsList);
-        const activeSeason = seasonsList.find((season) => season.status === 'active');
-        setSelectedSeasonId(activeSeason?.id || seasonsList[0]?.id || '');
+        setSelectedSeasonId(seasonsList[0]?.id || '');
       } catch (loadError) {
         console.error('加载初始数据失败:', loadError);
       } finally {

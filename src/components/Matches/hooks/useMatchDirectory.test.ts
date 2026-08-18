@@ -26,7 +26,7 @@ describe('useMatchDirectory', () => {
     });
   });
 
-  it('waits for the selected season before loading the first match page', async () => {
+  it('waits for the season list and loads the latest season instead of an older active season', async () => {
     let resolveSeasons: ((value: Awaited<ReturnType<typeof api.fetchSeasons>>) => void) | undefined;
     vi.mocked(api.fetchSeasons).mockReturnValue(
       new Promise((resolve) => {
@@ -39,13 +39,16 @@ describe('useMatchDirectory', () => {
     expect(api.fetchMatches).not.toHaveBeenCalled();
 
     await act(async () => {
-      resolveSeasons?.([{ id: 'season-1', name: '2026 男子足球联赛', status: 'active' }]);
+      resolveSeasons?.([
+        { id: 'season-latest', name: '2027 男子足球联赛', status: 'archived' },
+        { id: 'season-active', name: '2026 男子足球联赛', status: 'active' },
+      ]);
       await Promise.resolve();
       await Promise.resolve();
     });
 
     await waitFor(() => expect(api.fetchMatches).toHaveBeenCalledTimes(1));
-    expect(api.fetchMatches).toHaveBeenCalledWith(1, 5, undefined, 'season-1', 'all');
+    expect(api.fetchMatches).toHaveBeenCalledWith(1, 5, undefined, 'season-latest', 'all');
 
     act(() => result.current.setSortBy('date-asc'));
     expect(api.fetchMatches).toHaveBeenCalledTimes(1);
