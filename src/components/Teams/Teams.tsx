@@ -7,6 +7,7 @@ import TeamModal from './TeamModal';
 import { PlayerCareerCard } from '../Player';
 import { useTeamDirectory, useTeamRoster } from './hooks';
 import { usePlayerCareer } from '../../hooks/usePlayerCareer';
+import { useSectionActivation } from '../../hooks/useSectionActivation';
 import {
   LoadingSpinner,
   EmptyState,
@@ -18,14 +19,15 @@ import {
 } from '../common';
 
 const Teams: React.FC = () => {
-  const directory = useTeamDirectory();
+  const section = useSectionActivation<HTMLElement>();
+  const directory = useTeamDirectory(section.isActive);
   const career = usePlayerCareer();
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const roster = useTeamRoster(selectedTeam);
 
   return (
-    <section className="teams" id="teams">
+    <section ref={section.ref} className="teams" id="teams">
       <div className="teamsContainer">
         <SectionHeader
           tag="球队信息"

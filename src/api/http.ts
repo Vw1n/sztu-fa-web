@@ -63,8 +63,8 @@ function getPublicCacheTtlMs(key: string): number {
   const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
   const path = new URL(key, origin).pathname;
   if (/\/api\/v1\/matches(?:\/|$)/.test(path)) return 15_000;
-  if (/\/api\/v1\/(?:seasons|teams|players|news)(?:\/|$)/.test(path)) return 60_000;
-  if (/\/api\/v1\/public\/summary\/?$/.test(path)) return 60_000;
+  if (/\/api\/v1\/(?:seasons|teams|players|news)(?:\/|$)/.test(path)) return 300_000;
+  if (/\/api\/v1\/public\/summary\/?$/.test(path)) return 300_000;
   return 0;
 }
 

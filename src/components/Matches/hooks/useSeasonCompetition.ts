@@ -4,20 +4,7 @@ import type { CupStandings, Match, SeasonStats, StandingRow } from '../../../typ
 import type { AssistRow, MatchTab, ScorerRow } from '../types';
 import { getWinnerTeamId } from '../utils/matchOutcome';
 
-/** 从比赛事件中统计每位球员的常规时间点球进球数（不含点球大战） */
-function countPenaltyGoals(matches: Match[]): Record<string, number> {
-  const counts: Record<string, number> = {};
-  for (const match of matches) {
-    for (const event of match.events || []) {
-      if (event.eventType === 'penalty' && event.playerName) {
-        counts[event.playerName] = (counts[event.playerName] || 0) + 1;
-      }
-    }
-  }
-  return counts;
-}
-
-export const useSeasonCompetition = (selectedSeasonId: string) => {
+export const useSeasonCompetition = (selectedSeasonId: string, enabled = true) => {
   const [activeTab, setActiveTab] = useState<MatchTab>('matches');
   const [standings, setStandings] = useState<StandingRow[] | CupStandings>([]);
   const [stats, setStats] = useState<SeasonStats>({ scorers: [], assists: [], cards: [] });
@@ -26,30 +13,24 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
   const [bracketMatches, setBracketMatches] = useState<Match[]>([]);
   const [bracketLoading, setBracketLoading] = useState(false);
 
-  const loadStats = useCallback(async (seasonId: string, active = true) => {
-    if (!seasonId) return;
+  const loadStats = useCallback(async (
+    seasonId: string,
+    tab: MatchTab,
+    active = true,
+  ) => {
+    if (!seasonId || tab === 'matches') return;
     setStatsLoading(true);
     setStatsError(null);
     try {
-      const [standingsData, statsData, matchesResponse] = await Promise.all([
-        fetchSeasonStandings(seasonId),
-        fetchSeasonStats(seasonId),
-        fetchMatches(1, 200, undefined, seasonId),
-      ]);
-      if (!active) return;
-      setStandings(standingsData);
+      if (tab === 'standings') {
+        const standingsData = await fetchSeasonStandings(seasonId);
+        if (active) setStandings(standingsData);
+        return;
+      }
 
-      // 统计常规时间点球进球并合并到射手榜
-      const allMatches = matchesResponse.data || [];
-      const penaltyMap = countPenaltyGoals(allMatches);
-      const enrichedStats: SeasonStats = {
-        ...statsData,
-        scorers: (statsData.scorers || []).map(s => ({
-          ...s,
-          penaltyGoals: s.penaltyGoals ?? (s.playerName ? penaltyMap[s.playerName] || 0 : 0),
-        })),
-      };
-      setStats(enrichedStats);
+      const statsData = await fetchSeasonStats(seasonId);
+      if (!active) return;
+      setStats(statsData);
     } catch (loadError) {
       if (active) {
         setStatsError(loadError instanceof Error ? loadError.message : '加载赛季统计数据失败');
@@ -61,10 +42,11 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     let active = true;
-    void loadStats(selectedSeasonId, active);
+    void loadStats(selectedSeasonId, activeTab, active);
     return () => { active = false; };
-  }, [selectedSeasonId, loadStats]);
+  }, [enabled, selectedSeasonId, activeTab, loadStats]);
 
   const loadBracketMatches = useCallback(async () => {
     if (!selectedSeasonId) return;
@@ -143,8 +125,8 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
   }, [selectedSeasonId]);
 
   useEffect(() => {
-    if (activeTab === 'standings') void loadBracketMatches();
-  }, [activeTab, loadBracketMatches]);
+    if (enabled && activeTab === 'standings') void loadBracketMatches();
+  }, [enabled, activeTab, loadBracketMatches]);
 
   return {
     activeTab,
@@ -152,7 +134,7 @@ export const useSeasonCompetition = (selectedSeasonId: string) => {
     standings,
     statsLoading,
     statsError,
-    reloadStats: () => void loadStats(selectedSeasonId),
+    reloadStats: () => void loadStats(selectedSeasonId, activeTab),
     bracketMatches,
     bracketLoading,
     scorers: (stats.scorers || []).slice(0, 10) as ScorerRow[],

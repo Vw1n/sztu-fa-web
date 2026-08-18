@@ -10,7 +10,7 @@ const getSeasonGender = (seasonName: string) => {
   return null;
 };
 
-export const useTeamDirectory = () => {
+export const useTeamDirectory = (enabled = true) => {
   const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +77,7 @@ export const useTeamDirectory = () => {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const loadSeasons = async () => {
       try {
         const seasons = await fetchSeasons();
@@ -118,11 +119,12 @@ export const useTeamDirectory = () => {
       }
     };
     void loadSeasons();
-  }, []);
+  }, [enabled]);
 
   useEffect(() => {
+    if (!enabled) return;
     void loadTeams(currentPage, globalSeasonId, selectedGender, appliedSearchTerm || undefined);
-  }, [currentPage, globalSeasonId, selectedGender, appliedSearchTerm, loadTeams]);
+  }, [enabled, currentPage, globalSeasonId, selectedGender, appliedSearchTerm, loadTeams]);
 
   // PC 端前端分页，移动端全部展示
   const teams = useMemo(() => {

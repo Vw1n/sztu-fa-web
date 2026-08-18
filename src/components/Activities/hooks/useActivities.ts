@@ -14,7 +14,7 @@ export interface ActivityDisplay {
   wechatUrl: string;
 }
 
-export const useActivities = () => {
+export const useActivities = (enabled = true) => {
   const [allNews, setAllNews] = useState<News[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -57,8 +57,9 @@ export const useActivities = () => {
   }, [isMockEnabled]);
 
   useEffect(() => {
+    if (!enabled) return;
     void loadNewsData();
-  }, [loadNewsData]);
+  }, [enabled, loadNewsData]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
