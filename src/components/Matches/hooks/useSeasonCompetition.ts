@@ -59,6 +59,7 @@ export const useSeasonCompetition = (selectedSeasonId: string, enabled = true) =
         selectedSeasonId,
         undefined,
         'KNOCKOUT',
+        false,
       );
       const allMatches = response.data || [];
       const knockoutMatches = allMatches.filter(

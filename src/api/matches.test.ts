@@ -15,10 +15,10 @@ describe('matches api', () => {
     );
     vi.stubGlobal('fetch', fetchMock);
 
-    await fetchMatches(1, 100, undefined, 'season-1', undefined, 'KNOCKOUT');
+    await fetchMatches(1, 100, undefined, 'season-1', undefined, 'KNOCKOUT', false);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/v1/matches?page=1&limit=100&seasonId=season-1&stage=KNOCKOUT',
+      '/api/v1/matches?page=1&limit=100&seasonId=season-1&stage=KNOCKOUT&includeMeta=false',
       undefined,
     );
   });

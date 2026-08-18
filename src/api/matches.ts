@@ -8,6 +8,7 @@ export async function fetchMatches(
   seasonId?: string,
   status?: string,
   stage?: string,
+  includeMeta: boolean = true,
 ): Promise<PaginatedResponse<Match>> {
   let url = `${BASE_URL}/matches?page=${page}&limit=${limit}`;
   if (teamId) url += `&teamId=${teamId}`;
@@ -19,6 +20,7 @@ export async function fetchMatches(
     url += `&status=${backendStatus}`;
   }
   if (stage) url += `&stage=${encodeURIComponent(stage)}`;
+  if (!includeMeta) url += '&includeMeta=false';
 
   const response = await apiFetch(url);
   if (!response.ok) {
