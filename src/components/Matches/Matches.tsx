@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import './Matches.css';
 import type { Match } from '../../types';
 import { LeagueStandings } from './components/LeagueStandings';
@@ -11,6 +11,7 @@ import { useMatchDirectory, useSeasonCompetition } from './hooks';
 import { usePlayerCareer } from '../../hooks/usePlayerCareer';
 import { useSectionActivation } from '../../hooks/useSectionActivation';
 import { SectionHeader, SeasonSelector } from '../common';
+import { fetchMatchById } from '../../api';
 
 const Matches: React.FC = () => {
   const section = useSectionActivation<HTMLElement>();
@@ -19,13 +20,38 @@ const Matches: React.FC = () => {
   const career = usePlayerCareer();
   const [selectedMatchForModal, setSelectedMatchForModal] = useState<Match | null>(null);
   const [modalTab, setModalTab] = useState<'events' | 'lineups'>('events');
+  const [matchDetailLoading, setMatchDetailLoading] = useState(false);
+  const [matchDetailError, setMatchDetailError] = useState<string | null>(null);
+  const detailRequestId = useRef(0);
   const selectedSeason = directory.seasons.find(
     (season) => season.id === directory.selectedSeasonId,
   );
 
-  const openMatch = (match: Match) => {
+  const loadMatchDetail = useCallback(async (match: Match, resetTab = false) => {
+    const requestId = ++detailRequestId.current;
     setSelectedMatchForModal(match);
-    setModalTab('events');
+    if (resetTab) setModalTab('events');
+    setMatchDetailLoading(true);
+    setMatchDetailError(null);
+    try {
+      const detail = await fetchMatchById(match.id);
+      if (requestId === detailRequestId.current) setSelectedMatchForModal(detail);
+    } catch (loadError) {
+      if (requestId === detailRequestId.current) {
+        setMatchDetailError(loadError instanceof Error ? loadError.message : '加载比赛详情失败');
+      }
+    } finally {
+      if (requestId === detailRequestId.current) setMatchDetailLoading(false);
+    }
+  }, []);
+
+  const openMatch = (match: Match) => void loadMatchDetail(match, true);
+
+  const closeMatch = () => {
+    detailRequestId.current += 1;
+    setSelectedMatchForModal(null);
+    setMatchDetailLoading(false);
+    setMatchDetailError(null);
   };
 
   return (
@@ -124,8 +150,11 @@ const Matches: React.FC = () => {
         <MatchDetailModal
           selectedMatchForModal={selectedMatchForModal}
           modalTab={modalTab}
-          onClose={() => setSelectedMatchForModal(null)}
+          detailLoading={matchDetailLoading}
+          detailError={matchDetailError}
+          onClose={closeMatch}
           onTabChange={setModalTab}
+          onRetryDetail={() => selectedMatchForModal && void loadMatchDetail(selectedMatchForModal)}
           onPlayerClick={career.openCareer}
         />
         <PlayerCareerCard

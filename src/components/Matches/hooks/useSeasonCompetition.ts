@@ -52,7 +52,14 @@ export const useSeasonCompetition = (selectedSeasonId: string, enabled = true) =
     if (!selectedSeasonId) return;
     setBracketLoading(true);
     try {
-      const response = await fetchMatches(1, 200, undefined, selectedSeasonId);
+      const response = await fetchMatches(
+        1,
+        100,
+        undefined,
+        selectedSeasonId,
+        undefined,
+        'KNOCKOUT',
+      );
       const allMatches = response.data || [];
       const knockoutMatches = allMatches.filter(
         (match) =>

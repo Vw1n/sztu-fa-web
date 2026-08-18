@@ -6,7 +6,8 @@ export async function fetchMatches(
   limit: number = 10,
   teamId?: string,
   seasonId?: string,
-  status?: string
+  status?: string,
+  stage?: string,
 ): Promise<PaginatedResponse<Match>> {
   let url = `${BASE_URL}/matches?page=${page}&limit=${limit}`;
   if (teamId) url += `&teamId=${teamId}`;
@@ -17,6 +18,7 @@ export async function fetchMatches(
     else if (status === 'in_progress') backendStatus = 'ongoing';
     url += `&status=${backendStatus}`;
   }
+  if (stage) url += `&stage=${encodeURIComponent(stage)}`;
 
   const response = await apiFetch(url);
   if (!response.ok) {
