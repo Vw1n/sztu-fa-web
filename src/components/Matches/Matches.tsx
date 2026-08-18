@@ -9,11 +9,13 @@ import { MatchList } from './components/MatchList';
 import { PlayerCareerCard } from '../Player';
 import { useMatchDirectory, useSeasonCompetition } from './hooks';
 import { usePlayerCareer } from '../../hooks/usePlayerCareer';
+import { useSectionActivation } from '../../hooks/useSectionActivation';
 import { SectionHeader, SeasonSelector } from '../common';
 
 const Matches: React.FC = () => {
-  const directory = useMatchDirectory();
-  const competition = useSeasonCompetition(directory.selectedSeasonId);
+  const section = useSectionActivation<HTMLElement>();
+  const directory = useMatchDirectory(section.isActive);
+  const competition = useSeasonCompetition(directory.selectedSeasonId, section.isActive);
   const career = usePlayerCareer();
   const [selectedMatchForModal, setSelectedMatchForModal] = useState<Match | null>(null);
   const [modalTab, setModalTab] = useState<'events' | 'lineups'>('events');
@@ -27,7 +29,7 @@ const Matches: React.FC = () => {
   };
 
   return (
-    <section className="matches" id="matches">
+    <section ref={section.ref} className="matches" id="matches">
       <div className="matchesContainer">
         <SectionHeader
           tag="赛事公告"

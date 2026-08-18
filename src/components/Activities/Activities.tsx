@@ -1,8 +1,10 @@
 import './Activities.css';
 import { SectionHeader, Pagination, LoadingSpinner, ErrorMessage } from '../common';
 import { useActivities } from './hooks/useActivities';
+import { useSectionActivation } from '../../hooks/useSectionActivation';
 
 const Activities: React.FC = () => {
+  const section = useSectionActivation<HTMLElement>();
   const {
     displayList,
     currentPage,
@@ -12,10 +14,10 @@ const Activities: React.FC = () => {
     error,
     isMock,
     reloadNews,
-  } = useActivities();
+  } = useActivities(section.isActive);
 
   return (
-    <section className="activities" id="activities">
+    <section ref={section.ref} className="activities" id="activities">
       <div className="activitiesContainer">
         <SectionHeader
           tag="活动动态"

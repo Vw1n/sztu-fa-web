@@ -4,7 +4,7 @@ import type { Match, Season, Team } from '../../../types';
 import type { SortOption, StatusFilter } from '../types';
 import { selectUpcomingMatches, sortMatches } from '../utils/matchData';
 
-export const useMatchDirectory = () => {
+export const useMatchDirectory = (enabled = true) => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [matchStats, setMatchStats] = useState({ total: 0, completed: 0, scheduled: 0, ongoing: 0 });
   const [loading, setLoading] = useState(true);
@@ -20,6 +20,7 @@ export const useMatchDirectory = () => {
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
 
   useEffect(() => {
+    if (!enabled) return;
     const loadInitialData = async () => {
       try {
         const seasonsList = await fetchSeasons();
@@ -31,9 +32,10 @@ export const useMatchDirectory = () => {
       }
     };
     void loadInitialData();
-  }, []);
+  }, [enabled]);
 
   useEffect(() => {
+    if (!enabled) return;
     const activeToken = { active: true };
 
     const loadSeasonTeams = async () => {
@@ -64,7 +66,7 @@ export const useMatchDirectory = () => {
 
     void loadSeasonTeams();
     return () => { activeToken.active = false; };
-  }, [selectedSeasonId]);
+  }, [enabled, selectedSeasonId]);
 
   const loadMatches = useCallback(async (
     page: number,
@@ -100,11 +102,12 @@ export const useMatchDirectory = () => {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const activeToken = { active: true };
     setCurrentPage(1);
     void loadMatches(1, statusFilter, teamFilter, sortBy, selectedSeasonId, activeToken);
     return () => { activeToken.active = false; };
-  }, [statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
+  }, [enabled, statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
 
   const changePage = (page: number) => {
     if (page < 1) return;

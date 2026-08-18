@@ -799,6 +799,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .sectionHeader { grid-template-columns: 1fr; gap: 12px; margin-bottom: 38px; }
   .sectionTitleWrapper { grid-column: auto; grid-row: auto; }
   .sectionTitle { padding-bottom: 1.2rem; font-size: clamp(2.75rem, 13vw, 4.4rem); }
+  .about .sectionTitle { padding-bottom: 2rem; }
   .sectionDescription { position: absolute; right: 0; bottom: -18px; margin-top: 0; font-size: .9rem; padding-right: 0; white-space: normal; max-width: 100%; }
   .aboutContent { grid-template-columns: 1fr; gap: 28px; }
   .aboutImageWrapper { margin-top: 0; }

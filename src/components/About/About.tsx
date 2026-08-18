@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './About.css';
 import { SectionHeader } from '../common';
 import { fetchPublicSummary } from '../../api';
+import { useSectionActivation } from '../../hooks/useSectionActivation';
 
 interface Feature {
   icon: React.ReactNode;
@@ -56,6 +57,7 @@ interface StatItem {
 }
 
 const About: React.FC = () => {
+  const section = useSectionActivation<HTMLElement>();
   const [stats, setStats] = useState<StatItem[]>([
     { value: '2017', suffix: '年', label: '成立年份' },
     { value: '--', suffix: '场', label: '举办赛事' },
@@ -63,6 +65,7 @@ const About: React.FC = () => {
   ]);
 
   useEffect(() => {
+    if (!section.isActive) return;
     let isMounted = true;
     const loadRealStats = async () => {
       try {
@@ -93,9 +96,9 @@ const About: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [section.isActive]);
   return (
-    <section className="about" id="about">
+    <section ref={section.ref} className="about" id="about">
       <div className="aboutContainer">
         <SectionHeader
           tag="关于我们"
