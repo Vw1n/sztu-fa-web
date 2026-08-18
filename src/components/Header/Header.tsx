@@ -63,13 +63,61 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     if (location.pathname !== '/' || !location.hash) return;
-    const element = document.getElementById(location.hash.slice(1));
-    if (element) {
+
+    const targetId = location.hash.slice(1);
+    let animationFrame = 0;
+    let cancelled = false;
+
+    const scrollToTarget = () => {
+      animationFrame = 0;
+      if (cancelled) return;
+
+      const element = document.getElementById(targetId);
+      if (!element) return;
+
       const headerOffset =
         document.querySelector('header.header')?.getBoundingClientRect().height ?? 72;
       const target = element.getBoundingClientRect().top + window.scrollY - headerOffset - 4;
-      window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-    }
+      window.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
+    };
+
+    const scheduleScroll = () => {
+      if (cancelled || animationFrame) return;
+      animationFrame = window.requestAnimationFrame(scrollToTarget);
+    };
+
+    // 跨页面返回首页时，上方异步区块可能在首轮定位后继续变高。
+    // 监听首页布局变化并重新对齐目标，避免最终落到前一个区块。
+    const layoutRoot = document.querySelector('main.main');
+    const resizeObserver = typeof ResizeObserver === 'undefined'
+      ? null
+      : new ResizeObserver(scheduleScroll);
+    if (layoutRoot) resizeObserver?.observe(layoutRoot);
+
+    const retryTimers = [0, 100, 300, 700, 1500].map((delay) =>
+      window.setTimeout(scheduleScroll, delay),
+    );
+    const stopTimer = window.setTimeout(() => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+    }, 2200);
+
+    const cancelOnUserInput = () => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+    };
+    window.addEventListener('wheel', cancelOnUserInput, { passive: true, once: true });
+    window.addEventListener('touchstart', cancelOnUserInput, { passive: true, once: true });
+
+    return () => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+      retryTimers.forEach((timer) => window.clearTimeout(timer));
+      window.clearTimeout(stopTimer);
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener('wheel', cancelOnUserInput);
+      window.removeEventListener('touchstart', cancelOnUserInput);
+    };
   }, [location.pathname, location.hash]);
 
   const toggleMobileMenu = () => {
