@@ -8,6 +8,7 @@ import Teams from './components/Teams';
 import Matches from './components/Matches';
 import Footer from './components/Footer';
 import MotionEffects from './components/common/MotionEffects';
+import ScrollToTop from './components/common/ScrollToTop';
 import { useActiveHomeSection } from './hooks/useActiveHomeSection';
 
 import Login from './pages/Login';
@@ -64,6 +65,7 @@ function MobileDock() {
 function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <MotionEffects />
       <Routes>
         <Route path="/" element={<HomePage />} />
