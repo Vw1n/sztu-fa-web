@@ -21,6 +21,7 @@ export const useTeamDirectory = (enabled = true) => {
   const [globalSeasons, setGlobalSeasons] = useState<Season[]>([]);
   const [globalSeasonId, setGlobalSeasonId] = useState('all');
   const [selectedGender, setSelectedGender] = useState('MALE');
+  const [seasonsReady, setSeasonsReady] = useState(false);
   const latestRequestId = useRef(0);
 
   // 移动端检测（≤768px）
@@ -78,9 +79,11 @@ export const useTeamDirectory = (enabled = true) => {
 
   useEffect(() => {
     if (!enabled) return;
+    let active = true;
     const loadSeasons = async () => {
       try {
         const seasons = await fetchSeasons();
+        if (!active) return;
         setGlobalSeasons(seasons);
         if (seasons.length > 0) {
           // 从赛季名称解析年份（如 2026 赛季）
@@ -116,15 +119,18 @@ export const useTeamDirectory = (enabled = true) => {
         }
       } catch (loadError) {
         console.error('获取赛季列表失败:', loadError);
+      } finally {
+        if (active) setSeasonsReady(true);
       }
     };
     void loadSeasons();
+    return () => { active = false; };
   }, [enabled]);
 
   useEffect(() => {
-    if (!enabled) return;
-    void loadTeams(currentPage, globalSeasonId, selectedGender, appliedSearchTerm || undefined);
-  }, [enabled, currentPage, globalSeasonId, selectedGender, appliedSearchTerm, loadTeams]);
+    if (!enabled || !seasonsReady) return;
+    void loadTeams(1, globalSeasonId, selectedGender, appliedSearchTerm || undefined);
+  }, [enabled, seasonsReady, globalSeasonId, selectedGender, appliedSearchTerm, loadTeams]);
 
   // PC 端前端分页，移动端全部展示
   const teams = useMemo(() => {

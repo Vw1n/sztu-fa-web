@@ -50,6 +50,8 @@ describe('Teams Component', () => {
     });
 
     expect(screen.queryByRole('button', { name: '重新加载' })).not.toBeInTheDocument();
+    expect(api.fetchTeams).toHaveBeenCalledTimes(1);
+    expect(api.fetchTeams).toHaveBeenCalledWith(1, 50, 'season-1', 'MALE');
   });
 
   it('allows clicking retry button to refetch data', async () => {
@@ -99,6 +101,39 @@ describe('Teams Component', () => {
     await waitFor(() => {
       expect(screen.getByText('计算机学院队')).toBeInTheDocument();
     });
+  });
+
+  it('paginates the already loaded team list without requesting it again', async () => {
+    vi.mocked(api.fetchTeams).mockResolvedValue({
+      data: Array.from({ length: 9 }, (_, index) => ({
+        id: `team-${index + 1}`,
+        teamName: `球队 ${index + 1}`,
+        teamLogo: '',
+        groupTeams: [],
+        teamDoctor: '',
+        headCoach: '',
+        teamLeader: '',
+        coachPhone: '',
+        leaderPhone: '',
+        homeJerseyColor: '',
+        awayJerseyColor: '',
+        homeJersey: '',
+        awayJersey: '',
+        createdAt: '2026-01-01',
+        updatedAt: '2026-01-01',
+      })),
+      total: 9,
+      page: 1,
+      limit: 50,
+    });
+
+    render(<Teams />);
+
+    await waitFor(() => expect(screen.getByText('球队 1')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: '2' }));
+
+    await waitFor(() => expect(screen.getByText('球队 9')).toBeInTheDocument());
+    expect(api.fetchTeams).toHaveBeenCalledTimes(1);
   });
 });
 

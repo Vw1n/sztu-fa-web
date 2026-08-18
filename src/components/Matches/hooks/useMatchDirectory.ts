@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchMatches, fetchSeasons, fetchTeams } from '../../../api';
 import type { Match, Season, Team } from '../../../types';
 import type { SortOption, StatusFilter } from '../types';
@@ -18,24 +18,30 @@ export const useMatchDirectory = (enabled = true) => {
   const [availableTeams, setAvailableTeams] = useState<Team[]>([]);
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
+  const [seasonsReady, setSeasonsReady] = useState(false);
 
   useEffect(() => {
     if (!enabled) return;
+    let active = true;
     const loadInitialData = async () => {
       try {
         const seasonsList = await fetchSeasons();
+        if (!active) return;
         setSeasons(seasonsList);
-        const active = seasonsList.find((season) => season.status === 'active');
-        setSelectedSeasonId(active?.id || seasonsList[0]?.id || '');
+        const activeSeason = seasonsList.find((season) => season.status === 'active');
+        setSelectedSeasonId(activeSeason?.id || seasonsList[0]?.id || '');
       } catch (loadError) {
         console.error('加载初始数据失败:', loadError);
+      } finally {
+        if (active) setSeasonsReady(true);
       }
     };
     void loadInitialData();
+    return () => { active = false; };
   }, [enabled]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !seasonsReady) return;
     const activeToken = { active: true };
 
     const loadSeasonTeams = async () => {
@@ -66,13 +72,12 @@ export const useMatchDirectory = (enabled = true) => {
 
     void loadSeasonTeams();
     return () => { activeToken.active = false; };
-  }, [enabled, selectedSeasonId]);
+  }, [enabled, seasonsReady, selectedSeasonId]);
 
   const loadMatches = useCallback(async (
     page: number,
     status?: string,
     teamId?: string,
-    sort?: SortOption,
     seasonId?: string,
     activeToken: { active: boolean } = { active: true },
   ) => {
@@ -82,14 +87,13 @@ export const useMatchDirectory = (enabled = true) => {
       const filteredTeamId = teamId && teamId !== 'all' ? teamId : undefined;
       const response = await fetchMatches(page, limit, filteredTeamId, seasonId, status);
       if (!activeToken.active) return;
-      const sortedMatches = sortMatches(response.data, sort);
-      setMatches(sortedMatches);
+      setMatches(response.data);
       setTotal(response.total);
       setMatchStats(response.stats || {
         total: response.total,
-        completed: sortedMatches.filter((match) => match.status === 'completed').length,
-        scheduled: sortedMatches.filter((match) => match.status === 'scheduled').length,
-        ongoing: sortedMatches.filter((match) => match.status === 'in_progress').length,
+        completed: response.data.filter((match) => match.status === 'completed').length,
+        scheduled: response.data.filter((match) => match.status === 'scheduled').length,
+        ongoing: response.data.filter((match) => match.status === 'in_progress').length,
       });
     } catch (loadError) {
       if (activeToken.active) {
@@ -102,17 +106,19 @@ export const useMatchDirectory = (enabled = true) => {
   }, []);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !seasonsReady) return;
     const activeToken = { active: true };
     setCurrentPage(1);
-    void loadMatches(1, statusFilter, teamFilter, sortBy, selectedSeasonId, activeToken);
+    void loadMatches(1, statusFilter, teamFilter, selectedSeasonId, activeToken);
     return () => { activeToken.active = false; };
-  }, [enabled, statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
+  }, [enabled, seasonsReady, statusFilter, teamFilter, selectedSeasonId, loadMatches]);
+
+  const sortedMatches = useMemo(() => sortMatches(matches, sortBy), [matches, sortBy]);
 
   const changePage = (page: number) => {
     if (page < 1) return;
     setCurrentPage(page);
-    void loadMatches(page, statusFilter, teamFilter, sortBy, selectedSeasonId);
+    void loadMatches(page, statusFilter, teamFilter, selectedSeasonId);
   };
 
   const changeSeason = (seasonId: string) => {
@@ -122,14 +128,14 @@ export const useMatchDirectory = (enabled = true) => {
   };
 
   const reloadMatches = useCallback(() => {
-    void loadMatches(currentPage, statusFilter, teamFilter, sortBy, selectedSeasonId);
-  }, [currentPage, statusFilter, teamFilter, sortBy, selectedSeasonId, loadMatches]);
+    void loadMatches(currentPage, statusFilter, teamFilter, selectedSeasonId);
+  }, [currentPage, statusFilter, teamFilter, selectedSeasonId, loadMatches]);
 
   return {
-    matches, matchStats, loading, error, currentPage, total, limit,
+    matches: sortedMatches, matchStats, loading, error, currentPage, total, limit,
     sortBy, setSortBy, statusFilter, setStatusFilter, teamFilter, setTeamFilter,
     availableTeams, seasons, selectedSeasonId, setSelectedSeasonId: changeSeason,
-    upcomingMatches: selectUpcomingMatches(matches), changePage, reloadMatches,
+    upcomingMatches: selectUpcomingMatches(sortedMatches), changePage, reloadMatches,
   };
 };
 
