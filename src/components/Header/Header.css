@@ -183,33 +183,37 @@
 }
 
 .authBtn {
-  padding: 6px 14px;
+  padding: 8px 18px;
   border-radius: var(--radius-md);
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-fast);
-  border: none;
+  border: 1.5px solid transparent;
+  letter-spacing: .02em;
 }
 
 .loginBtn {
   color: var(--primary-color);
-  background-color: transparent;
-  border: 1px solid var(--primary-color);
+  background-color: rgba(26, 86, 219, 0.06);
+  border-color: var(--primary-color);
 }
 
 .loginBtn:hover {
-  background-color: rgba(26, 86, 219, 0.08);
+  background-color: rgba(26, 86, 219, 0.12);
+  box-shadow: 0 2px 8px rgba(26, 86, 219, 0.18);
 }
 
 .registerBtn {
-  color: #fff;
-  background-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: rgba(26, 86, 219, 0.06);
+  border-color: var(--primary-color);
 }
 
 .registerBtn:hover {
-  background-color: var(--primary-dark);
+  background-color: rgba(26, 86, 219, 0.12);
+  box-shadow: 0 2px 8px rgba(26, 86, 219, 0.18);
 }
 
 .logoutBtn {

@@ -218,10 +218,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .navLinkBtn:hover::after { width: calc(100% - 24px); }
 .navLinkBtn.active::after { width: calc(100% - 16px); height: 3.5px; background: var(--primary-dark); }
 .authBtn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 700; padding-inline: clamp(14px, 1.2vw, 20px); font-size: .88rem; }
-.loginBtn { border-color: var(--text-primary); color: var(--text-primary); border-width: 1.5px; }
-.loginBtn:hover { background: rgba(26, 86, 219, 0.06); border-color: var(--primary-color); color: var(--primary-color); }
-.registerBtn { background: var(--primary-color); }
-.registerBtn:hover { background: var(--primary-dark); color: #fff; box-shadow: 0 6px 14px rgba(26, 86, 219, 0.22); }
+.loginBtn, .registerBtn { background: rgba(26, 86, 219, 0.06); border: 1.5px solid var(--primary-color); color: var(--primary-color); }
+.loginBtn:hover, .registerBtn:hover { background: rgba(26, 86, 219, 0.12); box-shadow: 0 2px 8px rgba(26, 86, 219, 0.18); }
 .authButtons { gap: var(--spacing-md); }
 
 /* Shared section language */
