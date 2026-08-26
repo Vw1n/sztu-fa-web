@@ -143,10 +143,11 @@ const Predictions: React.FC = () => {
 
           <div className="noticeBanner">
             <span className="noticeBadge">竞猜规则说明</span>
-            <span>
-              ① 仅供校园娱乐互动，使用站内虚拟积分； ② 比赛开始前 5 分钟停止竞猜/修改； ③
-              淘汰赛按常规时间比分结算（不含加时赛及点球大战）。
-            </span>
+            <ul className="noticeRules">
+              <li>仅供校园娱乐互动，使用站内虚拟积分</li>
+              <li>比赛开始前 5 分钟停止竞猜/修改</li>
+              <li>淘汰赛按常规时间比分结算（不含加时赛及点球大战）</li>
+            </ul>
           </div>
 
           {!isAuthenticated && (
