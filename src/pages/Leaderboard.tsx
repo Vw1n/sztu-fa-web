@@ -124,61 +124,109 @@ const Leaderboard: React.FC = () => {
               暂无已结算的竞猜数据，榜单静候首位神预测选手！
             </div>
           ) : (
-            <div className="leaderboardCard">
-              <div className="tableResponsiveWrapper">
-                <table className="leaderboardTable">
-                  <thead>
-                    <tr>
-                      <th>排名</th>
-                      <th>选手昵称</th>
-                      <th>绑定学号</th>
-                      <th>总积分</th>
-                      <th>命中率</th>
-                      <th>参与/猜中</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list.map((item) => {
-                      let rankClass = 'normalRank';
-                      if (item.rank === 1) rankClass = 'topRank rank1';
-                      if (item.rank === 2) rankClass = 'topRank rank2';
-                      if (item.rank === 3) rankClass = 'topRank rank3';
-
-                      return (
-                        <tr
-                          key={item.userId}
-                          className={
-                            currentUser?.userId === item.userId ? 'currentUserRow' : ''
-                          }
-                        >
-                          <td>
-                            <span className={`rankBadge ${rankClass}`}>
-                              {item.rank}
-                            </span>
-                          </td>
-                          <td className="userCell">
-                            <div className="userFlex">
-                              <span className="userAvatar">
-                                {item.nickname[0].toUpperCase()}
-                              </span>
-                              <span className="userName">{item.nickname}</span>
-                            </div>
-                          </td>
-                          <td className="studentIdCell">{item.maskedStudentId}</td>
-                          <td className="pointsCell">
-                            <strong>{item.points}</strong> 分
-                          </td>
-                          <td className="accuracyCell">{item.accuracyRate}%</td>
-                          <td className="countCell">
-                            {item.totalCount} 次 / {item.correctCount} 中
-                          </td>
+            <>
+              <div className="leaderboardDesktop">
+                <div className="leaderboardCard">
+                  <div className="tableResponsiveWrapper">
+                    <table className="leaderboardTable">
+                      <thead>
+                        <tr>
+                          <th>排名</th>
+                          <th>选手昵称</th>
+                          <th>绑定学号</th>
+                          <th>总积分</th>
+                          <th>命中率</th>
+                          <th>参与/猜中</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      </thead>
+                      <tbody>
+                        {list.map((item) => {
+                          let rankClass = 'normalRank';
+                          if (item.rank === 1) rankClass = 'topRank rank1';
+                          if (item.rank === 2) rankClass = 'topRank rank2';
+                          if (item.rank === 3) rankClass = 'topRank rank3';
+
+                          return (
+                            <tr
+                              key={item.userId}
+                              className={
+                                currentUser?.userId === item.userId ? 'currentUserRow' : ''
+                              }
+                            >
+                              <td>
+                                <span className={`rankBadge ${rankClass}`}>
+                                  {item.rank}
+                                </span>
+                              </td>
+                              <td className="userCell">
+                                <div className="userFlex">
+                                  <span className="userAvatar">
+                                    {item.nickname[0].toUpperCase()}
+                                  </span>
+                                  <span className="userName">{item.nickname}</span>
+                                </div>
+                              </td>
+                              <td className="studentIdCell">{item.maskedStudentId}</td>
+                              <td className="pointsCell">
+                                <strong>{item.points}</strong> 分
+                              </td>
+                              <td className="accuracyCell">{item.accuracyRate}%</td>
+                              <td className="countCell">
+                                {item.totalCount} 次 / {item.correctCount} 中
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+
+              <div className="leaderboardMobile">
+                <div className="mobileCardsList">
+                  {list.map((item) => {
+                    let rankClass = 'normalRank';
+                    if (item.rank === 1) rankClass = 'topRank rank1';
+                    if (item.rank === 2) rankClass = 'topRank rank2';
+                    if (item.rank === 3) rankClass = 'topRank rank3';
+
+                    return (
+                      <div
+                        key={item.userId}
+                        className={`mobileRankCard ${
+                          currentUser?.userId === item.userId ? 'currentUserCard' : ''
+                        }`}
+                      >
+                        <div className="mobileCardHeader">
+                          <span className={`rankBadge ${rankClass}`}>{item.rank}</span>
+                          <div className="mobileUserInfo">
+                            <div className="mobileUserName">{item.nickname}</div>
+                            <div className="mobileStudentId">{item.maskedStudentId}</div>
+                          </div>
+                        </div>
+                        <div className="mobileCardStats">
+                          <div className="mobileStatItem">
+                            <span className="mobileStatLabel">积分</span>
+                            <span className="mobileStatValue">{item.points}</span>
+                          </div>
+                          <div className="mobileStatItem">
+                            <span className="mobileStatLabel">命中率</span>
+                            <span className="mobileStatValue">{item.accuracyRate}%</span>
+                          </div>
+                          <div className="mobileStatItem">
+                            <span className="mobileStatLabel">参与/猜中</span>
+                            <span className="mobileStatValue">
+                              {item.totalCount}/{item.correctCount}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
           )}
 
           {isAuthenticated && currentUser && (
