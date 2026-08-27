@@ -10,6 +10,7 @@ import type { Season } from '../api/seasons';
 import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import PredictionNavTabs from '../components/Predictions/PredictionNavTabs';
 import './pages.css';
 
 const Predictions: React.FC = () => {
@@ -63,8 +64,8 @@ const Predictions: React.FC = () => {
       setMessage({ type: 'error', text: '管理账号不参与竞猜' });
       return;
     }
-    if (!user?.studentId) {
-      setMessage({ type: 'error', text: '您的账号未绑定学号，请先去绑定学号' });
+    if (user?.verificationStatus !== 'APPROVED' || !user?.studentId) {
+      setMessage({ type: 'error', text: '请先到认证页面提交校园卡，审核通过后才能竞猜' });
       return;
     }
 
@@ -112,8 +113,10 @@ const Predictions: React.FC = () => {
   return (
     <div className="pageLayout">
       <Header />
+      {isAuthenticated && user?.verificationStatus !== 'APPROVED' && <p className="verification-notice">校园卡尚未审核通过，暂不能竞猜。<Link to="/verification">查看认证 / 补交材料</Link></p>}
       <main className="mainContent">
         <div className="pageContainer">
+          <PredictionNavTabs activeTab="predictions" />
           <div className="pageHeader">
             <div>
               <h1 className="pageTitle">校园足球赛事竞猜大厅</h1>

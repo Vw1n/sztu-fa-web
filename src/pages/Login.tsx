@@ -24,8 +24,8 @@ const Login: React.FC = () => {
     try {
       setError('');
       setLoading(true);
-      await login(username.trim(), password);
-      navigate('/predictions');
+      const result = await login(username.trim(), password);
+      navigate(result.user.verificationStatus === 'APPROVED' ? '/predictions' : '/verification');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : '登录失败，请检查用户名和密码';
       setError(errorMessage);

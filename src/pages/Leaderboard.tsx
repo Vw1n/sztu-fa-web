@@ -6,6 +6,7 @@ import type { Season } from '../api/seasons';
 import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import PredictionNavTabs from '../components/Predictions/PredictionNavTabs';
 import './pages.css';
 
 const Leaderboard: React.FC = () => {
@@ -71,6 +72,7 @@ const Leaderboard: React.FC = () => {
       <Header />
       <main className="mainContent">
         <div className="pageContainer">
+          <PredictionNavTabs activeTab="leaderboard" />
           <div className="pageHeader">
             <div>
               <h1 className="pageTitle">赛事竞猜英雄榜</h1>

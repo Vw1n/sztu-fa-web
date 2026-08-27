@@ -7,6 +7,7 @@ import type { Season } from '../api/seasons';
 import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import PredictionNavTabs from '../components/Predictions/PredictionNavTabs';
 import './pages.css';
 
 const MyPredictions: React.FC = () => {
@@ -61,6 +62,7 @@ const MyPredictions: React.FC = () => {
     return (
       <div className="pageLayout">
         <Header />
+      <p className="verification-notice"><Link to="/verification">查看校园卡认证状态</Link></p>
         <main className="mainContent flexCenter">
           <div className="loginNotice">
             <h2>请先登录账号</h2>
@@ -83,8 +85,10 @@ const MyPredictions: React.FC = () => {
   return (
     <div className="pageLayout">
       <Header />
+      <p className="verification-notice"><Link to="/verification">查看校园卡认证状态</Link></p>
       <main className="mainContent">
         <div className="pageContainer">
+          <PredictionNavTabs activeTab="my-predictions" />
           <div className="pageHeader">
             <div>
               <h1 className="pageTitle">我的竞猜中心</h1>
