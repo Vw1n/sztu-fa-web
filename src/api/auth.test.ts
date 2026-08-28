@@ -13,6 +13,12 @@ import {
 } from './auth';
 import * as httpModule from './http';
 
+function mockResponse(value: { ok: boolean; json?: () => Promise<unknown> }): Response {
+  const response = new Response(null, { status: value.ok ? 200 : 401 });
+  if (value.json) response.json = value.json;
+  return response;
+}
+
 vi.mock('./http', () => ({
   BASE_URL: 'http://127.0.0.1:3000/api/v1',
   apiFetch: vi.fn(),
@@ -22,6 +28,7 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
   let store: Record<string, string> = {};
 
   beforeEach(() => {
+    vi.mocked(httpModule.apiFetch).mockReset();
     store = {};
     const mockStorage = {
       getItem: (key: string) => store[key] || null,
@@ -72,7 +79,7 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
         user: { id: 'm1', username: 'student', role: 'user', verificationStatus: 'PENDING' },
       }),
     };
-    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockSuccessResponse as any);
+    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockResponse(mockSuccessResponse));
 
     const res = await loginApi('student', 'SecretPassword!2026');
     expect(httpModule.apiFetch).toHaveBeenCalledWith(
@@ -92,7 +99,7 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
       ok: false,
       json: vi.fn().mockResolvedValue({ message: '用户名或密码错误' }),
     };
-    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockFailResponse as any);
+    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockResponse(mockFailResponse));
 
     await expect(loginApi('student', 'WrongPassword')).rejects.toThrow('用户名或密码错误');
   });
@@ -106,7 +113,7 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
         user: { id: 'm2', username: 'new_student', role: 'user', verificationStatus: 'PENDING' },
       }),
     };
-    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockSuccessResponse as any);
+    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockResponse(mockSuccessResponse));
 
     const res = await registerApi({
       username: 'new_student',
@@ -125,14 +132,13 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
       }),
     );
 
-    const calledBody = vi.mocked(httpModule.apiFetch).mock.calls[0][1]?.body as any;
-    expect(calledBody).toBeDefined();
-    if (typeof calledBody?.get === 'function') {
-      expect(calledBody.get('username')).toBe('new_student');
-      expect(calledBody.get('realName')).toBe('王小明');
-      expect(calledBody.get('studentId')).toBe('20269999');
-      expect(calledBody.get('consentVersion')).toBe('campus-card-v1');
-    }
+    const calledBody = vi.mocked(httpModule.apiFetch).mock.calls[0][1]?.body;
+    expect(calledBody).toBeInstanceOf(FormData);
+    if (!(calledBody instanceof FormData)) throw new Error('注册请求必须使用 FormData');
+    expect(calledBody.get('username')).toBe('new_student');
+    expect(calledBody.get('realName')).toBe('王小明');
+    expect(calledBody.get('studentId')).toBe('20269999');
+    expect(calledBody.get('consentVersion')).toBe('campus-card-v1');
 
     expect(res.token).toBe('new-member-jwt');
     expect(getStoredToken()).toBe('new-member-jwt');
@@ -142,10 +148,10 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
     setStoredToken('existing-auth-token');
     const newCardFile = new File(['new-bytes'], 'new-card.png', { type: 'image/png' });
 
-    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce({
+    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockResponse({
       ok: true,
       json: vi.fn().mockResolvedValue({ success: true }),
-    } as any);
+    }));
 
     await resubmitCard('真实姓名', '20268888', newCardFile);
 
@@ -161,7 +167,7 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
 
   it('logoutApi 与 getMeApi 行为正确', async () => {
     setStoredToken('my-token');
-    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce({ ok: true } as any);
+    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockResponse({ ok: true }));
 
     await logoutApi();
     expect(httpModule.apiFetch).toHaveBeenCalledWith(
@@ -172,10 +178,10 @@ describe('auth.ts 网页端认证 API 客户端与本地存储', () => {
       }),
     );
 
-    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce({
+    vi.mocked(httpModule.apiFetch).mockResolvedValueOnce(mockResponse({
       ok: true,
       json: vi.fn().mockResolvedValue({ id: 'm1', username: 'student', role: 'user' }),
-    } as any);
+    }));
 
     const user = await getMeApi('my-token');
     expect(user.username).toBe('student');

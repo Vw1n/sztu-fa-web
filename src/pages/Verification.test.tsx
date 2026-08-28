@@ -6,7 +6,7 @@ import Verification from './Verification';
 import * as authApi from '../api/auth';
 
 const refreshUser = vi.fn();
-let mockUser: any = null;
+let mockUser: Pick<authApi.UserProfile, 'id' | 'username' | 'verificationStatus' | 'reviewComment'> | null = null;
 let mockLoading = false;
 
 vi.mock('../contexts', () => ({
