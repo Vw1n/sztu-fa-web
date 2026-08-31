@@ -1269,3 +1269,291 @@
 .verification-card{max-width:580px!important;width:100%}.verification-card fieldset{border:0;padding:0;margin:0;min-width:0}.verification-card .formGroup small{display:block;line-height:1.6;margin-top:6px;color:#64748b}.campus-card-preview{display:block;max-width:100%;max-height:280px;object-fit:contain;margin-top:12px}.card-privacy{padding:16px;border:1px solid #cbd5e1;background:#f8fafc;border-radius:8px;margin:18px 0;font-size:14px;line-height:1.8}.card-privacy label{display:flex;align-items:flex-start;gap:8px}.card-privacy input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:4px}.verification-notice{padding:12px 20px;background:#eff6ff;text-align:center}.verification-notice a{margin-left:12px;text-decoration:underline}
 
 .verification-card fieldset .formGroup{margin-bottom:20px}.verification-card button.authLink{width:auto;padding:6px 0;background:transparent;border:0;font:inherit;cursor:pointer}
+
+/* ==========================================================================
+   开发中提示卡 (Coming Soon Placeholder Styles)
+   ========================================================================== */
+.comingSoonPage {
+  position: relative;
+  min-height: 560px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: var(--spacing-2xl) 0;
+  margin-top: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(96,165,250,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(129,140,248,0.12) 0%, transparent 45%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 10px 30px -12px rgba(15, 23, 42, 0.08);
+}
+
+.comingSoonDecor {
+  position: absolute;
+  font-size: 1.8rem;
+  opacity: 0.45;
+  pointer-events: none;
+  filter: saturate(0.9);
+  animation: floatAround 8s ease-in-out infinite;
+}
+
+.comingSoonDecor-1 { top: 12%; left: 10%; animation-delay: 0s; }
+.comingSoonDecor-2 { top: 18%; right: 12%; animation-delay: 1.4s; }
+.comingSoonDecor-3 { bottom: 18%; left: 14%; animation-delay: 2.8s; }
+.comingSoonDecor-4 { bottom: 12%; right: 10%; animation-delay: 4.2s; }
+.comingSoonDecor-5 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14rem;
+  opacity: 0.04;
+  animation: none;
+}
+
+@keyframes floatAround {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.06); }
+}
+
+.comingSoonCard {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 520px;
+  padding: 48px 40px 44px;
+  text-align: center;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 10px 40px -10px rgba(30, 64, 175, 0.18),
+    0 0 0 1px rgba(255,255,255,0.6) inset;
+}
+
+.comingSoonIcon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #c7d2fe 100%);
+  box-shadow:
+    0 10px 25px -8px rgba(37, 99, 235, 0.35),
+    inset 0 -2px 0 rgba(255, 255, 255, 0.6);
+  animation: pulseGlow 3.2s ease-in-out infinite;
+}
+
+.comingSoonIcon .iconBase {
+  font-size: 2.6rem;
+  display: inline-block;
+  line-height: 1;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow:
+      0 10px 25px -8px rgba(37, 99, 235, 0.35),
+      inset 0 -2px 0 rgba(255, 255, 255, 0.6);
+  }
+  50% {
+    box-shadow:
+      0 16px 40px -10px rgba(37, 99, 235, 0.55),
+      inset 0 -2px 0 rgba(255, 255, 255, 0.6),
+      0 0 0 4px rgba(147, 197, 253, 0.35);
+  }
+}
+
+.comingSoonTitle {
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 14px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #6366f1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.comingSoonDivider {
+  width: 56px;
+  height: 4px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+}
+
+.comingSoonSubtitle {
+  margin: 0 0 24px;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: #334155;
+  font-weight: 500;
+}
+
+.comingSoonTagLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.comingSoonTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: linear-gradient(135deg, #eff6ff, #e0e7ff);
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  letter-spacing: 0.01em;
+}
+
+.comingSoonTag-accent {
+  background: transparent;
+  border: 0;
+  padding: 0 2px;
+  color: #64748b;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 768px) {
+  .comingSoonPage {
+    min-height: 440px;
+    padding: var(--spacing-xl) var(--spacing-md);
+    margin-top: var(--spacing-md);
+    border-radius: var(--radius-lg);
+  }
+
+  .comingSoonDecor { font-size: 1.2rem; }
+  .comingSoonDecor-1 { top: 8%; left: 6%; }
+  .comingSoonDecor-2 { top: 12%; right: 8%; }
+  .comingSoonDecor-3 { bottom: 12%; left: 8%; }
+  .comingSoonDecor-4 { bottom: 8%; right: 6%; }
+  .comingSoonDecor-5 { font-size: 9rem; opacity: 0.05; }
+
+  .comingSoonCard {
+    padding: 36px 22px 32px;
+    border-radius: var(--radius-lg);
+  }
+
+  .comingSoonIcon {
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    margin-bottom: 16px;
+  }
+
+  .comingSoonIcon .iconBase { font-size: 2.1rem; }
+
+  .comingSoonTitle { font-size: 1.7rem; margin-bottom: 12px; }
+
+  .comingSoonDivider {
+    width: 48px;
+    height: 3px;
+    margin-bottom: 14px;
+  }
+
+  .comingSoonSubtitle {
+    font-size: 0.94rem;
+    margin-bottom: 20px;
+  }
+
+  .comingSoonTag { padding: 7px 14px; font-size: 0.84rem; }
+}
+
+/* ==========================================================================
+   助威中心锁定/禁用样式 (Predictions Locked Styles)
+   ========================================================================== */
+.predictionsLocked {
+  position: relative;
+}
+
+.predictionsLocked .disabledNotice {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #93c5fd;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.predictionsLocked .disabledNotice p {
+  margin: 0;
+  color: #1e40af;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.predictionsLocked .seasonSelect:disabled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.predictionsLocked .lockedCard {
+  position: relative;
+  filter: saturate(0.7);
+}
+
+.predictionsLocked .lockedCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.02);
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.predictionsLocked .choiceBtn {
+  cursor: not-allowed !important;
+  opacity: 0.75;
+  filter: grayscale(0.2);
+}
+
+.predictionsLocked .choiceBtn:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.predictionsLocked .choiceBtn.selected {
+  opacity: 1;
+  filter: none;
+}
+
+.predictionsLocked .actionBtn,
+.predictionsLocked .closeToast {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.predictionsLocked .loginNotice {
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .predictionsLocked .disabledNotice {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .predictionsLocked .disabledNotice p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+}

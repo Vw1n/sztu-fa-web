@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -41,7 +41,7 @@ const Login: React.FC = () => {
         <div className="authCard">
           <div className="authHeader">
             <h2>用户登录</h2>
-            <p>登录 SZTUFA 账号参与校园赛事竞猜与排行榜竞争</p>
+            <p>登录 SZTUFA 账号参与校园赛事助威与排行榜竞争</p>
           </div>
 
           {error && <div className="errorMessage">{error}</div>}
@@ -76,12 +76,6 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="authFooter">
-            <span>还没有账号？</span>
-            <Link to="/register" className="authLink">
-              注册并绑定学号
-            </Link>
-          </div>
         </div>
       </main>
       <Footer />

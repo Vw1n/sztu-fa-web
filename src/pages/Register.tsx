@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -24,7 +24,7 @@ export default function Register() {
     finally { setLoading(false); }
   }
   return <div className="pageLayout"><Header /><main className="mainContent flexCenter"><div className="authCard verification-card">
-    <div className="authHeader"><h2>注册校园账号</h2><p>提交校园卡，经人工审核后参与竞猜。审核通过后自动删除图片。</p></div>
+    <div className="authHeader"><h2>注册校园账号</h2><p>提交校园卡，经人工审核后参与助威。审核通过后自动删除图片。</p></div>
     {error && <p role="alert" className="errorMessage">{error}</p>}
     <form className="authForm" onSubmit={submit}><fieldset disabled={loading}>
       <div className="formGroup"><label htmlFor="username">用户名</label><input id="username" autoComplete="username" required minLength={3} maxLength={30} pattern="[a-zA-Z0-9_-]{3,30}" title="3–30 位字母、数字、下划线或连字符" value={username} onChange={e => setUsername(e.target.value)} /><small>3–30 位字母、数字、下划线或连字符</small></div>
@@ -33,6 +33,6 @@ export default function Register() {
       <div className="formGroup"><label htmlFor="confirmPassword">确认密码</label><input id="confirmPassword" type={show ? 'text' : 'password'} autoComplete="new-password" required minLength={6} maxLength={128} value={confirm} onChange={e => setConfirm(e.target.value)} />{confirm && confirm !== password && <small role="status">两次密码尚不一致</small>}</div>
       <CardFields realName={realName} onName={setRealName} studentId={studentId} onStudentId={setStudentId} file={card} onFile={setCard} consent={consent} onConsent={setConsent} />
       <button type="submit" className="submitBtn">{loading ? '正在上传并提交…' : '提交注册申请'}</button>
-    </fieldset></form><div className="authFooter">已有账号？<Link to="/login" className="authLink">立即登录</Link></div>
+    </fieldset></form>
   </div></main><Footer /></div>;
 }

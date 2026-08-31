@@ -84,7 +84,7 @@ export async function fetchPredictionMatches(
   });
 
   if (!response.ok) {
-    throw new Error('获取竞猜比赛列表失败');
+    throw new Error('获取助威比赛列表失败');
   }
   return response.json();
 }
@@ -95,7 +95,7 @@ export async function fetchPredictionMatchDetail(matchId: string): Promise<Predi
   });
 
   if (!response.ok) {
-    throw new Error('获取比赛竞猜详情失败');
+    throw new Error('获取比赛助威详情失败');
   }
   return response.json();
 }
@@ -106,7 +106,7 @@ export async function submitPredictionApi(
 ): Promise<{ id: string; choice: PredictionChoice; status: PredictionStatus }> {
   const token = getStoredToken();
   if (!token) {
-    throw new Error('请先登录后再提交竞猜');
+    throw new Error('请先登录后再提交助威');
   }
 
   const response = await apiFetch(`${BASE_URL}/predictions/matches/${matchId}`, {
@@ -120,7 +120,7 @@ export async function submitPredictionApi(
 
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || '提交竞猜失败');
+    throw new Error(data.message || '提交助威失败');
   }
   return data;
 }
@@ -143,7 +143,7 @@ export async function fetchMyPredictions(
   });
 
   if (!response.ok) {
-    throw new Error('获取个人竞猜记录失败');
+    throw new Error('获取个人助威记录失败');
   }
   return response.json();
 }
@@ -169,7 +169,7 @@ export async function fetchMyStats(seasonId?: string): Promise<MyPredictionStats
   });
 
   if (!response.ok) {
-    throw new Error('获取个人竞猜统计失败');
+    throw new Error('获取个人助威统计失败');
   }
   return response.json();
 }

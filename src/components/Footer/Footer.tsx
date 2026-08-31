@@ -143,15 +143,6 @@ const Footer: React.FC = () => {
             <p className="copyright">
               &copy; {currentYear} 深圳技术大学足球协会. All Rights Reserved.
             </p>
-            <p className="icpInfo">
-              <a
-                href="https://beian.miit.gov.cn/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                粤ICP备XXXXXXXX号-X
-              </a>
-            </p>
           </div>
         </div>
       </div>

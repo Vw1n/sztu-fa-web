@@ -17,28 +17,28 @@ export const PredictionNavTabs: React.FC<PredictionNavTabsProps> = ({ activeTab 
       : 'predictions');
 
   return (
-    <div className="predictionCenterNav" role="navigation" aria-label="竞猜中心子导航">
+    <div className="predictionCenterNav" role="navigation" aria-label="助威中心子导航">
       <div className="predictionCenterNavInner">
         <Link
           to="/predictions"
           className={`predictionCenterTab ${current === 'predictions' ? 'active' : ''}`}
         >
           <span className="tabIcon" aria-hidden="true">🎯</span>
-          <span>竞猜大厅</span>
+          <span>助威大厅</span>
         </Link>
         <Link
           to="/leaderboard"
           className={`predictionCenterTab ${current === 'leaderboard' ? 'active' : ''}`}
         >
           <span className="tabIcon" aria-hidden="true">🏆</span>
-          <span>排行榜</span>
+          <span>助威榜</span>
         </Link>
         <Link
           to="/my-predictions"
           className={`predictionCenterTab ${current === 'my-predictions' ? 'active' : ''}`}
         >
           <span className="tabIcon" aria-hidden="true">👤</span>
-          <span>我的竞猜</span>
+          <span>我的助威</span>
         </Link>
       </div>
     </div>

@@ -137,8 +137,8 @@ export const useSeasonCompetition = (selectedSeasonId: string, enabled = true) =
     reloadStats: () => void loadStats(selectedSeasonId, activeTab),
     bracketMatches,
     bracketLoading,
-    scorers: (stats.scorers || []).slice(0, 10) as ScorerRow[],
-    assists: (stats.assists || []).slice(0, 10) as AssistRow[],
+    scorers: (stats.scorers || []) as ScorerRow[],
+    assists: (stats.assists || []) as AssistRow[],
   };
 };
 

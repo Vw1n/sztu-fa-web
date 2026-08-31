@@ -54,7 +54,7 @@ describe('predictions.ts API utilities', () => {
 
   it('submitPredictionApi throws error when not logged in', async () => {
     await expect(submitPredictionApi('m1', 'HOME_WIN')).rejects.toThrow(
-      '请先登录后再提交竞猜',
+      '请先登录后再提交助威',
     );
   });
 
