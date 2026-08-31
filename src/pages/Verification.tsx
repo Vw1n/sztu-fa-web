@@ -20,10 +20,10 @@ export default function Verification() {
   }
   return <div className="pageLayout"><Header /><main className="mainContent flexCenter"><div className="authCard verification-card">
     {loading ? <p>加载中…</p> : !user ? <p>请先<Link to="/login">登录</Link>，或<Link to="/register">注册并上传校园卡</Link>。</p> : <>
-      <h2>{labels[user.verificationStatus || 'LEGACY']}</h2><p>{user.verificationStatus === 'APPROVED' ? '审核已通过，图片自动清理，不再提供查看。' : '审核通过前可浏览赛事，但不能提交新竞猜。历史记录和积分保留。'}</p>
+      <h2>{labels[user.verificationStatus || 'LEGACY']}</h2><p>{user.verificationStatus === 'APPROVED' ? '审核已通过，图片自动清理，不再提供查看。' : '审核通过前可浏览赛事，但不能提交新助威。历史记录和积分保留。'}</p>
       {user.reviewComment && <p role="status">审核说明：{user.reviewComment}</p>}
       <button className="submitBtn" disabled={busy} onClick={() => void refreshUser()}>刷新审核状态</button>
-      {user.verificationStatus === 'APPROVED' ? <p><Link to="/predictions">前往竞猜</Link></p> : <>
+      {user.verificationStatus === 'APPROVED' ? <p><Link to="/predictions">前往助威</Link></p> : <>
         <p>材料不清晰、学号冲突或其他疑问，请联系网站管理员人工核实；请勿在公开评论中发送校园卡照片。</p>
         {error && <p role="alert" className="errorMessage">{error}</p>}
         <form className="authForm" onSubmit={submit}><fieldset disabled={busy}><CardFields realName={realName} onName={setRealName} studentId={studentId} onStudentId={setStudentId} file={file} onFile={setFile} consent={consent} onConsent={setConsent} /><button className="submitBtn">{busy ? '提交中…' : '提交 / 更新校园卡材料'}</button></fieldset></form>

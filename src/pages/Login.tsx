@@ -41,7 +41,7 @@ const Login: React.FC = () => {
         <div className="authCard">
           <div className="authHeader">
             <h2>用户登录</h2>
-            <p>登录 SZTUFA 账号参与校园赛事竞猜与排行榜竞争</p>
+            <p>登录 SZTUFA 账号参与校园赛事助威与排行榜竞争</p>
           </div>
 
           {error && <div className="errorMessage">{error}</div>}

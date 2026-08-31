@@ -67,7 +67,7 @@ describe('Verification 审核状态展示与材料补交页面', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('校园卡待审核');
-    expect(screen.getByText(/审核通过前可浏览赛事，但不能提交新竞猜/)).toBeInTheDocument();
+    expect(screen.getByText(/审核通过前可浏览赛事，但不能提交新助威/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '刷新审核状态' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '提交 / 更新校园卡材料' })).toBeInTheDocument();
   });
@@ -88,7 +88,7 @@ describe('Verification 审核状态展示与材料补交页面', () => {
     expect(screen.getByRole('status')).toHaveTextContent('审核说明：学号遮挡无法核对，请重新拍照上传');
   });
 
-  it('审核通过状态 (APPROVED) 呈现自动清理说明与竞猜链接，隐藏补交表单', () => {
+  it('审核通过状态 (APPROVED) 呈现自动清理说明与助威链接，隐藏补交表单', () => {
     mockUser = {
       id: 'm1',
       username: 'student',
@@ -101,7 +101,7 @@ describe('Verification 审核状态展示与材料补交页面', () => {
     );
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('校园卡审核通过');
     expect(screen.getByText(/审核已通过，图片自动清理，不再提供查看/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '前往竞猜' })).toHaveAttribute('href', '/predictions');
+    expect(screen.getByRole('link', { name: '前往助威' })).toHaveAttribute('href', '/predictions');
     expect(screen.queryByRole('button', { name: '提交 / 更新校园卡材料' })).not.toBeInTheDocument();
   });
 

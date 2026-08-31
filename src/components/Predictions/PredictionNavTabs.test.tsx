@@ -11,9 +11,9 @@ describe('PredictionNavTabs Component', () => {
       </MemoryRouter>
     );
 
-    const lobbyLink = screen.getByText('竞猜大厅').closest('a');
-    const rankLink = screen.getByText('排行榜').closest('a');
-    const myLink = screen.getByText('我的竞猜').closest('a');
+    const lobbyLink = screen.getByText('助威大厅').closest('a');
+    const rankLink = screen.getByText('助威榜').closest('a');
+    const myLink = screen.getByText('我的助威').closest('a');
 
     expect(lobbyLink).toHaveAttribute('href', '/predictions');
     expect(rankLink).toHaveAttribute('href', '/leaderboard');
@@ -31,7 +31,7 @@ describe('PredictionNavTabs Component', () => {
       </MemoryRouter>
     );
 
-    const myLink = screen.getByText('我的竞猜').closest('a');
+    const myLink = screen.getByText('我的助威').closest('a');
     expect(myLink).toHaveClass('active');
   });
 });

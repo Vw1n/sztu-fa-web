@@ -90,10 +90,10 @@ const Predictions: React.FC = () => {
           </div>
 
           <div className="noticeBanner">
-            <span className="noticeBadge">竞猜规则说明</span>
+            <span className="noticeBadge">助威规则说明</span>
             <ul className="noticeRules">
               <li>仅供校园娱乐互动，使用站内虚拟积分</li>
-              <li>比赛开始前 5 分钟停止竞猜/修改</li>
+              <li>比赛开始前 5 分钟停止助威/修改</li>
               <li>淘汰赛按常规时间比分结算（不含加时赛及点球大战）</li>
             </ul>
           </div>
@@ -165,8 +165,8 @@ const Predictions: React.FC = () => {
                             : status === 'ongoing' || status === 'in_progress'
                               ? '比赛中'
                               : isClosed
-                                ? '竞猜已截止'
-                                : '开放竞猜中'}
+                                ? '助威已截止'
+                                : '开放助威中'}
                         </span>
                       </div>
 
@@ -193,7 +193,7 @@ const Predictions: React.FC = () => {
                         <span>胜平负预测</span>
                         {isClosed && (
                           <span className="closedNotice">
-                            {match.userPrediction ? '结果锁定' : '已停止下注'}
+                            {match.userPrediction ? '结果锁定' : '已停止预测'}
                           </span>
                         )}
                       </div>
