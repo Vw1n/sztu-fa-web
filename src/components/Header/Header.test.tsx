@@ -27,8 +27,9 @@ describe('Header Component 审核状态入口', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getAllByText('登录').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('注册绑定学号').length).toBeGreaterThan(0);
+    // 未登录时隐藏登录/注册/学号绑定入口（功能暂未开放）
+    expect(screen.queryByText('登录')).not.toBeInTheDocument();
+    expect(screen.queryByText('注册绑定学号')).not.toBeInTheDocument();
     expect(screen.queryByText('审核中')).not.toBeInTheDocument();
   });
 
