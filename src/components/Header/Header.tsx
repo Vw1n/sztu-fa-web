@@ -10,7 +10,7 @@ const navItems = [
   { id: 'news', label: '活动动态', path: '/#activities', section: 'activities' as const },
   { id: 'teams', label: '球队信息', path: '/#teams', section: 'teams' as const },
   { id: 'notice', label: '赛事公告', path: '/#matches', section: 'matches' as const },
-  { id: 'predictions', label: '竞猜中心', path: '/predictions', section: null },
+  { id: 'predictions', label: '助威中心', path: '/predictions', section: null },
 ];
 
 type HomeSectionId = 'home' | 'about' | 'activities' | 'teams' | 'matches';
@@ -259,16 +259,7 @@ const Header: React.FC = () => {
                 退出
               </button>
             </div>
-          ) : (
-            <div className="authButtons">
-              <Link to="/login" className="authBtn loginBtn">
-                登录
-              </Link>
-              <Link to="/register" className="authBtn registerBtn">
-                注册绑定学号
-              </Link>
-            </div>
-          )}
+          ) : null}
         </div>
 
         <button
@@ -295,8 +286,8 @@ const Header: React.FC = () => {
               </button>
             </li>
           ))}
-          <li className="mobileNavItem mobileAuthItem">
-            {isAuthenticated && user ? (
+          {isAuthenticated && user ? (
+            <li className="mobileNavItem mobileAuthItem">
               <div className="mobileUserInfo">
                 <div className="mobileUserDetail">
                   <Link to="/verification" className="userIdentityLink" onClick={() => setIsMobileMenuOpen(false)}>
@@ -311,17 +302,8 @@ const Header: React.FC = () => {
                   退出登录
                 </button>
               </div>
-            ) : (
-              <div className="mobileAuthButtons">
-                <Link to="/login" className="authBtn loginBtn" onClick={() => setIsMobileMenuOpen(false)}>
-                  登录
-                </Link>
-                <Link to="/register" className="authBtn registerBtn" onClick={() => setIsMobileMenuOpen(false)}>
-                  注册绑定学号
-                </Link>
-              </div>
-            )}
-          </li>
+            </li>
+          ) : null}
         </ul>
       </nav>
     </header>

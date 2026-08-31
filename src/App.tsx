@@ -42,7 +42,7 @@ function MobileDock() {
     { label: '首页', to: '/', icon: '⌂' },
     { label: '赛事', to: '/#matches', icon: '◷' },
     { label: '球队', to: '/#teams', icon: '◉' },
-    { label: '竞猜中心', to: '/predictions', icon: '◇' },
+    { label: '助威中心', to: '/predictions', icon: '◇' },
   ];
 
   return (

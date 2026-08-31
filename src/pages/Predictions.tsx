@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import {
   fetchPredictionMatches,
-  submitPredictionApi,
 } from '../api/predictions';
-import type { PredictionMatch, PredictionChoice } from '../api/predictions';
+import type { PredictionMatch } from '../api/predictions';
 import { fetchSeasons } from '../api/seasons';
 import type { Season } from '../api/seasons';
-import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PredictionNavTabs from '../components/Predictions/PredictionNavTabs';
@@ -18,12 +15,6 @@ const Predictions: React.FC = () => {
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [submittingMatchId, setSubmittingMatchId] = useState<string | null>(null);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
-    null,
-  );
-
-  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const loadSeasons = async () => {
@@ -55,51 +46,6 @@ const Predictions: React.FC = () => {
     loadMatches();
   }, [loadMatches]);
 
-  const handleChoice = async (matchId: string, choice: PredictionChoice) => {
-    if (!isAuthenticated) {
-      setMessage({ type: 'error', text: '请先登录账号再进行竞猜提交' });
-      return;
-    }
-    if (user?.role !== 'user') {
-      setMessage({ type: 'error', text: '管理账号不参与竞猜' });
-      return;
-    }
-    if (user?.verificationStatus !== 'APPROVED' || !user?.studentId) {
-      setMessage({ type: 'error', text: '请先到认证页面提交校园卡，审核通过后才能竞猜' });
-      return;
-    }
-
-    try {
-      setSubmittingMatchId(matchId);
-      setMessage(null);
-      await submitPredictionApi(matchId, choice);
-      setMessage({ type: 'success', text: '竞猜提交成功！开赛前可随时修改选择。' });
-
-      setMatches((prev) =>
-        prev.map((m) => {
-          if (m.id === matchId) {
-            return {
-              ...m,
-              userPrediction: {
-                id: m.userPrediction?.id || 'temp',
-                choice,
-                status: 'PENDING',
-                awardedPoints: 0,
-                submittedAt: new Date().toISOString(),
-              },
-            };
-          }
-          return m;
-        }),
-      );
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '竞猜提交失败';
-      setMessage({ type: 'error', text: errorMessage });
-    } finally {
-      setSubmittingMatchId(null);
-    }
-  };
-
   const getMatchStageLabel = (match: PredictionMatch) => {
     if (match.stage === 'KNOCKOUT') {
       return match.knockoutRound ? `淘汰赛 · ${match.knockoutRound}` : '淘汰赛';
@@ -113,13 +59,12 @@ const Predictions: React.FC = () => {
   return (
     <div className="pageLayout">
       <Header />
-      {isAuthenticated && user?.verificationStatus !== 'APPROVED' && <p className="verification-notice">校园卡尚未审核通过，暂不能竞猜。<Link to="/verification">查看认证 / 补交材料</Link></p>}
       <main className="mainContent">
-        <div className="pageContainer">
+        <div className="pageContainer predictionsLocked">
           <PredictionNavTabs activeTab="predictions" />
           <div className="pageHeader">
             <div>
-              <h1 className="pageTitle">校园足球赛事竞猜大厅</h1>
+              <h1 className="pageTitle">助威中心</h1>
               <p className="pageSubtitle">
                 预测比赛胜平负结果，猜中即得 3 积分！冲刺当前赛季与历史排行榜榜首。
               </p>
@@ -130,7 +75,7 @@ const Predictions: React.FC = () => {
                 <select
                   id="seasonFilter"
                   value={selectedSeasonId}
-                  onChange={(e) => setSelectedSeasonId(e.target.value)}
+                  disabled
                   className="seasonSelect"
                 >
                   <option value="">全部赛季</option>
@@ -153,38 +98,9 @@ const Predictions: React.FC = () => {
             </ul>
           </div>
 
-          {!isAuthenticated && (
-            <div className="loginNotice">
-              <p>您尚未登录账号。登录并绑定真实学号后即可参加比赛胜负预测。</p>
-              <div className="noticeActions">
-                <Link to="/login" className="actionBtn primary">
-                  立即登录
-                </Link>
-                <Link to="/register" className="actionBtn secondary">
-                  注册绑定学号
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {isAuthenticated && user?.role === 'user' && !user.studentId && (
-            <div className="loginNotice warning">
-              <p>您的账号尚未绑定学号，暂无法提交竞猜。请联系管理员完成学号绑定核验。</p>
-            </div>
-          )}
-
-          {message && (
-            <div className={`toastMessage ${message.type}`}>
-              {message.text}
-              <button
-                type="button"
-                className="closeToast"
-                onClick={() => setMessage(null)}
-              >
-                ×
-              </button>
-            </div>
-          )}
+          <div className="loginNotice disabledNotice">
+            <p>🚧 功能暂未开放，预计新生杯正式投入使用，敬请期待！</p>
+          </div>
 
           {loading ? (
             <div className="loadingContainer">加载比赛列表中...</div>
@@ -207,7 +123,7 @@ const Predictions: React.FC = () => {
                 return (
                   <div
                     key={match.id}
-                    className={`predictionCard ${isClosed ? 'closedCard' : ''}`}
+                    className={`predictionCard ${isClosed ? 'closedCard' : ''} lockedCard`}
                   >
                     <div className="cardTop">
                       <span className="stageTag">{getMatchStageLabel(match)}</span>
@@ -222,6 +138,8 @@ const Predictions: React.FC = () => {
                             src={match.homeTeam.teamLogo}
                             alt={match.homeTeam.teamName}
                             className="teamLogo"
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className="teamLogoPlaceholder">
@@ -258,6 +176,8 @@ const Predictions: React.FC = () => {
                             src={match.awayTeam.teamLogo}
                             alt={match.awayTeam.teamName}
                             className="teamLogo"
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className="teamLogoPlaceholder">
@@ -281,11 +201,10 @@ const Predictions: React.FC = () => {
                       <div className="choiceButtons">
                         <button
                           type="button"
-                          disabled={isClosed || submittingMatchId === match.id}
+                          disabled
                           className={`choiceBtn ${
                             userChoice === 'HOME_WIN' ? 'selected' : ''
                           }`}
-                          onClick={() => handleChoice(match.id, 'HOME_WIN')}
                         >
                           <span className="choiceText">
                             {match.homeTeam.teamName} 胜
@@ -295,11 +214,10 @@ const Predictions: React.FC = () => {
 
                         <button
                           type="button"
-                          disabled={isClosed || submittingMatchId === match.id}
+                          disabled
                           className={`choiceBtn ${
                             userChoice === 'DRAW' ? 'selected' : ''
                           }`}
-                          onClick={() => handleChoice(match.id, 'DRAW')}
                         >
                           <span className="choiceText">打 平</span>
                           <span className="choiceBadge">平局</span>
@@ -307,11 +225,10 @@ const Predictions: React.FC = () => {
 
                         <button
                           type="button"
-                          disabled={isClosed || submittingMatchId === match.id}
+                          disabled
                           className={`choiceBtn ${
                             userChoice === 'AWAY_WIN' ? 'selected' : ''
                           }`}
-                          onClick={() => handleChoice(match.id, 'AWAY_WIN')}
                         >
                           <span className="choiceText">
                             {match.awayTeam.teamName} 胜
