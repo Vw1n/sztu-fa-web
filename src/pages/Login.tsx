@@ -76,12 +76,6 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="authFooter">
-            <span>还没有账号？</span>
-            <Link to="/register" className="authLink">
-              注册并绑定学号
-            </Link>
-          </div>
         </div>
       </main>
       <Footer />
