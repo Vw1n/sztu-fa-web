@@ -8,10 +8,12 @@ import Teams from './components/Teams';
 import Matches from './components/Matches';
 import Footer from './components/Footer';
 import MotionEffects from './components/common/MotionEffects';
+import ScrollToTop from './components/common/ScrollToTop';
 import { useActiveHomeSection } from './hooks/useActiveHomeSection';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Verification from './pages/Verification';
 import Predictions from './pages/Predictions';
 import MyPredictions from './pages/MyPredictions';
 import Leaderboard from './pages/Leaderboard';
@@ -40,16 +42,20 @@ function MobileDock() {
     { label: '首页', to: '/', icon: '⌂' },
     { label: '赛事', to: '/#matches', icon: '◷' },
     { label: '球队', to: '/#teams', icon: '◉' },
-    { label: '竞猜', to: '/predictions', icon: '◇' },
-    { label: '我的', to: '/my-predictions', icon: '○' },
+    { label: '助威中心', to: '/predictions', icon: '◇' },
   ];
 
   return (
     <nav className="mobileDock" aria-label="移动端快捷导航">
       {items.map((item) => {
         const [pathname, hash = ''] = item.to.split('#');
-        const active = location.pathname === pathname
-          && (hash ? activeHomeSection === hash : activeHomeSection === 'home');
+        const active =
+          item.to === '/predictions'
+            ? location.pathname === '/predictions' ||
+              location.pathname === '/leaderboard' ||
+              location.pathname === '/my-predictions'
+            : location.pathname === pathname &&
+              (hash ? activeHomeSection === hash : activeHomeSection === 'home');
         return (
           <Link key={item.label} to={item.to} className={active ? 'active' : ''}>
             <span className="mobileDockIcon" aria-hidden="true">{item.icon}</span>
@@ -64,10 +70,12 @@ function MobileDock() {
 function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <MotionEffects />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/verification" element={<Verification />} />
         <Route path="/register" element={<Register />} />
         <Route path="/predictions" element={<Predictions />} />
         <Route path="/my-predictions" element={<MyPredictions />} />

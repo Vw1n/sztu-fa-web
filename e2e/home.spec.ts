@@ -22,4 +22,29 @@ test.describe('Home Page & Navigation Flow', () => {
       expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1);
     }
   });
+
+  test('keeps cross-page home navigation aligned with the requested section', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Desktop header navigation is hidden in the mobile layout');
+
+    await page.goto('/predictions');
+
+    for (const [label, sectionId] of [
+      ['协会简介', 'about'],
+      ['活动动态', 'activities'],
+      ['球队信息', 'teams'],
+      ['赛事公告', 'matches'],
+    ] as const) {
+      await page.getByRole('button', { name: label, exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`#${sectionId}$`));
+      await expect.poll(async () => {
+        return page.locator(`#${sectionId}`).evaluate((element) => {
+          const header = document.querySelector('header.header');
+          const headerHeight = header?.getBoundingClientRect().height ?? 72;
+          return Math.abs(element.getBoundingClientRect().top - headerHeight - 4);
+        });
+      }, { timeout: 3000 }).toBeLessThan(12);
+
+      await page.goto('/predictions');
+    }
+  });
 });

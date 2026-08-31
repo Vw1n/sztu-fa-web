@@ -10,9 +10,7 @@ const navItems = [
   { id: 'news', label: '活动动态', path: '/#activities', section: 'activities' as const },
   { id: 'teams', label: '球队信息', path: '/#teams', section: 'teams' as const },
   { id: 'notice', label: '赛事公告', path: '/#matches', section: 'matches' as const },
-  { id: 'predictions', label: '竞猜大厅', path: '/predictions', section: null },
-  { id: 'leaderboard', label: '排行榜', path: '/leaderboard', section: null },
-  { id: 'my-predictions', label: '我的竞猜', path: '/my-predictions', section: null },
+  { id: 'predictions', label: '助威中心', path: '/predictions', section: null },
 ];
 
 type HomeSectionId = 'home' | 'about' | 'activities' | 'teams' | 'matches';
@@ -63,13 +61,61 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     if (location.pathname !== '/' || !location.hash) return;
-    const element = document.getElementById(location.hash.slice(1));
-    if (element) {
+
+    const targetId = location.hash.slice(1);
+    let animationFrame = 0;
+    let cancelled = false;
+
+    const scrollToTarget = () => {
+      animationFrame = 0;
+      if (cancelled) return;
+
+      const element = document.getElementById(targetId);
+      if (!element) return;
+
       const headerOffset =
         document.querySelector('header.header')?.getBoundingClientRect().height ?? 72;
       const target = element.getBoundingClientRect().top + window.scrollY - headerOffset - 4;
-      window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-    }
+      window.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
+    };
+
+    const scheduleScroll = () => {
+      if (cancelled || animationFrame) return;
+      animationFrame = window.requestAnimationFrame(scrollToTarget);
+    };
+
+    // 跨页面返回首页时，上方异步区块可能在首轮定位后继续变高。
+    // 监听首页布局变化并重新对齐目标，避免最终落到前一个区块。
+    const layoutRoot = document.querySelector('main.main');
+    const resizeObserver = typeof ResizeObserver === 'undefined'
+      ? null
+      : new ResizeObserver(scheduleScroll);
+    if (layoutRoot) resizeObserver?.observe(layoutRoot);
+
+    const retryTimers = [0, 100, 300, 700, 1500].map((delay) =>
+      window.setTimeout(scheduleScroll, delay),
+    );
+    const stopTimer = window.setTimeout(() => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+    }, 2200);
+
+    const cancelOnUserInput = () => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+    };
+    window.addEventListener('wheel', cancelOnUserInput, { passive: true, once: true });
+    window.addEventListener('touchstart', cancelOnUserInput, { passive: true, once: true });
+
+    return () => {
+      cancelled = true;
+      resizeObserver?.disconnect();
+      retryTimers.forEach((timer) => window.clearTimeout(timer));
+      window.clearTimeout(stopTimer);
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener('wheel', cancelOnUserInput);
+      window.removeEventListener('touchstart', cancelOnUserInput);
+    };
   }, [location.pathname, location.hash]);
 
   const toggleMobileMenu = () => {
@@ -121,7 +167,16 @@ const Header: React.FC = () => {
   const isActive = (path: string, section: HomeSectionId | null) => {
     // 1. 非首页路径：用 path 精确 / 前缀匹配
     if (!path.startsWith('/#') && path !== '/') {
-      // 对 /my-predictions 这种要和 /predictions 区分开，用精确路径或段级前缀
+      if (path === '/predictions') {
+        return (
+          location.pathname === '/predictions' ||
+          location.pathname.startsWith('/predictions/') ||
+          location.pathname === '/leaderboard' ||
+          location.pathname.startsWith('/leaderboard/') ||
+          location.pathname === '/my-predictions' ||
+          location.pathname.startsWith('/my-predictions/')
+        );
+      }
       if (path === location.pathname) return true;
       if (location.pathname.startsWith(path + '/')) return true;
       return false;
@@ -138,6 +193,29 @@ const Header: React.FC = () => {
     }
     // path 形如 '/#about' -> 取 sectionId 对比
     return section ? effectiveSection === section : false;
+  };
+
+  const getVerificationBadge = () => {
+    if (!user) return null;
+    const status = user.verificationStatus || 'PENDING';
+    const statusMap: Record<string, { label: string; className: string }> = {
+      APPROVED: { label: '已认证', className: 'status-approved' },
+      PENDING: { label: '审核中', className: 'status-pending' },
+      CHANGES_REQUESTED: { label: '待补充', className: 'status-changes-requested' },
+      LEGACY: { label: '待补交', className: 'status-legacy' },
+    };
+    const info = statusMap[status] || { label: '审核状态', className: 'status-pending' };
+    return (
+      <Link
+        to="/verification"
+        className={`verificationStatusBadge ${info.className}`}
+        title="查看校园卡审核状态与材料"
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        <span className="statusDot"></span>
+        {info.label}
+      </Link>
+    );
   };
 
   return (
@@ -170,24 +248,18 @@ const Header: React.FC = () => {
         <div className="headerAuth">
           {isAuthenticated && user ? (
             <div className="userInfoBox">
-              <div className="userIdentity">
-                <span className="userName">{user.nickname || user.username}</span>
-                {user.studentId && <span className="userStudentId">{user.studentId}</span>}
-              </div>
+              <Link to="/verification" className="userIdentityLink" title="查看校园卡审核状态">
+                <div className="userIdentity">
+                  <span className="userName">{user.nickname || user.username}</span>
+                  {user.studentId && <span className="userStudentId">{user.studentId}</span>}
+                </div>
+              </Link>
+              {getVerificationBadge()}
               <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
                 退出
               </button>
             </div>
-          ) : (
-            <div className="authButtons">
-              <Link to="/login" className="authBtn loginBtn">
-                登录
-              </Link>
-              <Link to="/register" className="authBtn registerBtn">
-                注册绑定学号
-              </Link>
-            </div>
-          )}
+          ) : null}
         </div>
 
         <button
@@ -214,28 +286,24 @@ const Header: React.FC = () => {
               </button>
             </li>
           ))}
-          <li className="mobileNavItem mobileAuthItem">
-            {isAuthenticated && user ? (
+          {isAuthenticated && user ? (
+            <li className="mobileNavItem mobileAuthItem">
               <div className="mobileUserInfo">
-                <div>
-                  <strong>{user.nickname || user.username}</strong>
-                  {user.studentId && <span> ({user.studentId})</span>}
+                <div className="mobileUserDetail">
+                  <Link to="/verification" className="userIdentityLink" onClick={() => setIsMobileMenuOpen(false)}>
+                    <strong>{user.nickname || user.username}</strong>
+                    {user.studentId && <span> ({user.studentId})</span>}
+                  </Link>
+                  <div className="mobileBadgeWrapper">
+                    {getVerificationBadge()}
+                  </div>
                 </div>
                 <button type="button" className="authBtn logoutBtn" onClick={handleLogout}>
                   退出登录
                 </button>
               </div>
-            ) : (
-              <div className="mobileAuthButtons">
-                <Link to="/login" className="authBtn loginBtn" onClick={() => setIsMobileMenuOpen(false)}>
-                  登录
-                </Link>
-                <Link to="/register" className="authBtn registerBtn" onClick={() => setIsMobileMenuOpen(false)}>
-                  注册绑定学号
-                </Link>
-              </div>
-            )}
-          </li>
+            </li>
+          ) : null}
         </ul>
       </nav>
     </header>

@@ -1,159 +1,38 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import CardFields from '../components/CardFields';
 import './pages.css';
 
-const Register: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [studentId, setStudentId] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const { register } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!username.trim()) {
-      setError('请输入用户名');
-      return;
-    }
-    if (!studentId.trim()) {
-      setError('普通用户注册必须填写绑定学号');
-      return;
-    }
-    if (password.length < 6) {
-      setError('密码长度不能少于 6 位');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('两次输入的密码不一致');
-      return;
-    }
-
-    try {
-      setError('');
-      setLoading(true);
-      await register(
-        username.trim(),
-        password,
-        studentId.trim(),
-        nickname.trim() || undefined,
-      );
-      navigate('/predictions');
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '注册失败，请核对信息后再试';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="pageLayout">
-      <Header />
-      <main className="mainContent flexCenter">
-        <div className="authCard">
-          <div className="authHeader">
-            <h2>注册账号并绑定学号</h2>
-            <p>为保证校园赛事互动公平性，普通账号须绑定唯一真实学号</p>
-          </div>
-
-          {error && <div className="errorMessage">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="authForm">
-            <div className="formGroup">
-              <label htmlFor="username">
-                用户名 <span className="required">*</span>
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="设置登录用户名"
-                required
-              />
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="studentId">
-                学号 <span className="required">*</span>
-              </label>
-              <input
-                id="studentId"
-                type="text"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                placeholder="例如：2023123456（唯一绑定，无法自行修改）"
-                required
-              />
-              <small className="fieldHint">
-                学号绑定后将在排行榜中脱敏展示（如 2023****56）
-              </small>
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="nickname">用户昵称</label>
-              <input
-                id="nickname"
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="排行榜展示的昵称（选填，默认与用户名一致）"
-              />
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="password">
-                密码 <span className="required">*</span>
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="设置 6 位以上密码"
-                required
-              />
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="confirmPassword">
-                确认密码 <span className="required">*</span>
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="再次输入密码"
-                required
-              />
-            </div>
-
-            <button type="submit" className="submitBtn" disabled={loading}>
-              {loading ? '注册中...' : '注册并绑定学号'}
-            </button>
-          </form>
-
-          <div className="authFooter">
-            <span>已有账号？</span>
-            <Link to="/login" className="authLink">
-              立即登录
-            </Link>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default Register;
+export default function Register() {
+  const [username, setUsername] = useState(''), [nickname, setNickname] = useState('');
+  const [password, setPassword] = useState(''), [confirm, setConfirm] = useState(''), [show, setShow] = useState(false);
+  const [realName, setRealName] = useState(''), [studentId, setStudentId] = useState('');
+  const [card, setCard] = useState<File | null>(null), [consent, setConsent] = useState(false);
+  const [error, setError] = useState(''), [loading, setLoading] = useState(false);
+  const { register } = useAuth(); const navigate = useNavigate();
+  async function submit(e: React.FormEvent) {
+    e.preventDefault(); if (loading) return;
+    if (!card || !consent) { setError('请上传校园卡并确认材料使用说明'); return; }
+    if (password !== confirm) { setError('两次输入的密码不一致'); return; }
+    setLoading(true); setError('');
+    try { await register({ username: username.trim(), password, nickname: nickname.trim() || undefined,
+      realName: realName.trim(), studentId: studentId.trim(), campusCard: card }); navigate('/verification'); }
+    catch (e) { setError(e instanceof Error ? e.message : '注册失败，请重试'); }
+    finally { setLoading(false); }
+  }
+  return <div className="pageLayout"><Header /><main className="mainContent flexCenter"><div className="authCard verification-card">
+    <div className="authHeader"><h2>注册校园账号</h2><p>提交校园卡，经人工审核后参与助威。审核通过后自动删除图片。</p></div>
+    {error && <p role="alert" className="errorMessage">{error}</p>}
+    <form className="authForm" onSubmit={submit}><fieldset disabled={loading}>
+      <div className="formGroup"><label htmlFor="username">用户名</label><input id="username" autoComplete="username" required minLength={3} maxLength={30} pattern="[a-zA-Z0-9_-]{3,30}" title="3–30 位字母、数字、下划线或连字符" value={username} onChange={e => setUsername(e.target.value)} /><small>3–30 位字母、数字、下划线或连字符</small></div>
+      <div className="formGroup"><label htmlFor="nickname">昵称（选填）</label><input id="nickname" maxLength={30} value={nickname} onChange={e => setNickname(e.target.value)} /><small>公开排行榜显示昵称，不公开申请姓名。</small></div>
+      <div className="formGroup"><label htmlFor="password">密码</label><input id="password" type={show ? 'text' : 'password'} autoComplete="new-password" required minLength={6} maxLength={128} value={password} onChange={e => setPassword(e.target.value)} /><small>至少 6 个字符。</small><button type="button" className="authLink" onClick={() => setShow(!show)}>{show ? '隐藏密码' : '显示密码'}</button></div>
+      <div className="formGroup"><label htmlFor="confirmPassword">确认密码</label><input id="confirmPassword" type={show ? 'text' : 'password'} autoComplete="new-password" required minLength={6} maxLength={128} value={confirm} onChange={e => setConfirm(e.target.value)} />{confirm && confirm !== password && <small role="status">两次密码尚不一致</small>}</div>
+      <CardFields realName={realName} onName={setRealName} studentId={studentId} onStudentId={setStudentId} file={card} onFile={setCard} consent={consent} onConsent={setConsent} />
+      <button type="submit" className="submitBtn">{loading ? '正在上传并提交…' : '提交注册申请'}</button>
+    </fieldset></form>
+  </div></main><Footer /></div>;
+}

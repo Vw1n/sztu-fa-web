@@ -5,6 +5,7 @@ import {
   getStoredUser,
   removeStoredAuth,
   loginApi,
+  logoutApi,
   registerApi,
   getMeApi,
 } from '../api/auth';
@@ -56,8 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return res;
   };
 
-  const handleRegister: typeof registerApi = async (username, password, studentId, nickname) => {
-    const res = await registerApi(username, password, studentId, nickname);
+  const handleRegister: typeof registerApi = async (input) => {
+    const res = await registerApi(input);
     setUser(res.user);
     setToken(res.token);
     return res;
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         login: handleLogin,
         register: handleRegister,
-        logout: handleLogout,
+        logout: () => { void logoutApi().finally(handleLogout).catch(() => { /* 本地会话仍清理，旧凭证按到期时间失效 */ }); },
         refreshUser: handleRefreshUser,
       }}
     >

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LoadingSpinner, ErrorMessage } from '../../common';
+
+const PAGE_SIZE = 10;
 
 export interface ScorerRow {
   playerId?: string;
@@ -39,6 +41,50 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
   onRetry,
   onPlayerClick,
 }) => {
+  const [scorersPage, setScorersPage] = useState(1);
+  const [assistsPage, setAssistsPage] = useState(1);
+
+  // Reset to page 1 when tab switches or data reloads
+  useEffect(() => { setScorersPage(1); }, [activeTab]);
+  useEffect(() => { setAssistsPage(1); }, [activeTab]);
+  useEffect(() => { setScorersPage(1); setAssistsPage(1); }, [scorers.length, assists.length]);
+
+  const scorersTotalPages = Math.ceil(scorers.length / PAGE_SIZE);
+  const assistsTotalPages = Math.ceil(assists.length / PAGE_SIZE);
+  const scorersPaged = scorers.slice((scorersPage - 1) * PAGE_SIZE, scorersPage * PAGE_SIZE);
+  const assistsPaged = assists.slice((assistsPage - 1) * PAGE_SIZE, assistsPage * PAGE_SIZE);
+
+  const renderPagination = (
+    currentPage: number,
+    totalPages: number,
+    onPageChange: (page: number) => void,
+  ) => {
+    if (totalPages <= 1) return null;
+    return (
+      <div className="scorerPagination">
+        <button
+          type="button"
+          className="scorerPageBtn"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          上一页
+        </button>
+        <span className="scorerPageInfo">
+          第 {currentPage} / {totalPages} 页
+        </span>
+        <button
+          type="button"
+          className="scorerPageBtn"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          下一页
+        </button>
+      </div>
+    );
+  };
+
   return (
     <>
       {/* 射手榜 Tab 视图 */}
@@ -62,16 +108,17 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {scorers.map((row, index) => {
+                  {scorersPaged.map((row, index) => {
+                    const actualIndex = (scorersPage - 1) * PAGE_SIZE + index;
                     let rankClass = '';
-                    if (index === 0) rankClass = 'rank-gold';
-                    else if (index === 1) rankClass = 'rank-silver';
-                    else if (index === 2) rankClass = 'rank-bronze';
+                    if (actualIndex === 0) rankClass = 'rank-gold';
+                    else if (actualIndex === 1) rankClass = 'rank-silver';
+                    else if (actualIndex === 2) rankClass = 'rank-bronze';
                     
                     return (
-                      <tr key={index}>
+                      <tr key={actualIndex}>
                         <td>
-                          <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
+                          <span className={`rankBadge ${rankClass}`}>{actualIndex + 1}</span>
                         </td>
                         <td
                           style={{ cursor: row.playerId ? 'pointer' : 'default' }}
@@ -111,6 +158,7 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
                   )}
                 </tbody>
               </table>
+              {renderPagination(scorersPage, scorersTotalPages, setScorersPage)}
             </div>
           )}
         </div>
@@ -137,16 +185,17 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {assists.map((row, index) => {
+                  {assistsPaged.map((row, index) => {
+                    const actualIndex = (assistsPage - 1) * PAGE_SIZE + index;
                     let rankClass = '';
-                    if (index === 0) rankClass = 'rank-gold';
-                    else if (index === 1) rankClass = 'rank-silver';
-                    else if (index === 2) rankClass = 'rank-bronze';
+                    if (actualIndex === 0) rankClass = 'rank-gold';
+                    else if (actualIndex === 1) rankClass = 'rank-silver';
+                    else if (actualIndex === 2) rankClass = 'rank-bronze';
                     
                     return (
-                      <tr key={index}>
+                      <tr key={actualIndex}>
                         <td>
-                          <span className={`rankBadge ${rankClass}`}>{index + 1}</span>
+                          <span className={`rankBadge ${rankClass}`}>{actualIndex + 1}</span>
                         </td>
                         <td
                           style={{ cursor: row.playerId ? 'pointer' : 'default' }}
@@ -181,6 +230,7 @@ export const ScorerBoard: React.FC<ScorerBoardProps> = ({
                   )}
                 </tbody>
               </table>
+              {renderPagination(assistsPage, assistsTotalPages, setAssistsPage)}
             </div>
           )}
         </div>
