@@ -7,7 +7,7 @@ import { ScorerBoard } from './components/ScorerBoard';
 import { MatchDetailModal } from './components/MatchDetailModal';
 import { MatchList } from './components/MatchList';
 import { PlayerCareerCard } from '../Player';
-import { useMatchDirectory, useSeasonCompetition } from './hooks';
+import { useMatchDetails, useMatchDirectory, useSeasonCompetition } from './hooks';
 import { usePlayerCareer } from '../../hooks/usePlayerCareer';
 import { useSectionActivation } from '../../hooks/useSectionActivation';
 import { SectionHeader, SeasonSelector } from '../common';
@@ -16,15 +16,15 @@ const Matches: React.FC = () => {
   const section = useSectionActivation<HTMLElement>();
   const directory = useMatchDirectory(section.isActive);
   const competition = useSeasonCompetition(directory.selectedSeasonId, section.isActive);
+  const matchDetails = useMatchDetails();
   const career = usePlayerCareer();
-  const [selectedMatchForModal, setSelectedMatchForModal] = useState<Match | null>(null);
   const [modalTab, setModalTab] = useState<'events' | 'lineups'>('events');
   const selectedSeason = directory.seasons.find(
     (season) => season.id === directory.selectedSeasonId,
   );
 
   const openMatch = (match: Match) => {
-    setSelectedMatchForModal(match);
+    matchDetails.openDetails(match);
     setModalTab('events');
   };
 
@@ -122,9 +122,12 @@ const Matches: React.FC = () => {
 
 
         <MatchDetailModal
-          selectedMatchForModal={selectedMatchForModal}
+          selectedMatchForModal={matchDetails.selectedMatch}
+          detailsLoading={matchDetails.detailsLoading}
+          detailsError={matchDetails.detailsError}
           modalTab={modalTab}
-          onClose={() => setSelectedMatchForModal(null)}
+          onClose={matchDetails.closeDetails}
+          onRetry={matchDetails.retryDetails}
           onTabChange={setModalTab}
           onPlayerClick={career.openCareer}
         />
