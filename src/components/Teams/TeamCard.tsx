@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import type { Team } from '../../types';
 import './TeamCard.css';
+import { useResilientImage } from './useResilientImage';
 
 interface TeamCardProps {
   team: Team;
@@ -9,9 +9,8 @@ interface TeamCardProps {
 }
 
 const TeamCard: React.FC<TeamCardProps> = ({ team, isSelected, onClick }) => {
-  const [imgError, setImgError] = useState(false);
-
-  const hasLogo = team.teamLogo && !imgError;
+  const logo = useResilientImage(team.teamLogo);
+  const hasLogo = Boolean(team.teamLogo && !logo.failed);
 
   return (
     <div
@@ -23,7 +22,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, isSelected, onClick }) => {
         {/* 半透明水印队徽 */}
         {hasLogo && (
           <img
-            src={team.teamLogo}
+            src={logo.src}
             alt=""
             className="teamBannerWatermark"
             aria-hidden="true"
@@ -40,11 +39,11 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, isSelected, onClick }) => {
           <div className="teamBannerRight">
             {hasLogo ? (
               <img
-                src={team.teamLogo}
+                src={logo.src}
                 alt={team.teamName}
                 className="teamBannerLogo"
                 loading="lazy"
-                onError={() => setImgError(true)}
+                onError={logo.onError}
               />
             ) : (
               <div className="teamBannerLogo teamLogoPlaceholder teamBannerLogoPlaceholder">

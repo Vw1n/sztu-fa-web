@@ -1,4 +1,5 @@
 import type { Player, Season, Team } from '../../types';
+import { useResilientImage } from './useResilientImage';
 
 interface TeamModalProps {
   team: Team;
@@ -25,6 +26,9 @@ const TeamModal: React.FC<TeamModalProps> = ({
   onPreviewImage,
   onPlayerClick,
 }) => {
+  const logoUrl = team.teamLogo || 'https://picsum.photos/seed/jersey1/100/100';
+  const logo = useResilientImage(logoUrl);
+
   return (
     <div className="teamModalOverlay" onClick={onClose}>
       <div className="teamModal" onClick={(e) => e.stopPropagation()}>
@@ -35,12 +39,19 @@ const TeamModal: React.FC<TeamModalProps> = ({
           </svg>
         </button>
         <div className="modalHeader">
-          <img
-            src={team.teamLogo || 'https://picsum.photos/seed/jersey1/100/100'}
-            alt={team.teamName}
-            className="modalLogo"
-            onClick={() => onPreviewImage(team.teamLogo || 'https://picsum.photos/seed/jersey1/100/100')}
-          />
+          {logo.failed ? (
+            <div className="modalLogo teamLogoPlaceholder" aria-label={`${team.teamName}暂无可用队徽`}>
+              <span className="teamLogoInitial">{team.teamName.charAt(0)}</span>
+            </div>
+          ) : (
+            <img
+              src={logo.src}
+              alt={team.teamName}
+              className="modalLogo"
+              onError={logo.onError}
+              onClick={() => onPreviewImage(logoUrl)}
+            />
+          )}
           <h3 className="modalTitle">{team.teamName}</h3>
         </div>
         <div className="modalContent">
