@@ -2,6 +2,7 @@ import React from 'react';
 import type { Match } from '../../../types';
 import { formatMatchDate, formatMatchInfo, matchStatusColors, matchStatusLabels } from '../utils/matchPresentation';
 import { getPenaltyScore } from '../utils/matchOutcome';
+import { useResilientImage } from '../../Teams/useResilientImage';
 
 const isHotMatch = (match: Match): boolean => {
   const round = match.knockoutRound?.toUpperCase() ?? '';
@@ -16,6 +17,10 @@ interface MatchCardProps {
 
 export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPlayerClick }) => {
   const penaltyScore = getPenaltyScore(match);
+  const homeLogo = useResilientImage(match.homeTeam.teamLogo);
+  const awayLogo = useResilientImage(match.awayTeam.teamLogo);
+  const hasHomeLogo = Boolean(match.homeTeam.teamLogo && !homeLogo.failed);
+  const hasAwayLogo = Boolean(match.awayTeam.teamLogo && !awayLogo.failed);
 
   return (
   <div className="matchCard" onClick={() => onMatchClick(match)}>
@@ -28,7 +33,32 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
     <div className="matchContent">
       <div className="matchTeam">
         <div className="matchTeamLogo">
-          <img src={match.homeTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'} alt={match.homeTeam.teamName} loading="lazy" />
+          {hasHomeLogo ? (
+            <img
+              src={homeLogo.src}
+              alt={match.homeTeam.teamName}
+              loading="lazy"
+              onError={homeLogo.onError}
+            />
+          ) : (
+            <div
+              className="teamLogoPlaceholder"
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#e2e8f0',
+                color: '#475569',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+              }}
+            >
+              <span>{match.homeTeam.teamName.charAt(0)}</span>
+            </div>
+          )}
         </div>
         <span className="matchTeamName">{match.homeTeam.teamName}</span>
       </div>
@@ -52,7 +82,32 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onMatchClick, onPla
       </div>
       <div className="matchTeam">
         <div className="matchTeamLogo">
-          <img src={match.awayTeam.teamLogo || 'https://picsum.photos/seed/matchlogo/100/100'} alt={match.awayTeam.teamName} loading="lazy" />
+          {hasAwayLogo ? (
+            <img
+              src={awayLogo.src}
+              alt={match.awayTeam.teamName}
+              loading="lazy"
+              onError={awayLogo.onError}
+            />
+          ) : (
+            <div
+              className="teamLogoPlaceholder"
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#e2e8f0',
+                color: '#475569',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+              }}
+            >
+              <span>{match.awayTeam.teamName.charAt(0)}</span>
+            </div>
+          )}
         </div>
         <span className="matchTeamName">{match.awayTeam.teamName}</span>
       </div>
