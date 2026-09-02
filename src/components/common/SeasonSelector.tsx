@@ -28,6 +28,8 @@ export const SeasonSelector: React.FC<SeasonSelectorProps> = ({
       height: '38px',
       outline: 'none',
       cursor: 'pointer',
+      flex: '0 0 auto',
+      width: 'auto',
     }}
   >
     {includeAllOption && <option value="all">{allOptionLabel}</option>}
