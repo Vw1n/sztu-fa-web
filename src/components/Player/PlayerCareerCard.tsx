@@ -322,7 +322,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({ careerPlayer
                   >
                     <th
                       style={{
-                        width: '32%',
+                        width: '26%',
                         padding: '8px 3px',
                         fontWeight: 600,
                       }}
@@ -331,7 +331,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({ careerPlayer
                     </th>
                     <th
                       style={{
-                        width: '17%',
+                        width: '13%',
                         padding: '8px 2px',
                         fontWeight: 600,
                       }}
@@ -340,7 +340,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({ careerPlayer
                     </th>
                     <th
                       style={{
-                        width: '14%',
+                        width: '12%',
                         padding: '8px 2px',
                         fontWeight: 600,
                       }}
@@ -349,7 +349,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({ careerPlayer
                     </th>
                     <th
                       style={{
-                        width: '14%',
+                        width: '12%',
                         padding: '8px 2px',
                         fontWeight: 600,
                       }}
@@ -358,7 +358,7 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({ careerPlayer
                     </th>
                     <th
                       style={{
-                        width: '23%',
+                        width: '37%',
                         padding: '8px 2px',
                         fontWeight: 600,
                         whiteSpace: 'nowrap',
@@ -411,12 +411,21 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({ careerPlayer
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '2px',
+                            justifyContent: 'center',
+                            gap: '3px',
+                            fontSize: '0.72rem',
+                            lineHeight: 1,
                           }}
                         >
-                          <span>🟨{s.yellowCards}</span>
-                          <span style={{ color: '#aaa', margin: '0 1px' }}>/</span>
-                          <span>🟥{s.redCards}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px' }}>
+                            <span style={{ fontSize: '0.7rem' }}>🟨</span>
+                            <span>{s.yellowCards}</span>
+                          </span>
+                          <span style={{ color: '#aaa' }}>/</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px' }}>
+                            <span style={{ fontSize: '0.7rem' }}>🟥</span>
+                            <span>{s.redCards}</span>
+                          </span>
                         </span>
                       </td>
                     </tr>

@@ -4,11 +4,15 @@ import { formatMatchDate, matchStatusColors, matchStatusLabels } from '../utils/
 import { MatchModalEvents } from './MatchModalEvents';
 import { MatchModalLineups } from './MatchModalLineups';
 import { getPenaltyScore } from '../utils/matchOutcome';
+import { ErrorMessage, LoadingSpinner } from '../../common';
 
 interface MatchDetailModalProps {
   selectedMatchForModal: Match | null;
+  detailsLoading: boolean;
+  detailsError: string | null;
   modalTab: 'events' | 'lineups';
   onClose: () => void;
+  onRetry: () => void;
   onTabChange: (tab: 'events' | 'lineups') => void;
   onPlayerClick: (playerId: string, playerName: string) => void;
 }
@@ -21,7 +25,8 @@ const tabStyle = (active: boolean): React.CSSProperties => ({
 });
 
 export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
-  selectedMatchForModal: match, modalTab, onClose, onTabChange, onPlayerClick,
+  selectedMatchForModal: match, detailsLoading, detailsError, modalTab,
+  onClose, onRetry, onTabChange, onPlayerClick,
 }) => {
   if (!match) return null;
   const penaltyScore = getPenaltyScore(match);
@@ -78,8 +83,16 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
             <button className={`modalTabButton ${modalTab === 'lineups' ? 'active' : ''}`} onClick={() => onTabChange('lineups')} style={tabStyle(modalTab === 'lineups')}>🏃‍♂️ 双方阵容</button>
           </div>
 
-          {modalTab === 'events' && <MatchModalEvents match={match} onPlayerClick={onPlayerClick} />}
-          {modalTab === 'lineups' && <MatchModalLineups match={match} onPlayerClick={onPlayerClick} />}
+          {detailsLoading ? (
+            <LoadingSpinner message="正在加载比赛详情..." />
+          ) : detailsError ? (
+            <ErrorMessage message={detailsError} onRetry={onRetry} />
+          ) : (
+            <>
+              {modalTab === 'events' && <MatchModalEvents match={match} onPlayerClick={onPlayerClick} />}
+              {modalTab === 'lineups' && <MatchModalLineups match={match} onPlayerClick={onPlayerClick} />}
+            </>
+          )}
         </div>
       </div>
     </div>
