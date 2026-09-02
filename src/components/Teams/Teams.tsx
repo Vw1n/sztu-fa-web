@@ -8,15 +8,7 @@ import { PlayerCareerCard } from '../Player';
 import { useTeamDirectory, useTeamRoster } from './hooks';
 import { usePlayerCareer } from '../../hooks/usePlayerCareer';
 import { useSectionActivation } from '../../hooks/useSectionActivation';
-import {
-  LoadingSpinner,
-  EmptyState,
-  ErrorMessage,
-  Pagination,
-  ImagePreviewModal,
-  RefreshButton,
-  SectionHeader,
-} from '../common';
+import { LoadingSpinner, EmptyState, ErrorMessage, Pagination, ImagePreviewModal, RefreshButton, SectionHeader } from '../common';
 
 const Teams: React.FC = () => {
   const section = useSectionActivation<HTMLElement>();
@@ -29,12 +21,7 @@ const Teams: React.FC = () => {
   return (
     <section ref={section.ref} className="teams" id="teams">
       <div className="teamsContainer">
-        <SectionHeader
-          tag="球队信息"
-          title="我们的"
-          emphasis="球队"
-          description="多支实力强劲的球队，展现SZTU足球风采"
-        />
+        <SectionHeader tag="球队信息" title="我们的" emphasis="球队" description="多支实力强劲的球队，展现SZTU足球风采" />
 
         <TeamFilters
           globalSeasons={directory.globalSeasons}
@@ -44,80 +31,34 @@ const Teams: React.FC = () => {
           onSearchTermChange={directory.setSearchTerm}
           onSearch={directory.search}
           onReset={directory.reset}
-          onKeyDown={(event) => { if (event.key === 'Enter') directory.search(); }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') directory.search();
+          }}
         />
 
-        <RefreshButton
-          onClick={() => directory.loadTeams(
-            directory.currentPage,
-            directory.globalSeasonId,
-            directory.selectedGender,
-            directory.isSearching ? directory.searchTerm : undefined,
-          )}
-        />
+        <RefreshButton onClick={() => directory.loadTeams(directory.currentPage, directory.globalSeasonId, directory.selectedGender, directory.isSearching ? directory.searchTerm : undefined)} />
 
         {directory.loading ? (
           <LoadingSpinner />
         ) : directory.error ? (
-          <ErrorMessage
-            message={directory.error}
-            onRetry={() =>
-              directory.loadTeams(
-                directory.currentPage,
-                directory.globalSeasonId,
-                directory.selectedGender,
-                directory.isSearching ? directory.searchTerm : undefined,
-              )
-            }
-          />
+          <ErrorMessage message={directory.error} onRetry={() => directory.loadTeams(directory.currentPage, directory.globalSeasonId, directory.selectedGender, directory.isSearching ? directory.searchTerm : undefined)} />
         ) : directory.teams.length === 0 ? (
           <EmptyState message="暂无球队数据" />
         ) : (
           <>
             <div className="teamsGrid">
               {directory.teams.map((team) => (
-                <TeamCard
-                  key={team.id}
-                  team={team}
-                  isSelected={selectedTeam?.id === team.id}
-                  onClick={() => setSelectedTeam(team)}
-                />
+                <TeamCard key={team.id} team={team} isSelected={selectedTeam?.id === team.id} onClick={() => setSelectedTeam(team)} />
               ))}
             </div>
 
-            {!directory.isSearching && directory.total > directory.limit && (
-              <Pagination
-                currentPage={directory.currentPage}
-                totalPages={directory.totalPages}
-                onPageChange={directory.setCurrentPage}
-              />
-            )}
+            {!directory.isSearching && directory.total > directory.limit && <Pagination currentPage={directory.currentPage} totalPages={directory.totalPages} onPageChange={directory.setCurrentPage} />}
           </>
         )}
 
+        {selectedTeam && <TeamModal team={selectedTeam} seasons={roster.seasons} selectedSeasonId={roster.selectedSeasonId} displayPlayers={roster.displayPlayers} playersLoading={roster.playersLoading} rosterError={roster.rosterError} onClose={() => setSelectedTeam(null)} onSeasonChange={roster.setSelectedSeasonId} onPreviewImage={setPreviewImage} onPlayerClick={(playerId, playerName) => career.openCareer(playerId, playerName, roster.selectedSeasonId)} />}
 
-        {selectedTeam && (
-          <TeamModal
-            team={selectedTeam}
-            seasons={roster.seasons}
-            selectedSeasonId={roster.selectedSeasonId}
-            displayPlayers={roster.displayPlayers}
-            playersLoading={roster.playersLoading}
-            rosterError={roster.rosterError}
-            onClose={() => setSelectedTeam(null)}
-            onSeasonChange={roster.setSelectedSeasonId}
-            onPreviewImage={setPreviewImage}
-            onPlayerClick={career.openCareer}
-          />
-        )}
-
-        <PlayerCareerCard
-          careerPlayerId={career.careerPlayerId}
-          careerPlayerName={career.careerPlayerName}
-          careerData={career.careerData}
-          careerLoading={career.careerLoading}
-          onClose={career.closeCareer}
-        />
+        <PlayerCareerCard careerPlayerId={career.careerPlayerId} careerPlayerName={career.careerPlayerName} careerData={career.careerData} careerLoading={career.careerLoading} onClose={career.closeCareer} />
 
         <ImagePreviewModal src={previewImage} onClose={() => setPreviewImage(null)} />
       </div>

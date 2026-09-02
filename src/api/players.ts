@@ -1,11 +1,7 @@
 import type { Player, PaginatedResponse, PlayerCareerResponse } from '../types';
 import { BASE_URL, apiFetch } from './http';
 
-export async function fetchPlayers(
-  page: number = 1,
-  limit: number = 10,
-  teamId?: string
-): Promise<PaginatedResponse<Player>> {
+export async function fetchPlayers(page: number = 1, limit: number = 10, teamId?: string): Promise<PaginatedResponse<Player>> {
   let url = `${BASE_URL}/players?page=${page}&limit=${limit}`;
   if (teamId) url += `&teamId=${teamId}`;
   const response = await apiFetch(url);
@@ -28,9 +24,8 @@ export async function searchPlayers(name: string): Promise<Player[]> {
   return response.json();
 }
 
-export async function fetchPlayerCareer(id: string): Promise<PlayerCareerResponse> {
-  const response = await apiFetch(`${BASE_URL}/players/${id}/career`);
+export async function fetchPlayerCareer(id: string, seasonId: string): Promise<PlayerCareerResponse> {
+  const response = await apiFetch(`${BASE_URL}/players/${id}/career?seasonId=${encodeURIComponent(seasonId)}`);
   if (!response.ok) throw new Error('获取球员生涯数据失败');
   return response.json();
 }
-
