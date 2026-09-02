@@ -8,14 +8,14 @@ export const usePlayerCareer = () => {
   const [careerData, setCareerData] = useState<CareerData | null>(null);
   const [careerLoading, setCareerLoading] = useState(false);
 
-  const openCareer = async (playerId: string, playerName: string) => {
-    if (!playerId) return;
+  const openCareer = async (playerId: string, playerName: string, seasonId: string) => {
+    if (!playerId || !seasonId) return;
     setCareerPlayerId(playerId);
     setCareerPlayerName(playerName);
     setCareerLoading(true);
     setCareerData(null);
     try {
-      const response = await fetchPlayerCareer(playerId);
+      const response = await fetchPlayerCareer(playerId, seasonId);
       const data = buildCareerData(response);
       if (data) setCareerData(data);
       else console.error('返回数据格式不正确:', response);

@@ -28,6 +28,9 @@ const Matches: React.FC = () => {
     setModalTab('events');
   };
 
+  const openSeasonPlayerCard = (playerId: string, playerName: string) =>
+    career.openCareer(playerId, playerName, directory.selectedSeasonId);
+
   return (
     <section ref={section.ref} className="matches" id="matches">
       <div className="matchesContainer">
@@ -85,7 +88,7 @@ const Matches: React.FC = () => {
             onSortByChange={directory.setSortBy}
             onPageChange={directory.changePage}
             onMatchClick={openMatch}
-            onPlayerClick={career.openCareer}
+            onPlayerClick={openSeasonPlayerCard}
             onRetry={directory.reloadMatches}
           />
         )}
@@ -116,7 +119,7 @@ const Matches: React.FC = () => {
             statsLoading={competition.statsLoading}
             statsError={competition.statsError}
             onRetry={competition.reloadStats}
-            onPlayerClick={career.openCareer}
+            onPlayerClick={openSeasonPlayerCard}
           />
         )}
 
@@ -129,7 +132,7 @@ const Matches: React.FC = () => {
           onClose={matchDetails.closeDetails}
           onRetry={matchDetails.retryDetails}
           onTabChange={setModalTab}
-          onPlayerClick={career.openCareer}
+          onPlayerClick={openSeasonPlayerCard}
         />
         <PlayerCareerCard
           careerPlayerId={career.careerPlayerId}
