@@ -138,11 +138,11 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({
               <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'center' }}>
                 <thead>
                   <tr style={{ background: 'rgba(0,0,0,0.03)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                    <th style={{ width: '32%', padding: '8px 3px', fontWeight: 600 }}>赛季</th>
-                    <th style={{ width: '17%', padding: '8px 2px', fontWeight: 600 }}>出场</th>
-                    <th style={{ width: '14%', padding: '8px 2px', fontWeight: 600 }}>进球</th>
-                    <th style={{ width: '14%', padding: '8px 2px', fontWeight: 600 }}>助攻</th>
-                    <th style={{ width: '23%', padding: '8px 2px', fontWeight: 600, whiteSpace: 'nowrap' }}>黄牌/红牌</th>
+                    <th style={{ width: '26%', padding: '8px 3px', fontWeight: 600 }}>赛季</th>
+                    <th style={{ width: '13%', padding: '8px 2px', fontWeight: 600 }}>出场</th>
+                    <th style={{ width: '12%', padding: '8px 2px', fontWeight: 600 }}>进球</th>
+                    <th style={{ width: '12%', padding: '8px 2px', fontWeight: 600 }}>助攻</th>
+                    <th style={{ width: '37%', padding: '8px 2px', fontWeight: 600, whiteSpace: 'nowrap' }}>黄牌/红牌</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -153,10 +153,16 @@ export const PlayerCareerCard: React.FC<PlayerCareerCardProps> = ({
                       <td style={{ padding: '8px 2px', fontWeight: 600, color: 'var(--primary-color)' }}>{s.goals}</td>
                       <td style={{ padding: '8px 2px', fontWeight: 600, color: '#0288d1' }}>{s.assists}</td>
                       <td style={{ padding: '8px 2px', whiteSpace: 'nowrap' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                          <span>🟨{s.yellowCards}</span>
-                          <span style={{ color: '#aaa', margin: '0 1px' }}>/</span>
-                          <span>🟥{s.redCards}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '3px', fontSize: '0.72rem', lineHeight: 1 }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px' }}>
+                            <span style={{ fontSize: '0.7rem' }}>🟨</span>
+                            <span>{s.yellowCards}</span>
+                          </span>
+                          <span style={{ color: '#aaa' }}>/</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px' }}>
+                            <span style={{ fontSize: '0.7rem' }}>🟥</span>
+                            <span>{s.redCards}</span>
+                          </span>
                         </span>
                       </td>
                     </tr>
