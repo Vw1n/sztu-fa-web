@@ -1,7 +1,9 @@
 import React from 'react';
 import { LoadingSpinner } from '../../common';
 import type { Match } from '../../../types';
-import { getPenaltyScore, getWinnerTeamId } from '../utils/matchOutcome';
+import { buildBracketModel } from '../bracket/bracket-model';
+import { DesktopBracketLayout } from '../bracket/DesktopBracketLayout';
+import { MobileBracketLayout } from '../bracket/MobileBracketLayout';
 
 interface KnockoutBracketProps {
   bracketMatches: Match[];
@@ -9,13 +11,18 @@ interface KnockoutBracketProps {
   onMatchClick: (match: Match) => void;
 }
 
+/**
+ * KnockoutBracket 薄门面：
+ *   - 仅负责 loading / 非 loading 分支；
+ *   - 将比赛数组交给 buildBracketModel（纯函数）推导模型；
+ *   - 分别渲染桌面布局 & 移动布局（两者通过 CSS 媒体查询切换显示）；
+ *   - 不再内联任何对阵推导、轮次匹配或胜者判断逻辑。
+ */
 export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
   bracketMatches,
   bracketLoading,
   onMatchClick,
 }) => {
-  const matches = bracketMatches;
-
   if (bracketLoading) {
     return (
       <div className="bracketSection">
@@ -24,422 +31,18 @@ export const KnockoutBracket: React.FC<KnockoutBracketProps> = ({
     );
   }
 
-  const findMatch = (round: string, index: number) => {
-    return matches.find((m) => {
-      const matchRound = (m.knockoutRound || '').toUpperCase();
-      const targetRound = round.toUpperCase();
-
-      const isRoundMatch =
-        matchRound === targetRound ||
-        (targetRound === '3RD' &&
-          (matchRound === '3RD_PLACE' ||
-            matchRound === 'THIRD_PLACE' ||
-            matchRound === '34' ||
-            matchRound === '34名' ||
-            (m.matchName && (m.matchName.includes('三四名') || m.matchName.includes('季军') || m.matchName.includes('3/4')))));
-
-      if (!isRoundMatch) return false;
-
-      if (targetRound === '3RD') {
-        return (
-          m.knockoutMatchIndex === undefined ||
-          m.knockoutMatchIndex === null ||
-          Number(m.knockoutMatchIndex) === index ||
-          Number(m.knockoutMatchIndex) === 0
-        );
-      }
-
-      return (
-        Number(m.knockoutMatchIndex) === index ||
-        (!m.knockoutMatchIndex && index === 1)
-      );
-    });
-  };
-
-  const hasR16 = matches.some(m => m.knockoutRound === 'R16');
-  const hasQF = matches.some(m => m.knockoutRound === 'QF');
-
-  const renderMatchCard = (match: Match | undefined, round: string, index: number, compact?: boolean) => {
-    const side = round === 'R16' ? (index <= 4 ? 'left' : 'right') :
-                 round === 'QF' ? (index <= 2 ? 'left' : 'right') :
-                 round === 'SF' ? (index === 1 ? 'left' : 'right') : 'center';
-
-    if (!match) {
-      return (
-        <div className={`bracketMatchCard emptyCard bracket-card-${round.toLowerCase()} bracket-card-${side}${compact ? ' bracketCardCompact' : ''}`}>
-          <div className="bracketMatchHeader">对阵 #{index}</div>
-          <div className="bracketTeamRow">
-            <span className="bracketTeamName">待定</span>
-            <span className="bracketTeamScore">-</span>
-          </div>
-          <div className="bracketTeamRow">
-            <span className="bracketTeamName">待定</span>
-            <span className="bracketTeamScore">-</span>
-          </div>
-        </div>
-      );
-    }
-
-    const winnerTeamId =
-      match.status === 'completed' ? getWinnerTeamId(match) : null;
-    const isHomeWinner = winnerTeamId === match.homeTeamId;
-    const isAwayWinner = winnerTeamId === match.awayTeamId;
-    const penaltyScore = getPenaltyScore(match);
-
-    const cardClasses = [
-      'bracketMatchCard',
-      `bracket-card-${round.toLowerCase()}`,
-      `bracket-card-${side}`,
-      match.status === 'in_progress' ? 'ongoingMatch' : '',
-      match.status === 'completed' ? 'completedMatch' : '',
-      compact ? 'bracketCardCompact' : '',
-    ].filter(Boolean).join(' ');
-
-    return (
-      <div className={cardClasses} onClick={() => onMatchClick(match)} style={{ cursor: 'pointer' }}>
-        <div className="bracketMatchHeader">
-          <span>{match.location || '待定'}</span>
-          {match.status === 'in_progress' ? (
-            <span className="liveBadge">LIVE</span>
-          ) : match.status === 'completed' ? (
-            <span className="completedBadge">已结束</span>
-          ) : (
-            <span className="scheduledBadge">未开始</span>
-          )}
-        </div>
-        <div className={`bracketTeamRow ${isHomeWinner ? 'winnerRow' : ''}`}>
-          <div className="bracketTeamInfo">
-            {match.homeTeam?.teamLogo ? (
-              <img src={match.homeTeam.teamLogo} alt={match.homeTeam.teamName} className="bracketTeamLogo" />
-            ) : (
-              <span className="bracketLogoPlaceholder">⚽</span>
-            )}
-            <span className="bracketTeamName">{match.homeTeam?.teamName || '待定'}</span>
-          </div>
-          <span className="bracketTeamScore">
-            {match.status === 'completed' || match.status === 'in_progress' ? match.homeScore : '-'}
-            {penaltyScore ? ` (${penaltyScore.home})` : ''}
-          </span>
-        </div>
-        <div className={`bracketTeamRow ${isAwayWinner ? 'winnerRow' : ''}`}>
-          <div className="bracketTeamInfo">
-            {match.awayTeam?.teamLogo ? (
-              <img src={match.awayTeam.teamLogo} alt={match.awayTeam.teamName} className="bracketTeamLogo" />
-            ) : (
-              <span className="bracketLogoPlaceholder">⚽</span>
-            )}
-            <span className="bracketTeamName">{match.awayTeam?.teamName || '待定'}</span>
-          </div>
-          <span className="bracketTeamScore">
-            {match.status === 'completed' || match.status === 'in_progress' ? match.awayScore : '-'}
-            {penaltyScore ? ` (${penaltyScore.away})` : ''}
-          </span>
-        </div>
-        {!compact && (
-          <div className="bracketTime">
-            {match.matchDate ? new Date(match.matchDate).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '时间未定'}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderChampionCard = () => {
-    const finalMatch = findMatch('F', 1);
-    if (!finalMatch || finalMatch.status !== 'completed') return null;
-    const winnerTeamId = getWinnerTeamId(finalMatch);
-    const champion =
-      winnerTeamId === finalMatch.homeTeamId
-        ? finalMatch.homeTeam
-        : winnerTeamId === finalMatch.awayTeamId
-          ? finalMatch.awayTeam
-          : null;
-    if (!champion) return null;
-    return (
-      <div className="championCard">
-        <div className="championCrown">🏆</div>
-        <div className="championTitle">冠军</div>
-        {champion.teamLogo && <img src={champion.teamLogo} alt={champion.teamName} className="championLogo" />}
-        <div className="championName">{champion.teamName}</div>
-      </div>
-    );
-  };
-
-  // ============ 移动端：上下半区纵向对阵图 ============
-  //
-  //     上半区：QF1、QF2 → SF1 → Final+冠军
-  //     下半区：Final+冠军 → SF2 → QF3、QF4
-  //
-  const renderMobileTree = () => {
-    const qf1 = findMatch('QF', 1);
-    const qf2 = findMatch('QF', 2);
-    const qf3 = findMatch('QF', 3);
-    const qf4 = findMatch('QF', 4);
-    const sf1 = findMatch('SF', 1);
-    const sf2 = findMatch('SF', 2);
-    const finalMatch = findMatch('F', 1);
-    const championCard = renderChampionCard();
-
-    return (
-      <div className="bracketTreeMobile">
-
-        {/* 上半区：QF1、QF2 */}
-        {hasQF && (
-        <div className="treeRound">
-          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>1/4 决赛</div>
-          <div className="treePair">
-            <div className="treeMatchCell">{renderMatchCard(qf1, 'QF', 1, true)}</div>
-            <div className="treeMatchCell">{renderMatchCard(qf2, 'QF', 2, true)}</div>
-          </div>
-        </div>
-        )}
-
-        {/* SF1 */}
-        <div className="treeRound">
-          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>半决赛</div>
-          <div className="treeSingle">
-            <div className="treeMatchCell">{renderMatchCard(sf1, 'SF', 1, true)}</div>
-          </div>
-        </div>
-
-        {/* Final + 冠军 并排 */}
-        <div className="treeRound">
-          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#fbbf24', padding: '10px 0 6px', letterSpacing: 1 }}>🏆 决赛</div>
-          <div className="treePair">
-            <div className="treeMatchCell">{renderMatchCard(finalMatch, 'F', 1, true)}</div>
-            <div className="treeMatchCell">{championCard}</div>
-          </div>
-        </div>
-
-        {/* 三四名决赛 */}
-        <div className="treeRound">
-          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#cd7f32', padding: '10px 0 6px', letterSpacing: 1 }}>🥉 三四名决赛</div>
-          <div className="treeSingle">
-            <div className="treeMatchCell">{renderMatchCard(findMatch('3RD', 1), '3RD', 1, true)}</div>
-          </div>
-        </div>
-
-        {/* SF2 */}
-        <div className="treeRound">
-          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>半决赛</div>
-          <div className="treeSingle">
-            <div className="treeMatchCell">{renderMatchCard(sf2, 'SF', 2, true)}</div>
-          </div>
-        </div>
-
-        {/* 下半区：QF3、QF4 */}
-        {hasQF && (
-        <div className="treeRound">
-          <div style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#1a1a2e', padding: '10px 0 6px', letterSpacing: 1 }}>1/4 决赛</div>
-          <div className="treePair">
-            <div className="treeMatchCell">{renderMatchCard(qf3, 'QF', 3, true)}</div>
-            <div className="treeMatchCell">{renderMatchCard(qf4, 'QF', 4, true)}</div>
-          </div>
-        </div>
-        )}
-
-      </div>
-    );
-  };
-
-  // ============ 桌面端：无 1/4 决赛时的竖向对阵图 ============
-  //
-  //         冠军
-  //         决赛
-  //        ┌─┴─┐
-  //       SF1  SF2
-  //        三四名决赛
-  //
-  const renderNoQFTree = () => {
-    const sf1 = findMatch('SF', 1);
-    const sf2 = findMatch('SF', 2);
-    const finalMatch = findMatch('F', 1);
-    const championCard = renderChampionCard();
-
-    return (
-      <div className="bracketTreeNoQF bracketDesktop">
-        {/* 🏆 决赛标签：最上方（参考横向布局的列头） */}
-        <div className="noQfCell">
-          <div className="columnHeader championHeader">🏆 决赛</div>
-        </div>
-
-        {/* 冠军卡片 */}
-        {championCard && (
-          <div className="noQfCell noQfChampion">{championCard}</div>
-        )}
-
-        {/* 决赛卡片 */}
-        <div className="noQfCell noQfFinal">
-          {renderMatchCard(finalMatch, 'F', 1)}
-        </div>
-
-        <div className="noQfConnector" />
-
-        {/* 半决赛：同一水平两侧 */}
-        <div className="noQfSemis">
-          <div className="noQfStage noQfSemiStage">
-            <div className="columnHeader">半决赛</div>
-            <div className="noQfCell noQfSemi">{renderMatchCard(sf1, 'SF', 1)}</div>
-          </div>
-          <div className="noQfStage noQfSemiStage">
-            <div className="columnHeader">半决赛</div>
-            <div className="noQfCell noQfSemi">{renderMatchCard(sf2, 'SF', 2)}</div>
-          </div>
-        </div>
-
-        {/* 三四名决赛：上方虚线 */}
-        <div className="thirdPlaceSection noQfThirdSection">
-          <div className="thirdPlaceLabel">🥉 三四名决赛</div>
-          <div className="noQfCell noQfThird">
-            {renderMatchCard(findMatch('3RD', 1), '3RD', 1)}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ============ 移动端：无 1/4 决赛（仅半决赛 + 决赛）居中对称树 ============
-  //
-  //      半决赛
-  //    [SF1]  [SF2]
-  //      └──┬──┘
-  //         │
-  //      🏆 决赛
-  //    [Final] [冠军]
-  //    ─ ─ ─ ─ ─ ─
-  //      🥉 三四名
-  //        [3rd]
-  //
-  const renderNoQFMobileTree = () => {
-    const sf1 = findMatch('SF', 1);
-    const sf2 = findMatch('SF', 2);
-    const finalMatch = findMatch('F', 1);
-    const championCard = renderChampionCard();
-
-    return (
-      <div className="bracketTreeNoQFMobile">
-        {/* 半决赛：两场并排 */}
-        <div className="noQfMobLabel">半决赛</div>
-        <div className="noQfMobSemis">
-          <div className="noQfMobHalf">
-            <div className="noQfMobHalfCard">{renderMatchCard(sf1, 'SF', 1, true)}</div>
-          </div>
-          <div className="noQfMobHalf">
-            <div className="noQfMobHalfCard">{renderMatchCard(sf2, 'SF', 2, true)}</div>
-          </div>
-        </div>
-
-        {/* 连接线：SF1/SF2 汇入决赛 */}
-        <div className="noQfMobConnector">
-          <span className="noQfMobConnBar" />
-          <span className="noQfMobConnDown" />
-        </div>
-
-        {/* 决赛：卡片 + 冠军 */}
-        <div className="noQfMobLabel noQfMobLabelFinal">🏆 决赛</div>
-        <div className="noQfMobFinal">
-          <div className="noQfMobFinalCard">{renderMatchCard(finalMatch, 'F', 1, true)}</div>
-          {championCard}
-        </div>
-
-        {/* 三四名决赛 */}
-        <div className="noQfMobThird">
-          <div className="thirdPlaceLabel">🥉 三四名决赛</div>
-          <div className="noQfMobThirdCard">{renderMatchCard(findMatch('3RD', 1), '3RD', 1, true)}</div>
-        </div>
-      </div>
-    );
-  };
+  const model = buildBracketModel(bracketMatches);
 
   return (
     <div className="bracketSection">
       <div className="bracketWrapper">
-
-        {/* ====== 桌面端：横向 bracket（有 1/4 决赛） ====== */}
-        {hasQF && (
-        <div className="bracketContainer bracketDesktop">
-          {hasR16 && (
-            <div className="bracketColumn r16-left-column">
-              <div className="columnHeader">1/8 决赛</div>
-              <div className="matchGroups">
-                {renderMatchCard(findMatch('R16', 1), 'R16', 1)}
-                {renderMatchCard(findMatch('R16', 2), 'R16', 2)}
-                {renderMatchCard(findMatch('R16', 3), 'R16', 3)}
-                {renderMatchCard(findMatch('R16', 4), 'R16', 4)}
-              </div>
-            </div>
-          )}
-
-          {hasQF && (
-            <div className="bracketColumn qf-left-column">
-              <div className="columnHeader">1/4 决赛</div>
-              <div className="matchGroups">
-                {renderMatchCard(findMatch('QF', 1), 'QF', 1)}
-                {renderMatchCard(findMatch('QF', 2), 'QF', 2)}
-              </div>
-            </div>
-          )}
-
-          <div className="bracketColumn sf-left-column">
-            <div className="columnHeader">半决赛</div>
-            <div className="matchGroups">
-              {renderMatchCard(findMatch('SF', 1), 'SF', 1)}
-            </div>
-          </div>
-
-          <div className="bracketColumn f-center-column centerColumn">
-            <div className="columnHeader championHeader">🏆 决赛</div>
-            <div className="matchGroups finalGroup">
-              {renderChampionCard()}
-              <div style={{ marginTop: '-4px', marginBottom: 'auto' }}>{renderMatchCard(findMatch('F', 1), 'F', 1)}</div>
-              <div className="thirdPlaceSection">
-                <div className="thirdPlaceLabel">🥉 三四名决赛</div>
-                {renderMatchCard(findMatch('3RD', 1), '3RD', 1)}
-              </div>
-            </div>
-          </div>
-
-          <div className="bracketColumn sf-right-column">
-            <div className="columnHeader">半决赛</div>
-            <div className="matchGroups">
-              {renderMatchCard(findMatch('SF', 2), 'SF', 2)}
-            </div>
-          </div>
-
-          {hasQF && (
-            <div className="bracketColumn qf-right-column">
-              <div className="columnHeader">1/4 决赛</div>
-              <div className="matchGroups">
-                {renderMatchCard(findMatch('QF', 3), 'QF', 3)}
-                {renderMatchCard(findMatch('QF', 4), 'QF', 4)}
-              </div>
-            </div>
-          )}
-
-          {hasR16 && (
-            <div className="bracketColumn r16-right-column">
-              <div className="columnHeader">1/8 决赛</div>
-              <div className="matchGroups">
-                {renderMatchCard(findMatch('R16', 5), 'R16', 5)}
-                {renderMatchCard(findMatch('R16', 6), 'R16', 6)}
-                {renderMatchCard(findMatch('R16', 7), 'R16', 7)}
-                {renderMatchCard(findMatch('R16', 8), 'R16', 8)}
-              </div>
-            </div>
-          )}
-        </div>
-        )}
-
-        {/* ====== 桌面端：竖向 bracket（无 1/4 决赛，仅决赛 + 半决赛） ====== */}
-        {!hasQF && renderNoQFTree()}
-
-        {/* ====== 移动端：上下半区纵向 bracket（有 1/4 决赛） ====== */}
-        {hasQF && renderMobileTree()}
-
-        {/* ====== 移动端：居中对称树（无 1/4 决赛，仅半决赛 + 决赛） ====== */}
-        {!hasQF && renderNoQFMobileTree()}
-
+        {/* 桌面端布局（横向 bracket 或 竖向无QF 布局，内部按 hasQF 切换） */}
+        <DesktopBracketLayout model={model} onMatchClick={onMatchClick} />
+        {/* 移动端布局（内部按 hasQF 切换） */}
+        <MobileBracketLayout model={model} onMatchClick={onMatchClick} />
       </div>
     </div>
   );
 };
+
+export default KnockoutBracket;
