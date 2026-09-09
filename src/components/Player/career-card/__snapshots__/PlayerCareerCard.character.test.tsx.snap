@@ -1,0 +1,397 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PlayerCareerCard ｜ 行为锁定测试（重构基准） > 快照：loading 状态 DOM 结构 1`] = `
+<DocumentFragment>
+  <div
+    class="matchModalOverlay cc-overlay"
+  >
+    <div
+      class="matchModal careerCardModal cc-modal"
+    >
+      <button
+        class="matchModalClose"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <line
+            x1="18"
+            x2="6"
+            y1="6"
+            y2="18"
+          />
+          <line
+            x1="6"
+            x2="18"
+            y1="6"
+            y2="18"
+          />
+        </svg>
+      </button>
+      <div
+        class="cc-loading"
+      >
+        <div
+          class="loadingSpinner cc-loading-spinner"
+        />
+        <p
+          class="cc-loading-text"
+        >
+          正在生成赛季球星卡...
+        </p>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PlayerCareerCard ｜ 行为锁定测试（重构基准） > 快照：完整数据渲染的 DOM 结构锁定为重构基准 1`] = `
+<DocumentFragment>
+  <div
+    class="matchModalOverlay cc-overlay"
+  >
+    <div
+      class="matchModal careerCardModal cc-modal"
+    >
+      <button
+        class="matchModalClose"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <line
+            x1="18"
+            x2="6"
+            y1="6"
+            y2="18"
+          />
+          <line
+            x1="6"
+            x2="18"
+            y1="6"
+            y2="18"
+          />
+        </svg>
+      </button>
+      <div
+        class="cc-content"
+      >
+        <div
+          class="cc-header"
+        >
+          <div
+            class="cc-avatar-fallback"
+          >
+            11
+          </div>
+          <div
+            class="cc-header-info"
+          >
+            <h3
+              class="cc-player-name"
+            >
+              张三
+            </h3>
+            <p
+              class="cc-team-info"
+            >
+              <span>
+                🛡️
+              </span>
+               
+              <span>
+                校足球队A队
+              </span>
+              <span
+                class="cc-suspended-badge"
+              >
+                🛑 停赛中
+              </span>
+            </p>
+          </div>
+        </div>
+        <div
+          class="cc-stats-grid"
+        >
+          <div
+            class="cc-stat-tile"
+          >
+            <div
+              class="cc-stat-value"
+            >
+              12
+            </div>
+            <div
+              class="cc-stat-label"
+            >
+              出场数
+            </div>
+          </div>
+          <div
+            class="cc-stat-tile"
+          >
+            <div
+              class="cc-stat-value cc-stat-value--goals"
+            >
+              5
+            </div>
+            <div
+              class="cc-stat-label"
+            >
+              总进球
+            </div>
+          </div>
+          <div
+            class="cc-stat-tile"
+          >
+            <div
+              class="cc-stat-value cc-stat-value--assists"
+            >
+              7
+            </div>
+            <div
+              class="cc-stat-label"
+            >
+              总助攻
+            </div>
+          </div>
+          <div
+            class="cc-stat-tile"
+          >
+            <div
+              class="cc-stat-value cc-stat-value--discipline"
+            >
+              <span>
+                🟨4
+              </span>
+              <span>
+                🟥1
+              </span>
+            </div>
+            <div
+              class="cc-stat-label"
+            >
+              红黄牌
+            </div>
+          </div>
+        </div>
+        <h4
+          class="cc-section-title"
+        >
+          📊 当前赛季数据
+        </h4>
+        <div
+          class="cc-table-wrapper"
+        >
+          <table
+            class="cc-table"
+          >
+            <thead>
+              <tr
+                class="cc-table-header-row"
+              >
+                <th
+                  class="cc-table-th cc-table-th--season"
+                >
+                  赛季
+                </th>
+                <th
+                  class="cc-table-th cc-table-th--matches"
+                >
+                  出场
+                </th>
+                <th
+                  class="cc-table-th cc-table-th--goals"
+                >
+                  进球
+                </th>
+                <th
+                  class="cc-table-th cc-table-th--assists"
+                >
+                  助攻
+                </th>
+                <th
+                  class="cc-table-th cc-table-th--discipline"
+                >
+                  黄牌/红牌
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="cc-table-row  "
+              >
+                <td
+                  class="cc-table-td cc-table-td--season"
+                >
+                  2025赛季
+                </td>
+                <td
+                  class="cc-table-td"
+                >
+                  6
+                </td>
+                <td
+                  class="cc-table-td cc-table-td--goals"
+                >
+                  2
+                </td>
+                <td
+                  class="cc-table-td cc-table-td--assists"
+                >
+                  1
+                </td>
+                <td
+                  class="cc-table-td cc-table-td--discipline"
+                >
+                  <span
+                    class="cc-discipline"
+                  >
+                    <span
+                      class="cc-discipline-item"
+                    >
+                      <span
+                        class="cc-discipline-emoji"
+                      >
+                        🟨
+                      </span>
+                      <span>
+                        2
+                      </span>
+                    </span>
+                    <span
+                      class="cc-discipline-sep"
+                    >
+                      /
+                    </span>
+                    <span
+                      class="cc-discipline-item"
+                    >
+                      <span
+                        class="cc-discipline-emoji"
+                      >
+                        🟥
+                      </span>
+                      <span>
+                        0
+                      </span>
+                    </span>
+                  </span>
+                </td>
+              </tr>
+              <tr
+                class="cc-table-row cc-table-row--last cc-table-row--alt"
+              >
+                <td
+                  class="cc-table-td cc-table-td--season"
+                >
+                  2024赛季
+                </td>
+                <td
+                  class="cc-table-td"
+                >
+                  6
+                </td>
+                <td
+                  class="cc-table-td cc-table-td--goals"
+                >
+                  3
+                </td>
+                <td
+                  class="cc-table-td cc-table-td--assists"
+                >
+                  2
+                </td>
+                <td
+                  class="cc-table-td cc-table-td--discipline"
+                >
+                  <span
+                    class="cc-discipline"
+                  >
+                    <span
+                      class="cc-discipline-item"
+                    >
+                      <span
+                        class="cc-discipline-emoji"
+                      >
+                        🟨
+                      </span>
+                      <span>
+                        2
+                      </span>
+                    </span>
+                    <span
+                      class="cc-discipline-sep"
+                    >
+                      /
+                    </span>
+                    <span
+                      class="cc-discipline-item"
+                    >
+                      <span
+                        class="cc-discipline-emoji"
+                      >
+                        🟥
+                      </span>
+                      <span>
+                        1
+                      </span>
+                    </span>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PlayerCareerCard ｜ 行为锁定测试（重构基准） > 快照：空数据状态 DOM 结构 1`] = `
+<DocumentFragment>
+  <div
+    class="matchModalOverlay cc-overlay"
+  >
+    <div
+      class="matchModal careerCardModal cc-modal"
+    >
+      <button
+        class="matchModalClose"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <line
+            x1="18"
+            x2="6"
+            y1="6"
+            y2="18"
+          />
+          <line
+            x1="6"
+            x2="18"
+            y1="6"
+            y2="18"
+          />
+        </svg>
+      </button>
+      <div
+        class="cc-empty"
+      >
+        无法加载赛季数据
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
