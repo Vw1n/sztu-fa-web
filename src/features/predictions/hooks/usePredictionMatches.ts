@@ -35,11 +35,6 @@ export function usePredictionMatches(
   useEffect(() => {
     const currentReqId = ++reqIdRef.current;
 
-    // 赛季 ID 为空时不发请求（等待赛季加载完成）
-    if (selectedSeasonId === undefined) {
-      return;
-    }
-
     const load = async () => {
       setPhase('loading');
       setError(null);
