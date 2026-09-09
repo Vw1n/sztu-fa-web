@@ -8,7 +8,7 @@ import { PlayerCareerCard } from '../Player';
 import { useTeamDirectory, useTeamRoster } from './hooks';
 import { usePlayerCareer } from '../../hooks/usePlayerCareer';
 import { useSectionActivation } from '../../hooks/useSectionActivation';
-import { LoadingSpinner, EmptyState, ErrorMessage, Pagination, ImagePreviewModal, RefreshButton, SectionHeader } from '../common';
+import { LoadingSpinner, EmptyState, ErrorMessage, Pagination, ImagePreviewModal, SectionHeader } from '../common';
 
 const Teams: React.FC = () => {
   const section = useSectionActivation<HTMLElement>();
@@ -34,9 +34,8 @@ const Teams: React.FC = () => {
           onKeyDown={(event) => {
             if (event.key === 'Enter') directory.search();
           }}
+          onRefresh={() => directory.loadTeams(directory.currentPage, directory.globalSeasonId, directory.selectedGender, directory.isSearching ? directory.searchTerm : undefined)}
         />
-
-        <RefreshButton onClick={() => directory.loadTeams(directory.currentPage, directory.globalSeasonId, directory.selectedGender, directory.isSearching ? directory.searchTerm : undefined)} />
 
         {directory.loading ? (
           <LoadingSpinner />

@@ -90,16 +90,22 @@
 .refreshButton {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0 12px;
   background-color: var(--bg-primary);
   color: var(--primary-color);
   font-size: 0.9rem;
   font-weight: 500;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all var(--transition-fast);
-  margin: 0 auto var(--spacing-xl);
+  margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+  height: 38px;
+  min-height: 38px;
+  box-sizing: border-box;
 }
 
 .refreshButton:hover {
@@ -473,6 +479,31 @@
     justify-content: center !important;
     margin: 0 !important;
     white-space: nowrap !important;
+  }
+
+  .filterControls {
+    flex-wrap: nowrap !important;
+    gap: 25px !important;
+    padding: 10px 0 !important;
+    max-width: none !important;
+  }
+
+  .filterControls > div {
+    gap: 6px !important;
+  }
+
+  .filterControls > div > span {
+    font-size: 12px !important;
+  }
+
+  .refreshButton {
+    padding: 0 10px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .refreshButton svg {
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .teamsGrid {

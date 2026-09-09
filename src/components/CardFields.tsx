@@ -6,7 +6,7 @@ export default function CardFields(props: Props) {
   useEffect(() => { if (!props.file) { setPreview(''); return; } const url = URL.createObjectURL(props.file); setPreview(url); return () => URL.revokeObjectURL(url); }, [props.file]);
   return <>
     <div className="formGroup"><label htmlFor="realName">校园卡姓名（仅用于审核）</label><input id="realName" autoComplete="name" required minLength={2} maxLength={50} value={props.realName} onChange={e => props.onName(e.target.value)} /></div>
-    <div className="formGroup"><label htmlFor="studentId">学号</label><input id="studentId" required pattern="[a-zA-Z0-9_-]{6,20}" title="6–20 位字母、数字、下划线或连字符" value={props.studentId} onChange={e => props.onStudentId(e.target.value)} /></div>
+    <div className="formGroup"><label htmlFor="studentId">学号</label><input id="studentId" required pattern="[a-zA-Z0-9_\-]{6,20}" title="6–20 位字母、数字、下划线或连字符" value={props.studentId} onChange={e => props.onStudentId(e.target.value)} /></div>
     <div className="formGroup"><label htmlFor="campusCard">校园卡照片（必填）</label><input id="campusCard" type="file" accept="image/jpeg,image/png,image/webp" required aria-describedby="card-help" onChange={e => {
       const file = e.target.files?.[0] || null; setError('');
       if (file && (file.size > 3 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type))) { setError('请使用不超过 3 MB 的 JPG、PNG 或 WebP 图片'); props.onFile(null); e.target.value = ''; return; }

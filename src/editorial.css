@@ -434,8 +434,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Teams */
 .teams { background: var(--bg-primary); }
-.teamSearch { justify-content: flex-start; margin-bottom: 28px; }
-.searchInputWrapper, .searchButton, .refreshButton, .seasonSelect {
+.teamSearch { justify-content: flex-start !important; margin-bottom: 28px; }
+.searchInputWrapper, .searchButton, .seasonSelect {
   min-height: 48px;
   border: 1px solid var(--border-color);
   border-radius: 0;
@@ -443,7 +443,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .searchInputWrapper { max-width: 520px; }
 .searchButton { background: var(--text-primary); padding-inline: 28px; }
-.refreshButton { margin: 0 0 26px auto; background: transparent; color: var(--text-primary); }
+.refreshButton { margin: 0; background: transparent; color: var(--text-primary); flex-shrink: 0; }
 .teamsGrid { grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--bg-primary); border: 1px solid var(--border-color); }
 .teamCard {
   background: #fff;

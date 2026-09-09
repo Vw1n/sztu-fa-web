@@ -1,5 +1,5 @@
 import type { Season } from '../../types';
-import { SeasonSelector } from '../common';
+import { SeasonSelector, RefreshButton } from '../common';
 
 interface TeamFiltersProps {
   globalSeasons: Season[];
@@ -10,6 +10,7 @@ interface TeamFiltersProps {
   onSearch: () => void;
   onReset: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
+  onRefresh: () => void;
 }
 
 const TeamFilters: React.FC<TeamFiltersProps> = ({
@@ -21,6 +22,7 @@ const TeamFilters: React.FC<TeamFiltersProps> = ({
   onSearch,
   onReset,
   onKeyDown,
+  onRefresh,
 }) => {
   return (
     <>
@@ -53,17 +55,15 @@ const TeamFilters: React.FC<TeamFiltersProps> = ({
         </button>
       </div>
 
-      {/* 赛季筛选器 */}
-      <div className="filterControls" style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center', margin: '20px 0 25px 0', padding: '15px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.7)' }}>选择赛季:</span>
-          <SeasonSelector
-            seasons={globalSeasons}
-            selectedSeasonId={globalSeasonId}
-            onChange={onSeasonChange}
-            includeAllOption
-          />
-        </div>
+      {/* 赛季筛选器 + 刷新按钮同一行 */}
+      <div className="filterControls" style={{ display: 'flex', flexWrap: 'nowrap', gap: '30px', alignItems: 'center', justifyContent: 'space-between', margin: '0 0 25px 0', padding: '15px 0', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <SeasonSelector
+          seasons={globalSeasons}
+          selectedSeasonId={globalSeasonId}
+          onChange={onSeasonChange}
+          includeAllOption
+        />
+        <RefreshButton onClick={onRefresh} />
       </div>
     </>
   );
