@@ -1,0 +1,299 @@
+/* ============================================================
+ * PlayerCareerCard 样式文件
+ * 从 PlayerCareerCard.tsx 内联样式迁移而来
+ * 前缀 cc- = career-card，避免与全局样式冲突
+ * ============================================================ */
+
+/* ---------- Modal 容器 ---------- */
+.cc-modal {
+  max-width: 520px;
+  width: 92%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.cc-overlay {
+  z-index: 1100;
+}
+
+/* ---------- Loading 状态 ---------- */
+.cc-loading {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.cc-loading-spinner {
+  margin: 0 auto 15px auto;
+}
+
+.cc-loading-text {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ---------- 空数据状态 ---------- */
+.cc-empty {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+/* ---------- 内容区域 ---------- */
+.cc-content {
+  padding: 20px 14px;
+}
+
+/* ---------- 头部个人信息 ---------- */
+.cc-header {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+  padding-bottom: 14px;
+}
+
+/* 有头像时的容器 */
+.cc-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  border: 3px solid #fff;
+  background: #f1f5f9;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+/* 无头像时的降级圆形 */
+.cc-avatar-fallback {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  border: 3px solid #fff;
+  color: #fff;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.cc-header-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.cc-player-name {
+  margin: 0 0 4px 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-team-info {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.cc-suspended-badge {
+  background: #ffebeb;
+  color: #d93838;
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 2px;
+  white-space: nowrap;
+}
+
+/* ---------- 统计面板 ---------- */
+.cc-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.cc-stat-tile {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 8px 2px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.cc-stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.cc-stat-value--goals {
+  color: var(--primary-color);
+}
+
+.cc-stat-value--assists {
+  color: #0288d1;
+}
+
+.cc-stat-value--discipline {
+  font-size: 0.95rem;
+  color: #f57c00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.cc-stat-label {
+  font-size: 0.72rem;
+  color: #666;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* ---------- 赛季明细 ---------- */
+.cc-section-title {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cc-table-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cc-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.cc-table-header-row {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cc-table-th {
+  padding: 8px 2px;
+  font-weight: 600;
+}
+
+.cc-table-th--season {
+  width: 26%;
+  padding: 8px 3px;
+}
+
+.cc-table-th--matches {
+  width: 13%;
+}
+
+.cc-table-th--goals {
+  width: 12%;
+}
+
+.cc-table-th--assists {
+  width: 12%;
+}
+
+.cc-table-th--discipline {
+  width: 37%;
+  white-space: nowrap;
+}
+
+.cc-table-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: transparent;
+}
+
+.cc-table-row--last {
+  border-bottom: none;
+}
+
+.cc-table-row--alt {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cc-table-td {
+  padding: 8px 2px;
+}
+
+.cc-table-td--season {
+  padding: 8px 3px;
+  font-weight: 500;
+  word-break: break-word;
+  line-height: 1.25;
+}
+
+.cc-table-td--goals {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.cc-table-td--assists {
+  font-weight: 600;
+  color: #0288d1;
+}
+
+.cc-table-td--discipline {
+  white-space: nowrap;
+}
+
+/* ---------- 红黄牌展示 ---------- */
+.cc-discipline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.cc-discipline-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.cc-discipline-emoji {
+  font-size: 0.7rem;
+}
+
+.cc-discipline-sep {
+  color: #aaa;
+}

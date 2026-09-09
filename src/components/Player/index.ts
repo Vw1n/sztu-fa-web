@@ -1,1 +1,1 @@
-export { PlayerCareerCard } from './PlayerCareerCard';
+export { PlayerCareerCard } from './career-card/PlayerCareerCard';
