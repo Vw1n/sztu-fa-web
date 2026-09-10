@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { submitPredictionApi } from '../api/predictions';
+import type { PredictionChoice } from '../api/predictions';
+import { useAuth } from '../contexts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PredictionNavTabs from '../components/Predictions/PredictionNavTabs';
@@ -9,14 +13,46 @@ import { PredictionMatchSummary } from '../features/predictions/components/Predi
 import './pages.css';
 
 const Predictions: React.FC = () => {
-  const { seasons, selectedSeasonId, loadingSeasons } = usePredictionSeason();
-  const { matches, phase, error, reload } = usePredictionMatches(selectedSeasonId);
+  const { seasons, selectedSeasonId, setSelectedSeasonId, loadingSeasons } = usePredictionSeason();
+  const { matches, phase, error, reload, updateMatchPrediction } = usePredictionMatches(selectedSeasonId);
+  const { user, isAuthenticated } = useAuth();
+
+  const [submittingMatchId, setSubmittingMatchId] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleChoice = useCallback(async (matchId: string, choice: PredictionChoice) => {
+    if (!isAuthenticated) {
+      setMessage({ type: 'error', text: '请先登录账号再进行助威提交' });
+      return;
+    }
+    if (user?.role !== 'user') {
+      setMessage({ type: 'error', text: '管理账号不参与助威' });
+      return;
+    }
+    if (!user?.studentId) {
+      setMessage({ type: 'error', text: '您的账号未绑定学号，请先去绑定学号' });
+      return;
+    }
+
+    try {
+      setSubmittingMatchId(matchId);
+      setMessage(null);
+      await submitPredictionApi(matchId, choice);
+      setMessage({ type: 'success', text: '助威提交成功！开赛前可随时修改选择。' });
+      updateMatchPrediction(matchId, choice);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '助威提交失败';
+      setMessage({ type: 'error', text: errorMessage });
+    } finally {
+      setSubmittingMatchId(null);
+    }
+  }, [isAuthenticated, user, updateMatchPrediction]);
 
   return (
     <div className="pageLayout">
       <Header />
       <main className="mainContent">
-        <div className="pageContainer predictionsLocked">
+        <div className="pageContainer">
           <PredictionNavTabs activeTab="predictions" />
 
           {/* 标题 + 赛季选择器 */}
@@ -33,7 +69,7 @@ const Predictions: React.FC = () => {
                 <select
                   id="seasonFilter"
                   value={selectedSeasonId}
-                  disabled
+                  onChange={(e) => setSelectedSeasonId(e.target.value)}
                   className="seasonSelect"
                 >
                   <option value="">全部赛季</option>
@@ -57,10 +93,41 @@ const Predictions: React.FC = () => {
             </ul>
           </div>
 
-          {/* 功能未开放 banner */}
-          <div className="loginNotice disabledNotice">
-            <p>🚧 功能暂未开放，预计新生杯正式投入使用，敬请期待！</p>
-          </div>
+          {/* 未登录提示 */}
+          {!isAuthenticated && (
+            <div className="loginNotice">
+              <p>您尚未登录账号。登录并绑定真实学号后即可参加比赛胜负预测。</p>
+              <div className="noticeActions">
+                <Link to="/login" className="actionBtn primary">
+                  立即登录
+                </Link>
+                <Link to="/register" className="actionBtn secondary">
+                  注册绑定学号
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* 未绑定学号提示 */}
+          {isAuthenticated && user?.role === 'user' && !user.studentId && (
+            <div className="loginNotice warning">
+              <p>您的账号尚未绑定学号，暂无法提交助威。请联系管理员完成学号绑定核验。</p>
+            </div>
+          )}
+
+          {/* Toast 消息 */}
+          {message && (
+            <div className={`toastMessage ${message.type}`}>
+              {message.text}
+              <button
+                type="button"
+                className="closeToast"
+                onClick={() => setMessage(null)}
+              >
+                ×
+              </button>
+            </div>
+          )}
 
           {/* 四态列表 */}
           <PredictionPageState
@@ -70,7 +137,12 @@ const Predictions: React.FC = () => {
           >
             <div className="matchCardsGrid">
               {matches.map((match) => (
-                <PredictionMatchSummary key={match.id} match={match} locked />
+                <PredictionMatchSummary
+                  key={match.id}
+                  match={match}
+                  onChoice={handleChoice}
+                  submitting={submittingMatchId === match.id}
+                />
               ))}
             </div>
           </PredictionPageState>
