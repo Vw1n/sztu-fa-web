@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchPredictionMatches } from '../../../api/predictions';
-import type { PredictionMatch } from '../../../api/predictions';
+import type { PredictionMatch, PredictionChoice } from '../../../api/predictions';
 import type { PredictionPagePhase } from '../prediction.types';
 
 export interface UsePredictionMatches {
@@ -17,6 +17,8 @@ export interface UsePredictionMatches {
   phase: PredictionPagePhase;
   error: string | null;
   reload: () => void;
+  /** 提交后乐观更新本地比赛列表中的 userPrediction */
+  updateMatchPrediction: (matchId: string, choice: PredictionChoice) => void;
 }
 
 export function usePredictionMatches(
@@ -60,5 +62,27 @@ export function usePredictionMatches(
     load();
   }, [selectedSeasonId, reloadTick]);
 
-  return { matches, phase, error, reload };
+  const updateMatchPrediction = useCallback(
+    (matchId: string, choice: PredictionChoice) => {
+      setMatches((prev) =>
+        prev.map((m) =>
+          m.id === matchId
+            ? {
+                ...m,
+                userPrediction: {
+                  id: m.userPrediction?.id || 'temp',
+                  choice,
+                  status: 'PENDING',
+                  awardedPoints: 0,
+                  submittedAt: new Date().toISOString(),
+                },
+              }
+            : m,
+        ),
+      );
+    },
+    [],
+  );
+
+  return { matches, phase, error, reload, updateMatchPrediction };
 }

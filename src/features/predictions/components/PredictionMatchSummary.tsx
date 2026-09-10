@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import type { PredictionMatch } from '../../../api/predictions';
+import type { PredictionMatch, PredictionChoice } from '../../../api/predictions';
 import {
   getMatchStageLabel,
   formatMatchTime,
@@ -19,13 +19,16 @@ import type { MatchDisplayStatus } from '../prediction.types';
 
 export interface PredictionMatchSummaryProps {
   match: PredictionMatch;
-  /** 锁定模式：禁用所有交互（当前助威中心处于功能未开放状态） */
-  locked?: boolean;
+  /** 选择回调 */
+  onChoice?: (matchId: string, choice: PredictionChoice) => void;
+  /** 提交中状态 */
+  submitting?: boolean;
 }
 
 export const PredictionMatchSummary: React.FC<PredictionMatchSummaryProps> = ({
   match,
-  locked = true,
+  onChoice,
+  submitting = false,
 }) => {
   const stageLabel = getMatchStageLabel(match);
   const matchTime = formatMatchTime(match.matchDate);
@@ -36,11 +39,10 @@ export const PredictionMatchSummary: React.FC<PredictionMatchSummaryProps> = ({
   const userChoice = match.userPrediction?.choice;
   const choiceLabels = getChoiceLabels(match);
   const summary = getUserPredictionSummary(match);
+  const btnDisabled = isClosed || submitting;
 
   return (
-    <div
-      className={`predictionCard ${isClosed ? 'closedCard' : ''} ${locked ? 'lockedCard' : ''}`}
-    >
+    <div className={`predictionCard ${isClosed ? 'closedCard' : ''}`}>
       {/* 顶部：阶段 + 场地 + 时间 */}
       <div className="cardTop">
         <span className="stageTag">{stageLabel}</span>
@@ -112,8 +114,9 @@ export const PredictionMatchSummary: React.FC<PredictionMatchSummaryProps> = ({
         <div className="choiceButtons">
           <button
             type="button"
-            disabled
+            disabled={btnDisabled}
             className={`choiceBtn ${userChoice === 'HOME_WIN' ? 'selected' : ''}`}
+            onClick={() => onChoice?.(match.id, 'HOME_WIN')}
           >
             <span className="choiceText">{choiceLabels.fullHome}</span>
             <span className="choiceBadge">{choiceLabels.homeWin}</span>
@@ -121,8 +124,9 @@ export const PredictionMatchSummary: React.FC<PredictionMatchSummaryProps> = ({
 
           <button
             type="button"
-            disabled
+            disabled={btnDisabled}
             className={`choiceBtn ${userChoice === 'DRAW' ? 'selected' : ''}`}
+            onClick={() => onChoice?.(match.id, 'DRAW')}
           >
             <span className="choiceText">打 平</span>
             <span className="choiceBadge">{choiceLabels.draw}</span>
@@ -130,8 +134,9 @@ export const PredictionMatchSummary: React.FC<PredictionMatchSummaryProps> = ({
 
           <button
             type="button"
-            disabled
+            disabled={btnDisabled}
             className={`choiceBtn ${userChoice === 'AWAY_WIN' ? 'selected' : ''}`}
+            onClick={() => onChoice?.(match.id, 'AWAY_WIN')}
           >
             <span className="choiceText">{choiceLabels.fullAway}</span>
             <span className="choiceBadge">{choiceLabels.awayWin}</span>
