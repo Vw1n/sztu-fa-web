@@ -62,17 +62,20 @@ const MyPredictions: React.FC = () => {
     return (
       <div className="pageLayout">
         <Header />
-        <main className="mainContent flexCenter">
-          <div className="loginNotice">
-            <h2>请先登录账号</h2>
-            <p>登录后可查看您的个人助威统计、积分排名及历史记录</p>
-            <div className="noticeActions">
-              <Link to="/login" className="actionBtn primary">
-                登录账号
-              </Link>
-              <Link to="/register" className="actionBtn secondary">
-                注册绑定学号
-              </Link>
+        <main className="mainContent">
+          <div className="pageContainer">
+            <PredictionNavTabs activeTab="my-predictions" />
+            <div className="loginNotice">
+              <h2>请先登录账号</h2>
+              <p>登录后可查看您的个人助威统计、积分排名及历史记录</p>
+              <div className="noticeActions">
+                <Link to="/login" className="actionBtn primary">
+                  登录账号
+                </Link>
+                <Link to="/register" className="actionBtn secondary">
+                  注册绑定学号
+                </Link>
+              </div>
             </div>
           </div>
         </main>
